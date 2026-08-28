@@ -1,0 +1,64 @@
+﻿.MainPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .header {
+    position: absolute;
+    width: 100%;
+    border-bottom: 5px solid aquamarine;
+    border-image: linear-gradient(to right, #7efafa, #0024ea);
+    // linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    border-image-slice: 1;
+    height: calc(3rem + 45px);
+    z-index: -1;
+  }
+
+  .basicInformation {
+    width: 100%;
+    display: flex;
+    gap: 35px;
+    .information {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      .name {
+        font-size: 3rem;
+        font-weight: bold;
+        text-align: center;
+        padding-top: 5px;
+
+        .title {
+          font-weight: bold;
+        }
+      }
+      .role {
+        font-size: 1.5rem;
+        color: #555;
+      }
+
+      .info {
+        margin-top: 20px;
+        display: flex;
+      }
+    }
+    .column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      .photo {
+        left: 35px;
+        top: 30px;
+        width: 300px;
+        height: auto;
+        border-radius: 15%;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        object-fit: cover;
+        margin: 30px 35px;
+      }
+    }
+  }
+}

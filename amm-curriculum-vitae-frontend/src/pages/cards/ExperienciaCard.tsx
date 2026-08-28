@@ -29,6 +29,16 @@ export const ExperienciaCard = ({ experiencia, deleteExperiencia }: Props) => {
             .map((tech: any) => tech.titulo)
             .join(", ")}
         </p>
+        {experiencia.hitos?.length ? (
+          <>
+            <p>Hitos:</p>
+            <ul className={styles.hitos}>
+              {experiencia.hitos.map((hito) => (
+                <li key={hito.id}>{hito.descripcion}</li>
+              ))}
+            </ul>
+          </>
+        ) : null}
       </div>
       <div className={styles.actions}>
         <button onClick={() => deleteExperiencia(experiencia.id)}>

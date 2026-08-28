@@ -1,5 +1,7 @@
 ﻿import { useActionState, useEffect, useState } from "react";
 import { useConocimientoStore } from "../../hooks";
+import { MultiSelect } from "../../components/MultiSelect";
+import type { Conocimiento } from "../../interfaces/conocimiento.interface";
 
 import styles from "./Form.module.scss";
 
@@ -28,19 +30,6 @@ export const ExperienciaForm = ({ onAddExperiencia }: Props) => {
       getConocimiento();
     }
   }, []);
-
-  var expanded = false;
-
-  function showCheckboxes() {
-    var checkboxes = document.getElementById("checkboxes");
-    if (!expanded) {
-      checkboxes!.classList.add(styles.show);
-      expanded = true;
-    } else {
-      checkboxes!.classList.remove(styles.show);
-      expanded = false;
-    }
-  }
 
   const anadirHito = () => setHitos((prev) => [...prev, ""]);
 
@@ -73,40 +62,17 @@ export const ExperienciaForm = ({ onAddExperiencia }: Props) => {
         <input type="date" id="fechaFin" name="fechaFin" />
       </div>
       {conocimiento && conocimiento.length > 0 ? (
-        <div className={styles.multiselect}>
-          <div className={styles.selectBox} onClick={showCheckboxes}>
-            <select>
-              <option>Select option</option>
-            </select>
-            <div className={styles.overSelect}></div>
-          </div>
-          <div id="checkboxes" className={styles.checkboxes}>
-            {conocimiento.map((tecnologia: any) => (
-              <label key={tecnologia.id} htmlFor={tecnologia.id}>
-                <input
-                  type="checkbox"
-                  id={tecnologia.id}
-                  name="tecnologias"
-                  value={tecnologia.id}
-                  checked={selectedTecnologias.includes(tecnologia.id)}
-                  onChange={(e) => {
-                    const isChecked = e.target.checked;
-                    if (isChecked) {
-                      setSelectedTecnologias((prev) => [
-                        ...prev,
-                        tecnologia.id,
-                      ]);
-                    } else {
-                      setSelectedTecnologias((prev) =>
-                        prev.filter((item) => item !== tecnologia.id)
-                      );
-                    }
-                  }}
-                />
-                {tecnologia.titulo}
-              </label>
-            ))}
-          </div>
+        <div className={styles.tecnologias}>
+          <label>Tecnologías:</label>
+          <MultiSelect
+            name="tecnologias"
+            options={conocimiento.map((tecnologia: Conocimiento) => ({
+              id: tecnologia.id,
+              label: tecnologia.titulo,
+            }))}
+            selected={selectedTecnologias}
+            onChange={setSelectedTecnologias}
+          />
         </div>
       ) : (
         <p>No technologies available</p>

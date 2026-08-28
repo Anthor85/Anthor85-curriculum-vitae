@@ -1,0 +1,40 @@
+﻿import { useConocimientoStore } from "../../hooks";
+import { Experiencia } from "../../interfaces/experiencia.interface";
+
+import styles from "./Cards.module.scss";
+
+interface Props {
+  experiencia: Experiencia;
+  deleteExperiencia: (id: string) => void;
+}
+
+export const ExperienciaCard = ({ experiencia, deleteExperiencia }: Props) => {
+  const { conocimiento } = useConocimientoStore();
+
+  return (
+    <div className={styles.Card} key={experiencia.id}>
+      <div className={styles.data}>
+        <h2>{experiencia.empresa}</h2>
+        <p>{experiencia.descripcion}</p>
+        <p>
+          {new Date(experiencia.fechaInicio).toLocaleDateString()} -{" "}
+          {experiencia.fechaFin
+            ? new Date(experiencia.fechaFin).toLocaleDateString()
+            : "En la actualidad"}
+        </p>
+       <p>
+          Tecnologías:{" "}
+          {conocimiento
+            .filter((tech: any) => experiencia.tecnologias.includes(tech.id))
+            .map((tech: any) => tech.titulo)
+            .join(", ")}
+        </p>
+      </div>
+      <div className={styles.actions}>
+        <button onClick={() => deleteExperiencia(experiencia.id)}>
+          Delete
+        </button>
+      </div>
+    </div>
+  );
+};

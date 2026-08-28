@@ -1,0 +1,34 @@
+.Card {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  max-width: 600px;
+  place-content: space-between;
+  margin-right: 0.5rem;
+
+  .data {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .title {
+      margin-top: 0;
+      margin-bottom: 0;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+
+    .subdata {
+      font-size: 0.9rem;
+      color: #666;
+    }
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

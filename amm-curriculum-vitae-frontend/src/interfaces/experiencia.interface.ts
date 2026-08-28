@@ -1,3 +1,9 @@
+export interface Hito {
+  id: string;
+  descripcion: string;
+  experiencia: string;
+}
+
 export interface Experiencia {
   id: string;
   empresa: string;
@@ -5,6 +11,7 @@ export interface Experiencia {
   fechaInicio: string;
   fechaFin?: string;
   tecnologias: string[];
+  hitos: Hito[];
 }
 
 export interface ExperienciaState {

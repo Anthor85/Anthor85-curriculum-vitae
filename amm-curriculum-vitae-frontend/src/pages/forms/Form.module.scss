@@ -55,6 +55,28 @@
     }
   }
 
+  .hitos {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .hitoFila {
+      display: flex;
+      flex-direction: row;
+      gap: 0.5rem;
+
+      input {
+        flex: 1;
+      }
+    }
+
+    .hitoBoton {
+      width: auto;
+      align-self: flex-start;
+      padding: 0 0.75rem;
+    }
+  }
+
   button {
     width: 100px;
   }

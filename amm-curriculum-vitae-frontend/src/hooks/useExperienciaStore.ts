@@ -21,12 +21,21 @@ export const useExperienciaStore = () => {
 
   const createExperiencia = async (formData: FormData) => {
     try {
-      const tecnologias = formData.getAll("tecnologias").join(",");
+      const campos = Object.fromEntries(formData);
+      delete campos.tecnologias;
+      delete campos.hitos;
 
-      formData.delete("tecnologias");
-      formData.append("tecnologias", tecnologias); // Append an empty value to avoid issues
+      const payload = {
+        ...campos,
+        tecnologias: formData.getAll("tecnologias") as string[],
+        hitos: (formData.getAll("hitos") as string[])
+          .map((hito) => hito.trim())
+          .filter((hito) => hito !== ""),
+      };
 
-      const { data } = await api.post("/experiencia", formData);
+      console.log("Experiencia payload:", payload);
+
+      const { data } = await api.post("/experiencia", payload);
 
       dispatch(setExperiencia([...experiencia, data]));
     } catch (error) {

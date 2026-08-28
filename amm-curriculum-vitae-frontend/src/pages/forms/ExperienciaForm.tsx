@@ -14,6 +14,8 @@ export const ExperienciaForm = ({ onAddExperiencia }: Props) => {
   //TODO Cambiar esto a conocimiento
   const [selectedTecnologias, setSelectedTecnologias] = useState<string[]>([]);
 
+  const [hitos, setHitos] = useState<string[]>([""]);
+
   const [state, formAction, isPending] = useActionState(
     async (prevState: unknown, queryData: FormData) =>
       onAddExperiencia(queryData),
@@ -40,12 +42,19 @@ export const ExperienciaForm = ({ onAddExperiencia }: Props) => {
     }
   }
 
+  const anadirHito = () => setHitos((prev) => [...prev, ""]);
+
+  const borrarHito = (indice: number) =>
+    setHitos((prev) => prev.filter((_, i) => i !== indice));
+
+  const cambiarHito = (indice: number, valor: string) =>
+    setHitos((prev) => prev.map((hito, i) => (i === indice ? valor : hito)));
+
   return (
     <form
       action={formAction}
       method="post"
       className={styles.Form}
-      encType="multipart/form-data"
     >
       <div className={styles.field}>
         <label htmlFor="empresa">Company:</label>
@@ -102,6 +111,29 @@ export const ExperienciaForm = ({ onAddExperiencia }: Props) => {
       ) : (
         <p>No technologies available</p>
       )}
+      <div className={styles.hitos}>
+        <label>Hitos:</label>
+        {hitos.map((hito, indice) => (
+          <div key={indice} className={styles.hitoFila}>
+            <input
+              type="text"
+              name="hitos"
+              value={hito}
+              onChange={(e) => cambiarHito(indice, e.target.value)}
+            />
+            <button
+              type="button"
+              className={styles.hitoBoton}
+              onClick={() => borrarHito(indice)}
+            >
+              X
+            </button>
+          </div>
+        ))}
+        <button type="button" className={styles.hitoBoton} onClick={anadirHito}>
+          + Añadir hito
+        </button>
+      </div>
       <button type="submit" disabled={isPending}>
         {isPending ? "Submitting..." : "Submit"}
       </button>

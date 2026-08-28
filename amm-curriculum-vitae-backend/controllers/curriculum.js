@@ -9,11 +9,11 @@ const Perfil = require("../models/Perfil");
 const obtenerCurriculum = async (req, res = response) => {
   try {
     res.json({
-      'conocimiento': await Conocimiento.find(),
-      'experiencia': await Experiencia.find(),
-      'formaciones': await Formacion.find(),
-      'formacionesComplementarias': await FormacionComplementaria.find(),
-      'perfil': await Perfil.findOne(),
+      conocimiento: await Conocimiento.find(),
+      experiencia: await Experiencia.find().populate("hitos"),
+      formaciones: await Formacion.find(),
+      formacionesComplementarias: await FormacionComplementaria.find(),
+      perfil: await Perfil.findOne(),
     });
   } catch (error) {
     console.error(error);

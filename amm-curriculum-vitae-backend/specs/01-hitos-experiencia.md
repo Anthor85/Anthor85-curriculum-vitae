@@ -1,6 +1,6 @@
 # SPEC 01 — Hitos asociados a Experiencia
 
-> **Estado:** Aprobada
+> **Estado:** Implementada
 > **Depende de:** —
 > **Fecha:** 2026-08-28
 > **Objetivo:** Añadir una colección `hitos` en Mongo con un texto y una referencia a `Experiencia`, y adaptar el backend de Experiencia para crearlos y devolverlos junto a cada experiencia.

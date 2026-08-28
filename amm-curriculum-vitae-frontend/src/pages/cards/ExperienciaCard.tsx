@@ -22,22 +22,25 @@ export const ExperienciaCard = ({ experiencia, deleteExperiencia }: Props) => {
             ? new Date(experiencia.fechaFin).toLocaleDateString()
             : "En la actualidad"}
         </p>
-       <p>
-          Tecnologías:{" "}
-          {conocimiento
-            .filter((tech: any) => experiencia.tecnologias.includes(tech.id))
-            .map((tech: any) => tech.titulo)
-            .join(", ")}
-        </p>
+        <div className={styles.coleccion}>
+          <p>Tecnologías:</p>
+          <ul className={styles.colecciones}>
+            {conocimiento
+              .filter((tech: any) => experiencia.tecnologias.includes(tech.id))
+              .map((tech: any) => (
+                <li key={tech.id}>{tech.titulo}</li>
+              ))}
+          </ul>
+        </div>
         {experiencia.hitos?.length ? (
-          <>
+        <div className={styles.coleccion}>
             <p>Hitos:</p>
-            <ul className={styles.hitos}>
+            <ul className={styles.colecciones}>
               {experiencia.hitos.map((hito) => (
                 <li key={hito.id}>{hito.descripcion}</li>
               ))}
             </ul>
-          </>
+          </div>
         ) : null}
       </div>
       <div className={styles.actions}>

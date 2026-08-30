@@ -1,29 +1,31 @@
-﻿import { useActionState, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useConocimientoStore } from "../../hooks";
 import { MultiSelect } from "../../components/MultiSelect";
 import type { Conocimiento } from "../../interfaces/conocimiento.interface";
+import type {
+  Experiencia,
+  ExperienciaPayload,
+} from "../../interfaces/experiencia.interface";
 
 import styles from "./Form.module.scss";
 
 interface Props {
-  onAddExperiencia: (data: FormData) => void;
+  experienciaEnEdicion: Experiencia | null;
+  onSubmitExperiencia: (payload: ExperienciaPayload) => Promise<void> | void;
+  onLimpiar: () => void;
 }
 
-export const ExperienciaForm = ({ onAddExperiencia }: Props) => {
-
+export const ExperienciaForm = ({
+  experienciaEnEdicion,
+  onSubmitExperiencia,
+  onLimpiar,
+}: Props) => {
   const { conocimiento, getConocimiento } = useConocimientoStore();
-  
-  //TODO Cambiar esto a conocimiento
-  const [selectedTecnologias, setSelectedTecnologias] = useState<string[]>([]);
 
-  const [hitos, setHitos] = useState<string[]>([""]);
-
-  const [state, formAction, isPending] = useActionState(
-    async (prevState: unknown, queryData: FormData) =>
-      onAddExperiencia(queryData),
-    null
-    // { initialState: { submitted: false } }
+  const [experiencia, setExperiencia] = useState<Experiencia>(
+    {} as Experiencia,
   );
+  const [isPending, setIsPending] = useState<boolean>(false);
 
   useEffect(() => {
     if (!conocimiento || conocimiento.length === 0) {
@@ -31,35 +33,149 @@ export const ExperienciaForm = ({ onAddExperiencia }: Props) => {
     }
   }, []);
 
-  const anadirHito = () => setHitos((prev) => [...prev, ""]);
+  useEffect(() => {
+    if (!experienciaEnEdicion) {
+      setExperiencia({
+        id: "",
+        empresa: "",
+        descripcion: "",
+        fechaInicio: "",
+        fechaFin: "",
+        tecnologias: [],
+        hitos: [],
+      } as Experiencia);
+      return;
+    }
+
+    setExperiencia({
+      ...experienciaEnEdicion,
+      fechaInicio: experienciaEnEdicion.fechaInicio.slice(0, 10),
+      fechaFin: experienciaEnEdicion.fechaFin
+        ? experienciaEnEdicion.fechaFin.slice(0, 10)
+        : "",
+      hitos:
+        experienciaEnEdicion.hitos.length > 0
+          ? experienciaEnEdicion.hitos.map(({ id, descripcion }) => ({
+              id,
+              descripcion,
+            }))
+          : [{ descripcion: "" }],
+    } as Experiencia);
+  }, [experienciaEnEdicion]);
+
+  const anadirHito = () =>
+    setExperiencia(
+      (prev) =>
+        ({
+          ...prev,
+          hitos: [...(prev.hitos || []), { descripcion: "" }],
+        }) as Experiencia,
+    );
 
   const borrarHito = (indice: number) =>
-    setHitos((prev) => prev.filter((_, i) => i !== indice));
+    setExperiencia(
+      (prev) =>
+        ({
+          ...prev,
+          hitos: prev.hitos?.filter((_, i) => i !== indice) || [],
+        }) as Experiencia,
+    );
 
   const cambiarHito = (indice: number, valor: string) =>
-    setHitos((prev) => prev.map((hito, i) => (i === indice ? valor : hito)));
+    setExperiencia(
+      (prev) =>
+        ({
+          ...prev,
+          hitos:
+            prev.hitos?.map((hito, i) =>
+              i === indice ? { ...hito, descripcion: valor } : hito,
+            ) || [],
+        }) as Experiencia,
+    );
+
+  const limpiarFormulario = () => {
+    setExperiencia({
+      id: "",
+      empresa: "",
+      descripcion: "",
+      fechaInicio: "",
+      fechaFin: "",
+      tecnologias: [],
+      hitos: [],
+    } as Experiencia);
+    onLimpiar();
+  };
+
+  const enviar = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const payload: ExperienciaPayload = {
+      ...experiencia,
+      fechaFin: experiencia.fechaFin ?? "",
+      hitos: experiencia.hitos.filter((hito) => hito.descripcion.trim() !== ""),
+    };
+
+    setIsPending(true);
+    try {
+      await onSubmitExperiencia(payload);
+      limpiarFormulario();
+    } finally {
+      setIsPending(false);
+    }
+  };
 
   return (
-    <form
-      action={formAction}
-      method="post"
-      className={styles.Form}
-    >
+    <form onSubmit={enviar} className={styles.Form}>
       <div className={styles.field}>
         <label htmlFor="empresa">Company:</label>
-        <input type="text" id="empresa" name="empresa" required />
+        <input
+          type="text"
+          id="empresa"
+          name="empresa"
+          value={experiencia.empresa}
+          onChange={(e) =>
+            setExperiencia({ ...experiencia, empresa: e.target.value })
+          }
+          required
+        />
       </div>
       <div className={styles.field}>
         <label htmlFor="descripcion">Position:</label>
-        <input type="text" id="descripcion" name="descripcion" required />
+        <input
+          type="text"
+          id="descripcion"
+          name="descripcion"
+          value={experiencia.descripcion}
+          onChange={(e) =>
+            setExperiencia({ ...experiencia, descripcion: e.target.value })
+          }
+          required
+        />
       </div>
       <div className={styles.field}>
         <label htmlFor="fechaInicio">Start Date:</label>
-        <input type="date" id="fechaInicio" name="fechaInicio" required />
+        <input
+          type="date"
+          id="fechaInicio"
+          name="fechaInicio"
+          value={experiencia.fechaInicio}
+          onChange={(e) =>
+            setExperiencia({ ...experiencia, fechaInicio: e.target.value })
+          }
+          required
+        />
       </div>
       <div className={styles.field}>
         <label htmlFor="fechaFin">End Date:</label>
-        <input type="date" id="fechaFin" name="fechaFin" />
+        <input
+          type="date"
+          id="fechaFin"
+          name="fechaFin"
+          value={experiencia.fechaFin}
+          onChange={(e) =>
+            setExperiencia({ ...experiencia, fechaFin: e.target.value })
+          }
+        />
       </div>
       {conocimiento && conocimiento.length > 0 ? (
         <div className={styles.tecnologias}>
@@ -70,8 +186,16 @@ export const ExperienciaForm = ({ onAddExperiencia }: Props) => {
               id: tecnologia.id,
               label: tecnologia.titulo,
             }))}
-            selected={selectedTecnologias}
-            onChange={setSelectedTecnologias}
+            selected={experiencia.tecnologias}
+            onChange={(selectedTecnologias) =>
+              setExperiencia(
+                (prev) =>
+                  ({
+                    ...prev,
+                    tecnologias: selectedTecnologias,
+                  }) as Experiencia,
+              )
+            }
           />
         </div>
       ) : (
@@ -79,30 +203,43 @@ export const ExperienciaForm = ({ onAddExperiencia }: Props) => {
       )}
       <div className={styles.hitos}>
         <label>Hitos:</label>
-        {hitos.map((hito, indice) => (
-          <div key={indice} className={styles.hitoFila}>
-            <input
-              type="text"
-              name="hitos"
-              value={hito}
-              onChange={(e) => cambiarHito(indice, e.target.value)}
-            />
-            <button
-              type="button"
-              className={styles.hitoBoton}
-              onClick={() => borrarHito(indice)}
-            >
-              X
-            </button>
-          </div>
-        ))}
+        {experiencia.hitos &&
+          experiencia.hitos.length > 0 &&
+          experiencia.hitos.map((hito, indice) => (
+            <div key={indice} className={styles.hitoFila}>
+              <input
+                type="text"
+                name="hitos"
+                value={hito.descripcion}
+                onChange={(e) => cambiarHito(indice, e.target.value)}
+              />
+              <button
+                type="button"
+                className={styles.hitoBoton}
+                onClick={() => borrarHito(indice)}
+              >
+                X
+              </button>
+            </div>
+          ))}
         <button type="button" className={styles.hitoBoton} onClick={anadirHito}>
           + Añadir hito
         </button>
       </div>
-      <button type="submit" disabled={isPending}>
-        {isPending ? "Submitting..." : "Submit"}
-      </button>
+      <div className={styles.actions}>
+        <button type="submit" disabled={isPending}>
+          {experienciaEnEdicion
+            ? isPending
+              ? "Updating..."
+              : "Actualizar"
+            : isPending
+              ? "Submitting..."
+              : "Submit"}
+        </button>
+        <button type="button" onClick={limpiarFormulario}>
+          Borrar formulario
+        </button>
+      </div>
     </form>
   );
 };

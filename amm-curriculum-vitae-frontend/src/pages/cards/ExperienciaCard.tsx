@@ -6,13 +6,23 @@ import styles from "./Cards.module.scss";
 interface Props {
   experiencia: Experiencia;
   deleteExperiencia: (id: string) => void;
+  onEditar: (experiencia: Experiencia) => void;
+  enEdicion: boolean;
 }
 
-export const ExperienciaCard = ({ experiencia, deleteExperiencia }: Props) => {
+export const ExperienciaCard = ({
+  experiencia,
+  deleteExperiencia,
+  onEditar,
+  enEdicion,
+}: Props) => {
   const { conocimiento } = useConocimientoStore();
 
   return (
-    <div className={styles.Card} key={experiencia.id}>
+    <div
+      className={`${styles.Card} ${enEdicion ? styles.enEdicion : ""}`}
+      key={experiencia.id}
+    >
       <div className={styles.data}>
         <h2>{experiencia.empresa}</h2>
         <p>{experiencia.descripcion}</p>
@@ -43,7 +53,8 @@ export const ExperienciaCard = ({ experiencia, deleteExperiencia }: Props) => {
           </div>
         ) : null}
       </div>
-      <div className={styles.actions}>
+      <div className={`${styles.actions} ${styles.actionsFila}`}>
+        <button onClick={() => onEditar(experiencia)}>Editar</button>
         <button onClick={() => deleteExperiencia(experiencia.id)}>
           Delete
         </button>

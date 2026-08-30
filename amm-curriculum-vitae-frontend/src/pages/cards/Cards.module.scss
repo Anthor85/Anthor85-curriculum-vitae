@@ -42,4 +42,14 @@
     flex-direction: column;
     gap: 0.5rem;
   }
+
+  .actionsFila {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  &.enEdicion {
+    border-color: #4a90d9;
+    background-color: #eef5fc;
+  }
 }

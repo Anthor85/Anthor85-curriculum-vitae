@@ -26,3 +26,17 @@ export interface ExperienciaAction {
 }
 
 export type ExperienciaDispatch = (action: ExperienciaAction) => void;
+
+export interface HitoForm {
+  id?: string;
+  descripcion: string;
+}
+
+export interface ExperienciaPayload {
+  empresa: string;
+  descripcion: string;
+  fechaInicio: string;
+  fechaFin: string;
+  tecnologias: string[];
+  hitos: HitoForm[];
+}

@@ -1,4 +1,5 @@
 ﻿import { useDispatch, useSelector } from "react-redux";
+import type { ExperienciaPayload } from "../interfaces/experiencia.interface";
 import api from "../api/api";
 import { setExperiencia } from "../store";
 
@@ -19,20 +20,8 @@ export const useExperienciaStore = () => {
     }
   };
 
-  const createExperiencia = async (formData: FormData) => {
+  const createExperiencia = async (payload: ExperienciaPayload) => {
     try {
-      const campos = Object.fromEntries(formData);
-      delete campos.tecnologias;
-      delete campos.hitos;
-
-      const payload = {
-        ...campos,
-        tecnologias: formData.getAll("tecnologias") as string[],
-        hitos: (formData.getAll("hitos") as string[])
-          .map((hito) => hito.trim())
-          .filter((hito) => hito !== ""),
-      };
-
       console.log("Experiencia payload:", payload);
 
       const { data } = await api.post("/experiencia", payload);
@@ -40,6 +29,21 @@ export const useExperienciaStore = () => {
       dispatch(setExperiencia([...experiencia, data]));
     } catch (error) {
       console.error("Error creating experiencia:", error);
+    }
+  };
+
+  const updateExperiencia = async (id: string, payload: ExperienciaPayload) => {
+    try {
+      const { data } = await api.put(`/experiencia/${id}`, payload);
+      console.log("Experiencia updated:", data);
+
+      dispatch(
+        setExperiencia(
+          experiencia.map((exp: any) => (exp.id === data.id ? data : exp))
+        )
+      );
+    } catch (error) {
+      console.error("Error updating experiencia:", error);
     }
   };
 
@@ -62,6 +66,7 @@ export const useExperienciaStore = () => {
     error,
 
     createExperiencia,
+    updateExperiencia,
     deleteExperiencia,
     getExperiencia,
   };

@@ -1,6 +1,6 @@
 # SPEC 04 — Editar conocimiento desde la card
 
-> **Estado:** Aprobada
+> **Estado:** Implementada
 > **Depende de:** SPEC 03 del frontend (`03-editar-experiencia-frontend.md`, Implementada) y SPEC 03 del backend (`../amm-curriculum-vitae-backend/specs/03-editar-conocimiento.md`, Borrador)
 > **Fecha:** 2026-08-31
 > **Objetivo:** Añadir un botón `Editar` en cada `ConocimientoCard` que cargue ese conocimiento en el formulario para actualizarlo vía `PUT`, y un botón `Borrar formulario` que limpie los campos y desvincule el id, replicando el patrón de la SPEC 03.

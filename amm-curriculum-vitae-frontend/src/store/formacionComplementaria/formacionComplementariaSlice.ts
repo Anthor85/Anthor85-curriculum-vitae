@@ -2,7 +2,7 @@
 import {
   FormacionComplementaria,
   FormacionComplementariaState,
-} from '../../interfaces/formacioncomplementaria.interface';
+} from '../../interfaces/formacionComplementaria.interface';
 
 export const formacionComplementariaSlice = createSlice({
   name: 'formacionComplementariaSlice',

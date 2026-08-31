@@ -3,6 +3,7 @@ const {
   obtenerConocimientos,
   crearConocimiento,
   crearConocimientos,
+  actualizarConocimiento,
   eliminarConocimiento,
 } = require('../controllers/conocimiento');
 
@@ -16,6 +17,9 @@ router.post('/', crearConocimiento);
 
 // Crear múltiples conocimientos
 router.post('/multiple', crearConocimientos);
+
+// Actualizar un conocimiento
+router.put('/:id', actualizarConocimiento);
 
 // Eliminar un conocimiento
 router.delete('/:id', eliminarConocimiento);

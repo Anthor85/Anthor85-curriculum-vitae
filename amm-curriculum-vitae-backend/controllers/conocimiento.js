@@ -39,6 +39,28 @@ const crearConocimientos = async (req, res = response) => {
   }
 };
 
+// Actualizar un conocimiento
+const actualizarConocimiento = async (req, res = response) => {
+  const { id } = req.params;
+
+  try {
+    const conocimiento = await Conocimiento.findById(id);
+    if (!conocimiento) {
+      return res.status(404).json({ msg: 'Conocimiento no encontrado' });
+    }
+
+    conocimiento.titulo = req.body.titulo;
+    conocimiento.nivel = req.body.nivel;
+
+    await conocimiento.save();
+
+    res.json(conocimiento);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al actualizar el conocimiento' });
+  }
+};
+
 const eliminarConocimiento = async (req, res = response) => {
   const { id } = req.params;
 
@@ -58,5 +80,6 @@ module.exports = {
   obtenerConocimientos,
   crearConocimiento,
   crearConocimientos,
+  actualizarConocimiento,
   eliminarConocimiento,
 };

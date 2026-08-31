@@ -32,7 +32,7 @@ export const FormacionCard = ({
         </div>
         {descripcion && (
           <div className={styles.subdata}>
-            <b>Descripción:</b> {descripcion}
+            <b>A tener en cuenta:</b> {descripcion}
           </div>
         )}
       </div>

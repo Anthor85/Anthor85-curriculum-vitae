@@ -93,7 +93,7 @@ export const FormacionForm = ({
         />
       </div>
       <div className={styles.field}>
-        <label htmlFor="descripcion">Descripción:</label>
+        <label htmlFor="descripcion">A tener en cuenta:</label>
         <input
           type="text"
           id="descripcion"

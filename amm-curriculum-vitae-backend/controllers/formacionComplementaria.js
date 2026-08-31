@@ -14,12 +14,13 @@ const obtenerFormacionesComplementarias = async (req, res = response) => {
 };
 
 const crearFormacionComplementaria = async (req, res = response) => {
-  const { titulo, institucion } = req.body;
+  const { titulo, institucion, fechaFin } = req.body;
 
   try {
     const nuevaFormacion = new FormacionComplementaria({
       titulo,
       institucion,
+      fechaFin: fechaFin || undefined,
     });
     await nuevaFormacion.save();
     res.status(201).json(nuevaFormacion);
@@ -42,6 +43,7 @@ const actualizarFormacionComplementaria = async (req, res = response) => {
 
     formacionComplementaria.titulo = req.body.titulo;
     formacionComplementaria.institucion = req.body.institucion;
+    formacionComplementaria.fechaFin = req.body.fechaFin || undefined;
 
     await formacionComplementaria.save();
 

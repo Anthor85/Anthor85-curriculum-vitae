@@ -13,8 +13,10 @@
       width: 150px;
     }
 
+    input,
     select {
-      width: 200px;
+      flex: 1;
+      min-height: 2rem;
     }
   }
 
@@ -36,6 +38,11 @@
 
       input {
         flex: 1;
+        min-height: 2rem;
+      }
+
+      button {
+        min-height: 2rem;
       }
     }
 

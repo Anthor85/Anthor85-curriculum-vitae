@@ -20,13 +20,13 @@ const EXPERIENCIA_VACIA: ExperienciaPayload = {
 
 interface Props {
   experienciaEnEdicion: Experiencia | null;
-  onSubmitExperiencia: (payload: ExperienciaPayload) => Promise<void> | void;
+  onAddExperiencia: (payload: ExperienciaPayload) => Promise<void> | void;
   onLimpiar: () => void;
 }
 
 export const ExperienciaForm = ({
   experienciaEnEdicion,
-  onSubmitExperiencia,
+  onAddExperiencia,
   onLimpiar,
 }: Props) => {
   const { conocimiento, getConocimiento } = useConocimientoStore();
@@ -109,7 +109,7 @@ export const ExperienciaForm = ({
 
     setIsPending(true);
     try {
-      await onSubmitExperiencia(payload);
+      await onAddExperiencia(payload);
       limpiarFormulario();
     } finally {
       setIsPending(false);

@@ -59,7 +59,7 @@ export const Conocimiento = () => {
         </h1>
         <ConocimientoForm
           conocimientoEnEdicion={conocimientoEnEdicion}
-          onSubmitConocimiento={enviarConocimiento}
+          onAddConocimiento={enviarConocimiento}
           onLimpiar={() => setConocimientoEnEdicion(null)}
         />
       </div>

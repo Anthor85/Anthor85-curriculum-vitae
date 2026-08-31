@@ -32,41 +32,39 @@
 
 ## Modelo de datos
 
-No hay persistencia nueva. Se añaden dos tipos en `interfaces/experiencia.interface.ts`:
+No hay persistencia nueva. No se añade un tipo `HitoForm` aparte: `ExperienciaPayload` reutiliza `Experiencia` en `interfaces/experiencia.interface.ts`:
 
 ```ts
-export interface HitoForm {
-  id?: string;
-  descripcion: string;
-}
-
-export interface ExperienciaPayload {
-  empresa: string;
-  descripcion: string;
-  fechaInicio: string;
-  fechaFin: string;
-  tecnologias: string[];
-  hitos: HitoForm[];
-}
+export interface ExperienciaPayload extends Omit<Experiencia, 'id'> {}
 ```
 
-Estado local de `ExperienciaForm`:
+Los hitos del payload quedan tipados como `Hito[]` (con `id` y `experiencia` obligatorios), aunque el formulario solo rellena `id` (opcional, si el hito ya existía) y `descripcion`. Las funciones que tocan solo `hitos` (`anadirHito`, `borrarHito`, `cambiarHito`) usan una aserción `as Experiencia` sobre el resultado en vez de declarar un tipo adicional para el hito en construcción.
+
+Estado local de `ExperienciaForm`: un único objeto con la forma del payload, igual que en `ConocimientoForm`, no un `useState` por campo:
 
 ```ts
-const [empresa, setEmpresa] = useState('');
-const [descripcion, setDescripcion] = useState('');
-const [fechaInicio, setFechaInicio] = useState('');
-const [fechaFin, setFechaFin] = useState('');
-const [selectedTecnologias, setSelectedTecnologias] = useState<string[]>([]);
-const [hitos, setHitos] = useState<HitoForm[]>([{ descripcion: '' }]);
+const EXPERIENCIA_VACIA: ExperienciaPayload = {
+  empresa: '',
+  descripcion: '',
+  fechaInicio: '',
+  fechaFin: '',
+  tecnologias: [],
+  hitos: [],
+};
+
+const [experiencia, setExperiencia] =
+  useState<Omit<Experiencia, 'id'>>(EXPERIENCIA_VACIA);
+const [isPending, setIsPending] = useState<boolean>(false);
 ```
+
+`limpiarFormulario()` reasigna `experiencia` a `EXPERIENCIA_VACIA` (hitos incluido, como array vacío) en vez de vaciar seis estados sueltos por separado.
 
 Props de `ExperienciaForm`:
 
 ```ts
 interface Props {
   experienciaEnEdicion: Experiencia | null;
-  onSubmitExperiencia: (payload: ExperienciaPayload) => Promise<void>;
+  onAddExperiencia: (payload: ExperienciaPayload) => Promise<void> | void;
   onLimpiar: () => void;
 }
 ```
@@ -95,16 +93,16 @@ Mapeo de `Experiencia` (API) → estado del formulario, al entrar en modo edici�
 
 ## Plan de implementación
 
-1. Añadir `HitoForm` y `ExperienciaPayload` a `interfaces/experiencia.interface.ts`. Prueba: `npx tsc --noEmit` sin errores nuevos.
+1. Añadir `ExperienciaPayload` (`Omit<Experiencia, 'id'>`) a `interfaces/experiencia.interface.ts`, sin tipo `HitoForm` aparte. Prueba: `npx tsc --noEmit` sin errores nuevos.
 2. En `useExperienciaStore`, cambiar `createExperiencia` para que reciba un `ExperienciaPayload` y lo mande tal cual con `api.post("/experiencia", payload)`, eliminando el `Object.fromEntries` y los `formData.getAll`. Prueba: crear una experiencia sigue funcionando y el `console.log` del payload muestra `hitos` como array de objetos.
 3. En `useExperienciaStore`, añadir `updateExperiencia(id, payload)`: `api.put(\`/experiencia/${id}\`, payload)`y, con la experiencia poblada de la respuesta,`dispatch(setExperiencia(experiencia.map((e) => (e.id === data.id ? data : e))))`. Exportarla en el objeto de retorno. Prueba: llamarla a mano desde la consola actualiza la card sin recargar.
-4. Convertir `ExperienciaForm` a controlado: un `useState` por campo, `value` + `onChange` en cada input, y `hitos` como `HitoForm[]` (`cambiarHito` actualiza solo `descripcion` y conserva el `id`). Sustituir `useActionState` por un `onSubmit` con `e.preventDefault()` y un `isPending` propio (`useState<boolean>`), porque ya no hay `FormData` que enviar. Los inputs ocultos del `MultiSelect` dejan de ser necesarios para el envío, pero el componente no se toca: se sigue leyendo `selectedTecnologias`. Prueba: crear una experiencia nueva desde el form funciona igual que antes.
+4. Convertir `ExperienciaForm` a controlado: un único `useState<Omit<Experiencia, 'id'>>` inicializado con `EXPERIENCIA_VACIA`, `value` + `onChange` en cada input leyendo/escribiendo ese objeto, y `hitos` dentro de él (`cambiarHito` actualiza solo `descripcion` y conserva el `id` con `as Experiencia`). Sustituir `useActionState` por un `onSubmit` con `e.preventDefault()` y un `isPending` propio (`useState<boolean>`), porque ya no hay `FormData` que enviar. Los inputs ocultos del `MultiSelect` dejan de ser necesarios para el envío, pero el componente no se toca: se sigue leyendo `experiencia.tecnologias`. Prueba: crear una experiencia nueva desde el form funciona igual que antes.
 5. Añadir a `ExperienciaForm` la prop `experienciaEnEdicion` y un `useEffect` con dependencia `[experienciaEnEdicion]` que rellene los seis estados según la tabla de mapeo, o los vacíe si es `null`. Prueba: pulsar `Editar` en una card rellena todos los campos, incluidos tecnologías e hitos.
-6. Añadir la función `limpiarFormulario()` en `ExperienciaForm`, que vacía los seis estados y llama a `props.onLimpiar()`. Renderizar bajo el botón de submit un `<button type="button">Borrar formulario</button>` que la invoque. Prueba: con una experiencia cargada, pulsarlo deja el form vacío y el título vuelve a `Crear Experiencia`.
-7. En el submit de `ExperienciaForm`, montar el `ExperienciaPayload` desde el estado (descartando los hitos con `descripcion` vacía tras `trim`) y llamar a `onSubmitExperiencia`. Al terminar con éxito, llamar a `limpiarFormulario()`. El texto del botón es `Actualizar` / `Updating...` si hay `experienciaEnEdicion`, y `Submit` / `Submitting...` si no. Prueba: editar una experiencia y guardar deja el form vacío y la card actualizada.
+6. Añadir la función `limpiarFormulario()` en `ExperienciaForm`, que reasigna el estado a `EXPERIENCIA_VACIA` y llama a `props.onLimpiar()`. Renderizar bajo el botón de submit un `<button type="button">Borrar formulario</button>` que la invoque. Prueba: con una experiencia cargada, pulsarlo deja el form vacío y el título vuelve a `Crear Experiencia`.
+7. En el submit de `ExperienciaForm`, montar el `ExperienciaPayload` desde el estado (descartando los hitos con `descripcion` vacía tras `trim`) y llamar a `onAddExperiencia`. Al terminar con éxito, llamar a `limpiarFormulario()`. El texto del botón es `Actualizar` / `Updating...` si hay `experienciaEnEdicion`, y `Submit` / `Submitting...` si no. Prueba: editar una experiencia y guardar deja el form vacío y la card actualizada.
 8. En `ExperienciaCard`, añadir las props `onEditar` y `enEdicion`, y un `<button onClick={() => onEditar(experiencia)}>Editar</button>` **antes** del de `Delete` dentro de `.actions`. Aplicar la clase de resaltado al `.Card` cuando `enEdicion` es `true`. Prueba: el botón aparece a la izquierda de `Delete` y la card se resalta.
 9. En `Cards.module.scss`, añadir dentro de `.Card` una clase `.actionsFila` (`flex-direction: row`) que use solo `ExperienciaCard` junto a `.actions`, y una clase `.enEdicion` con el borde/fondo de resaltado. No se modifica `.actions`, que la comparten las demás cards. Prueba: las cards de Formación y Conocimiento siguen con sus botones en columna.
-10. En `Experiencia.tsx`, añadir `const [experienciaEnEdicion, setExperienciaEnEdicion] = useState<IExperiencia | null>(null)`, pasar `onEditar={setExperienciaEnEdicion}` y `enEdicion={exp.id === experienciaEnEdicion?.id}` a cada card, y al form `experienciaEnEdicion`, `onLimpiar={() => setExperienciaEnEdicion(null)}` y un `onSubmitExperiencia` que llame a `updateExperiencia(experienciaEnEdicion.id, payload)` si hay experiencia en edición y a `createExperiencia(payload)` si no. El `h1` muestra `Editar Experiencia` o `Crear Experiencia` según el estado. Prueba: el ciclo completo editar → guardar → volver a crear funciona sin recargar la página.
+10. En `Experiencia.tsx`, añadir `const [experienciaEnEdicion, setExperienciaEnEdicion] = useState<IExperiencia | null>(null)`, pasar `onEditar={setExperienciaEnEdicion}` y `enEdicion={exp.id === experienciaEnEdicion?.id}` a cada card, y al form `experienciaEnEdicion`, `onLimpiar={() => setExperienciaEnEdicion(null)}` y un `onAddExperiencia` que llame a `updateExperiencia(experienciaEnEdicion.id, payload)` si hay experiencia en edición y a `createExperiencia(payload)` si no. El `h1` muestra `Editar Experiencia` o `Crear Experiencia` según el estado. Prueba: el ciclo completo editar → guardar → volver a crear funciona sin recargar la página.
 11. Comprobación end to end: crear una experiencia con tres hitos, editarla cambiando empresa, quitando un hito, editando otro y añadiendo uno nuevo, y verificar en la respuesta del `PUT` que el hito editado conserva su `id` y que solo hay tres hitos.
 
 ## Criterios de aceptación
@@ -139,7 +137,9 @@ Mapeo de `Experiencia` (API) → estado del formulario, al entrar en modo edici�
 
 - **Sí:** formulario controlado. Con `defaultValue` habría que remontarlo con `key` en cada `Editar`, y aun así `Borrar formulario` necesitaría otro cambio de `key` artificial. Controlado hace que cargar, limpiar y montar el payload sean la misma operación sobre el estado.
 - **Sí:** abandonar `FormData` y `useActionState`. Con el form controlado el `FormData` sería una copia del estado, y los hitos con `id` no caben en un `FormData` sin acoplar dos campos por posición de array.
-- **Sí:** hitos como `{ id?, descripcion }[]` en el estado del form. Es el requisito de la reconciliación por id del backend; sin el `id`, cada guardado recrearía todos los hitos.
+- **Sí:** un único `useState<Omit<Experiencia, 'id'>>` para todo el formulario, inicializado con la constante `EXPERIENCIA_VACIA`, en vez de un `useState` por campo. Mismo criterio que `ConocimientoForm`: el objeto ya tiene la forma del payload, así que cargar, limpiar y enviar son la misma asignación, sin recomponer seis variables en cada operación.
+- **Sí:** no declarar un tipo `HitoForm` aparte y reutilizar `Hito[]` (vía `ExperienciaPayload = Omit<Experiencia, 'id'>`), aceptando que el formulario solo rellena `id` (opcional) y `descripcion` y usando `as Experiencia` al tocar `hitos`. Añadir un tipo nuevo solo para el estado del form duplicaría `Hito` por una diferencia de un campo opcional.
+- **Sí:** hitos como objetos con `id` opcional y `descripcion` dentro de ese mismo estado. Es el requisito de la reconciliación por id del backend; sin el `id`, cada guardado recrearía todos los hitos.
 - **Sí:** `experienciaEnEdicion` como `useState` en `Experiencia.tsx`. Es estado de UI efímero, no compartido con otras rutas; meterlo en Redux añadiría una acción y un reducer sin ningún consumidor más.
 - **Sí:** un único formulario que alterna entre crear y editar, en vez de un formulario o modal aparte. Los campos son los mismos y el usuario pidió explícitamente que `Editar` cargue los datos en el formulario existente.
 - **Sí:** `Borrar formulario` visible siempre, no solo en edición. También sirve para descartar lo escrito al crear, y una segunda variante contextual sería más código para el mismo botón.
@@ -159,7 +159,7 @@ Mapeo de `Experiencia` (API) → estado del formulario, al entrar en modo edici�
 | La API devuelve `fechaInicio` en ISO completo y el input `type="date"` lo rechaza, quedando vacío  | Mapeo explícito con `.slice(0, 10)` documentado en la tabla, y criterio de aceptación que verifica que las fechas se cargan.                                                                     |
 | Guardar en modo edición dispara un `POST` y duplica la experiencia                                 | `Experiencia.tsx` decide entre `createExperiencia` y `updateExperiencia` según `experienciaEnEdicion`, y hay criterio de aceptación explícito de que se lanza `PUT`.                             |
 | Limpiar el formulario sin desvincular el id provoca un `PUT` que vacía la experiencia editada      | `limpiarFormulario` llama siempre a `onLimpiar()`, que pone `experienciaEnEdicion` a `null`. Criterio de aceptación específico.                                                                  |
-| Los hitos pierden su `id` al pasar por el estado del form y el backend los recrea en cada guardado | El estado guarda `HitoForm` con `id` opcional y `cambiarHito` solo toca `descripcion`. Se verifica en el paso 11 comprobando que el `id` se conserva.                                            |
+| Los hitos pierden su `id` al pasar por el estado del form y el backend los recrea en cada guardado | Cada hito en `experiencia.hitos` conserva `id` como campo opcional y `cambiarHito` solo toca `descripcion`. Se verifica en el paso 11 comprobando que el `id` se conserva.                       |
 | El backend aún no tiene el `PUT` desplegado y la edición falla con 404 de ruta                     | Esta spec depende de la SPEC 02 del backend; se implementa después. El error se ve en el `console.error` del hook.                                                                               |
 | Cambiar la firma de `createExperiencia` rompe otro consumidor del hook                             | `useExperienciaStore` solo lo consume `Experiencia.tsx`; se comprueba con una búsqueda de `createExperiencia` antes de tocarlo. `createExperiencia.action.ts` es código muerto y no usa el hook. |
 | Quitar `useActionState` pierde el estado `isPending` que deshabilita el submit                     | Se sustituye por un `useState<boolean>` propio, puesto a `true` antes del `await` y a `false` en el `finally`.                                                                                   |

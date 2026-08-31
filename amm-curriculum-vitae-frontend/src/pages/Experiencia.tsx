@@ -60,7 +60,7 @@ export const Experiencia = () => {
         </h1>
         <ExperienciaForm
           experienciaEnEdicion={experienciaEnEdicion}
-          onSubmitExperiencia={enviarExperiencia}
+          onAddExperiencia={enviarExperiencia}
           onLimpiar={() => setExperienciaEnEdicion(null)}
         />
       </div>

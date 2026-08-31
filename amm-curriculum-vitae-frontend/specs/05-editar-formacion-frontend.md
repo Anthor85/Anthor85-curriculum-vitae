@@ -73,7 +73,7 @@ Props de `FormacionForm`:
 ```ts
 interface Props {
   formacionEnEdicion: Formacion | null;
-  onAddFormacion: (payload: FormacionPayload) => Promise<void> | void;
+  onSubmitFormacion: (payload: FormacionPayload) => Promise<void> | void;
   onLimpiar: () => void;
 }
 ```
@@ -91,11 +91,11 @@ interface Props {
 
 Mapeo de `Formacion` (API) → estado del formulario, al entrar en modo edición:
 
-| Campo del form | Origen                                                                                 |
-| -------------- | -------------------------------------------------------------------------------------- |
-| `titulo`       | `formacion.titulo`                                                                     |
-| `institucion`  | `formacion.institucion`                                                                |
-| `descripcion`  | `formacion.descripcion ?? ""` — el campo es opcional y el input controlado no admite `undefined` |
+| Campo del form | Origen                                                                                                       |
+| -------------- | ------------------------------------------------------------------------------------------------------------ |
+| `titulo`       | `formacion.titulo`                                                                                           |
+| `institucion`  | `formacion.institucion`                                                                                      |
+| `descripcion`  | `formacion.descripcion ?? ""` — el campo es opcional y el input controlado no admite `undefined`             |
 | `fechaFin`     | `formacion.fechaFin.slice(0, 10)` — el input `type="date"` exige `YYYY-MM-DD` y la API devuelve ISO completo |
 
 Al salir de edición (`formacionEnEdicion === null`): los cuatro campos vuelven a `FORMACION_VACIA`.
@@ -108,7 +108,7 @@ Al salir de edición (`formacionEnEdicion === null`): los cuatro campos vuelven 
 4. Convertir `FormacionForm` a controlado: `value` + `onChange` en los cuatro inputs. Sustituir `useActionState` por un `onSubmit` con `e.preventDefault()` y un `isPending` propio (`useState<boolean>`), puesto a `true` antes del `await` y a `false` en el `finally`. Corregir de paso el `htmlFor="institucion"` duplicado de la etiqueta de descripción, que debe ser `htmlFor="descripcion"`. Prueba: crear una formación nueva desde el form funciona igual que antes.
 5. Añadir a `FormacionForm` la prop `formacionEnEdicion` y un `useEffect` con dependencia `[formacionEnEdicion]` que rellene el estado según la tabla de mapeo, o lo devuelva a `FORMACION_VACIA` si es `null`. Prueba: pulsar `Editar` en una card rellena los cuatro campos, incluida la fecha.
 6. Añadir la función `limpiarFormulario()` en `FormacionForm`, que devuelve el estado a `FORMACION_VACIA` y llama a `props.onLimpiar()`. Renderizar junto al botón de submit un `<button type="button">Borrar formulario</button>` que la invoque. Prueba: con una formación cargada, pulsarlo deja el form vacío y el título vuelve a `Crear Formación`.
-7. En el submit de `FormacionForm`, montar el `FormacionPayload` desde el estado (con `titulo.trim()` e `institucion.trim()`) y llamar a `onAddFormacion`. Al terminar con éxito, llamar a `limpiarFormulario()`. El texto del botón es `Actualizar Formación` / `Actualizando...` si hay `formacionEnEdicion`, y `Agregar Formación` / `Agregando...` si no. Prueba: editar una formación y guardar deja el form vacío y la card actualizada.
+7. En el submit de `FormacionForm`, montar el `FormacionPayload` desde el estado (con `titulo.trim()` e `institucion.trim()`) y llamar a `onSubmitFormacion`. Al terminar con éxito, llamar a `limpiarFormulario()`. El texto del botón es `Actualizar Formación` / `Actualizando...` si hay `formacionEnEdicion`, y `Agregar Formación` / `Agregando...` si no. Prueba: editar una formación y guardar deja el form vacío y la card actualizada.
 8. En `FormacionCard`, añadir las props `onEditar` y `enEdicion`, un `<button onClick={() => onEditar(formacion)}>Editar</button>` **antes** del de `Eliminar` dentro de `.actions`, la clase `.actionsFila` junto a `.actions` y la clase `.enEdicion` en el `.Card` cuando `enEdicion` es `true`. Prueba: el botón aparece a la izquierda de `Eliminar` y la card se resalta.
 9. En `Formacion.tsx`, añadir `const [formacionEnEdicion, setFormacionEnEdicion] = useState<IFormacion | null>(null)`, pasar `onEditar={setFormacionEnEdicion}` y `enEdicion={f.id === formacionEnEdicion?.id}` a cada card, y al form `formacionEnEdicion`, `onLimpiar={() => setFormacionEnEdicion(null)}` y un `enviarFormacion` que llame a `updateFormacion(formacionEnEdicion.id, payload)` si hay formación en edición y a `createFormacion(payload)` si no. El `h1` muestra `Editar Formación` o `Crear Formación` según el estado. Prueba: el ciclo completo editar → guardar → volver a crear funciona sin recargar la página.
 10. Comprobación end to end: crear una formación, editarla cambiando los cuatro campos, borrar la descripción dejándola vacía, y verificar en `/curriculum` que los datos nuevos aparecen y que la descripción vacía no pinta el bloque `Descripción:`.
@@ -155,14 +155,14 @@ Al salir de edición (`formacionEnEdicion === null`): los cuatro campos vuelven 
 
 ## Riesgos
 
-| Riesgo                                                                                        | Mitigación                                                                                                                                                                                        |
-| ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Cambiar `fechaFin` a `string` rompe otro consumidor tipado como `Date`                        | El único uso fuera del form es `new Date(fechaFin)` en `FormacionCard`, que acepta string; el paso 1 se valida con `npx tsc --noEmit`.                                                             |
-| La API devuelve `fechaFin` en ISO completo y el input `type="date"` lo rechaza, quedando vacío | Mapeo explícito con `.slice(0, 10)` documentado en la tabla, con criterio de aceptación que verifica que la fecha se carga.                                                                        |
-| Cambiar la firma de `createFormacion` rompe otro consumidor del hook                          | `createFormacion` solo lo consume `Formacion.tsx`; se comprueba con una búsqueda de `useFormacionStore` antes de tocarlo.                                                                          |
-| Guardar en modo edición dispara un `POST` y duplica la formación                              | `Formacion.tsx` decide entre `createFormacion` y `updateFormacion` según `formacionEnEdicion`, con criterio de aceptación explícito de que se lanza `PUT`.                                         |
-| Limpiar el formulario sin desvincular el id provoca un `PUT` que sobrescribe la formación editada | `limpiarFormulario` llama siempre a `onLimpiar()`, que pone `formacionEnEdicion` a `null`. Criterio de aceptación específico.                                                                      |
-| El backend aún no tiene el `PUT` desplegado y la edición falla con 404 de ruta                | Esta spec depende de la SPEC 04 del backend; se implementa después. El error se ve en el `console.error` del hook.                                                                                 |
-| Quitar `useActionState` pierde el `isPending` que deshabilita el submit                       | Se sustituye por un `useState<boolean>` propio, puesto a `true` antes del `await` y a `false` en el `finally`, igual que en `ExperienciaForm` y `ConocimientoForm`.                                |
-| El botón `Borrar formulario` envía el formulario al no llevar `type`                          | `type="button"` explícito, con criterio de aceptación propio.                                                                                                                                      |
-| `descripcion` vacía se manda como `""` y sobrescribe la descripción guardada                  | Es el comportamiento decidido en la SPEC 04 del backend: vaciar la descripción es una edición legítima; la card no pinta el bloque cuando está vacía.                                             |
+| Riesgo                                                                                            | Mitigación                                                                                                                                                          |
+| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cambiar `fechaFin` a `string` rompe otro consumidor tipado como `Date`                            | El único uso fuera del form es `new Date(fechaFin)` en `FormacionCard`, que acepta string; el paso 1 se valida con `npx tsc --noEmit`.                              |
+| La API devuelve `fechaFin` en ISO completo y el input `type="date"` lo rechaza, quedando vacío    | Mapeo explícito con `.slice(0, 10)` documentado en la tabla, con criterio de aceptación que verifica que la fecha se carga.                                         |
+| Cambiar la firma de `createFormacion` rompe otro consumidor del hook                              | `createFormacion` solo lo consume `Formacion.tsx`; se comprueba con una búsqueda de `useFormacionStore` antes de tocarlo.                                           |
+| Guardar en modo edición dispara un `POST` y duplica la formación                                  | `Formacion.tsx` decide entre `createFormacion` y `updateFormacion` según `formacionEnEdicion`, con criterio de aceptación explícito de que se lanza `PUT`.          |
+| Limpiar el formulario sin desvincular el id provoca un `PUT` que sobrescribe la formación editada | `limpiarFormulario` llama siempre a `onLimpiar()`, que pone `formacionEnEdicion` a `null`. Criterio de aceptación específico.                                       |
+| El backend aún no tiene el `PUT` desplegado y la edición falla con 404 de ruta                    | Esta spec depende de la SPEC 04 del backend; se implementa después. El error se ve en el `console.error` del hook.                                                  |
+| Quitar `useActionState` pierde el `isPending` que deshabilita el submit                           | Se sustituye por un `useState<boolean>` propio, puesto a `true` antes del `await` y a `false` en el `finally`, igual que en `ExperienciaForm` y `ConocimientoForm`. |
+| El botón `Borrar formulario` envía el formulario al no llevar `type`                              | `type="button"` explícito, con criterio de aceptación propio.                                                                                                       |
+| `descripcion` vacía se manda como `""` y sobrescribe la descripción guardada                      | Es el comportamiento decidido en la SPEC 04 del backend: vaciar la descripción es una edición legítima; la card no pinta el bloque cuando está vacía.               |

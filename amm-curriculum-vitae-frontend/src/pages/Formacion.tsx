@@ -1,8 +1,11 @@
-﻿import { useEffect } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useFormacionStore } from '../hooks';
 import { FormacionForm } from './forms/FormacionForm';
 import { FormacionCard } from './cards';
-import { Formacion as IFormacion } from '../interfaces/formacion.interface';
+import {
+  Formacion as IFormacion,
+  FormacionPayload,
+} from '../interfaces/formacion.interface';
 
 import styles from './Layout.module.scss';
 
@@ -14,8 +17,21 @@ export const Formacion = () => {
 
     getFormacion,
     createFormacion,
+    updateFormacion,
     deleteFormacion,
   } = useFormacionStore();
+
+  const [formacionEnEdicion, setFormacionEnEdicion] =
+    useState<IFormacion | null>(null);
+
+  const enviarFormacion = async (payload: FormacionPayload) => {
+    if (formacionEnEdicion) {
+      await updateFormacion(formacionEnEdicion.id, payload);
+      return;
+    }
+
+    await createFormacion(payload);
+  };
 
   useEffect(() => {
     if (formacion === null) getFormacion();
@@ -33,13 +49,19 @@ export const Formacion = () => {
               key={f.id}
               formacion={f}
               deleteFormacion={() => deleteFormacion(f.id)}
+              onEditar={setFormacionEnEdicion}
+              enEdicion={f.id === formacionEnEdicion?.id}
             />
           ))}
         </div>
       )}
       <div className={styles.form}>
-        <h1>Crear Formación</h1>
-        <FormacionForm onAddFormacion={createFormacion} />
+        <h1>{formacionEnEdicion ? 'Editar Formación' : 'Crear Formación'}</h1>
+        <FormacionForm
+          formacionEnEdicion={formacionEnEdicion}
+          onSubmitFormacion={enviarFormacion}
+          onLimpiar={() => setFormacionEnEdicion(null)}
+        />
       </div>
     </div>
   );

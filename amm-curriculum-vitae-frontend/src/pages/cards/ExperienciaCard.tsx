@@ -1,4 +1,5 @@
-﻿import { useConocimientoStore } from '../../hooks';
+﻿import { dateConverter } from '../../helpers/dateConverter';
+import { useConocimientoStore } from '../../hooks';
 import { Experiencia } from '../../interfaces/experiencia.interface';
 
 import styles from './Cards.module.scss';
@@ -27,9 +28,9 @@ export const ExperienciaCard = ({
         <h2>{experiencia.empresa}</h2>
         <p>{experiencia.descripcion}</p>
         <p>
-          {new Date(experiencia.fechaInicio).toLocaleDateString()} -{' '}
+          {dateConverter(new Date(experiencia.fechaInicio))} -{' '}
           {experiencia.fechaFin
-            ? new Date(experiencia.fechaFin).toLocaleDateString()
+            ? dateConverter(new Date(experiencia.fechaFin))
             : 'En la actualidad'}
         </p>
         {experiencia.tecnologias.length > 0 && (

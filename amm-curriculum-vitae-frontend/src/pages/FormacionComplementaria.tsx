@@ -42,7 +42,7 @@ export const FormacionComplementaria = () => {
       <div className={styles.form}>
         <h1>Crear Formación Complementaria</h1>
         <FormacionComplementariaForm
-          onAddFormacionComplementaria={createFormacionComplementaria}
+          onSubmitFormacionComplementaria={createFormacionComplementaria}
         />
       </div>
     </div>

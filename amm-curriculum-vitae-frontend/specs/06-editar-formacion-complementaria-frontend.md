@@ -39,8 +39,10 @@
 No hay persistencia nueva. En `interfaces/formacionComplementaria.interface.ts` se añade `FormacionComplementariaPayload` reutilizando la interfaz existente, sin declarar sus campos por separado:
 
 ```ts
-export interface FormacionComplementariaPayload
-  extends Omit<FormacionComplementaria, 'id'> {}
+export interface FormacionComplementariaPayload extends Omit<
+  FormacionComplementaria,
+  'id'
+> {}
 ```
 
 `FormacionComplementaria` no cambia (`id`, `titulo`, `institucion`).
@@ -63,7 +65,7 @@ Props de `FormacionComplementariaForm`:
 ```ts
 interface Props {
   formacionComplementariaEnEdicion: FormacionComplementaria | null;
-  onAddFormacionComplementaria: (
+  onSubmitFormacionComplementaria: (
     payload: FormacionComplementariaPayload,
   ) => Promise<void> | void;
   onLimpiar: () => void;
@@ -83,9 +85,9 @@ interface Props {
 
 Mapeo de `FormacionComplementaria` (API) → estado del formulario, al entrar en modo edición:
 
-| Campo del form | Origen                              |
-| -------------- | ----------------------------------- |
-| `titulo`       | `formacionComplementaria.titulo`    |
+| Campo del form | Origen                                |
+| -------------- | ------------------------------------- |
+| `titulo`       | `formacionComplementaria.titulo`      |
 | `institucion`  | `formacionComplementaria.institucion` |
 
 Al salir de edición (`formacionComplementariaEnEdicion === null`): los dos campos vuelven a `FORMACION_COMPLEMENTARIA_VACIA`.
@@ -99,7 +101,7 @@ Al salir de edición (`formacionComplementariaEnEdicion === null`): los dos camp
 5. Convertir `FormacionComplementariaForm` a controlado: `value` + `onChange` en los dos inputs. Sustituir `useActionState` por un `onSubmit` con `e.preventDefault()` y un `isPending` propio (`useState<boolean>`), puesto a `true` antes del `await` y a `false` en el `finally`. Prueba: crear un registro nuevo desde el form funciona igual que antes.
 6. Añadir a `FormacionComplementariaForm` la prop `formacionComplementariaEnEdicion` y un `useEffect` con dependencia `[formacionComplementariaEnEdicion]` que rellene el estado según la tabla de mapeo, o lo devuelva a `FORMACION_COMPLEMENTARIA_VACIA` si es `null`. Prueba: pulsar `Editar` en una card rellena título e institución.
 7. Añadir la función `limpiarFormulario()`, que devuelve el estado a `FORMACION_COMPLEMENTARIA_VACIA` y llama a `props.onLimpiar()`. Renderizar junto al botón de submit un `<button type="button">Borrar formulario</button>` que la invoque. Prueba: con un registro cargado, pulsarlo deja el form vacío y el título vuelve a `Crear Formación Complementaria`.
-8. En el submit, montar el `FormacionComplementariaPayload` desde el estado (con `titulo.trim()` e `institucion.trim()`) y llamar a `onAddFormacionComplementaria`. Al terminar con éxito, llamar a `limpiarFormulario()`. El texto del botón es `Actualizar Formación Complementaria` / `Actualizando...` si hay registro en edición, y `Agregar Formación Complementaria` / `Agregando...` si no. Prueba: editar un registro y guardar deja el form vacío y la card actualizada.
+8. En el submit, montar el `FormacionComplementariaPayload` desde el estado (con `titulo.trim()` e `institucion.trim()`) y llamar a `onSubmitFormacionComplementaria`. Al terminar con éxito, llamar a `limpiarFormulario()`. El texto del botón es `Actualizar Formación Complementaria` / `Actualizando...` si hay registro en edición, y `Agregar Formación Complementaria` / `Agregando...` si no. Prueba: editar un registro y guardar deja el form vacío y la card actualizada.
 9. En `FormacionComplementariaCard`, añadir las props `onEditar` y `enEdicion`, un `<button onClick={() => onEditar(formacionComplementaria)}>Editar</button>` **antes** del de `Eliminar` dentro de `.actions`, la clase `.actionsFila` junto a `.actions` y la clase `.enEdicion` en el `.Card` cuando `enEdicion` es `true`. Prueba: el botón aparece a la izquierda de `Eliminar` y la card se resalta.
 10. En `FormacionComplementaria.tsx`, añadir `const [formacionComplementariaEnEdicion, setFormacionComplementariaEnEdicion] = useState<IFormacionComplementaria | null>(null)`, pasar `onEditar={setFormacionComplementariaEnEdicion}` y `enEdicion={f.id === formacionComplementariaEnEdicion?.id}` a cada card, y al form la prop de edición, `onLimpiar` y un `enviarFormacionComplementaria` que llame a `updateFormacionComplementaria(...)` si hay registro en edición y a `createFormacionComplementaria(payload)` si no. El `h1` muestra `Editar Formación Complementaria` o `Crear Formación Complementaria` según el estado. Prueba: el ciclo completo editar → guardar → volver a crear funciona sin recargar la página.
 11. Comprobación end to end: crear un registro, editarlo cambiando los dos campos y verificar en `/curriculum` que los valores nuevos aparecen sin recargar.
@@ -143,12 +145,12 @@ Al salir de edición (`formacionComplementariaEnEdicion === null`): los dos camp
 
 ## Riesgos
 
-| Riesgo                                                                                          | Mitigación                                                                                                                                                     |
-| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Cambiar la firma de `createFormacionComplementaria` rompe otro consumidor del hook               | Solo lo consume `FormacionComplementaria.tsx`; se comprueba con una búsqueda de `useFormacionComplementariaStore` antes de tocarlo.                              |
+| Riesgo                                                                                           | Mitigación                                                                                                                                                          |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cambiar la firma de `createFormacionComplementaria` rompe otro consumidor del hook               | Solo lo consume `FormacionComplementaria.tsx`; se comprueba con una búsqueda de `useFormacionComplementariaStore` antes de tocarlo.                                 |
 | Corregir las mayúsculas de los imports rompe la resolución en algún build                        | El fichero real es `formacionComplementaria.interface.ts` y `curriculum.interface.ts` ya lo importa así; el paso 2 se valida con `npx tsc --noEmit` y con la build. |
-| Guardar en modo edición dispara un `POST` y duplica el registro                                  | La página decide entre `create` y `update` según el estado de edición, con criterio de aceptación explícito de que se lanza `PUT`.                              |
-| Limpiar el formulario sin desvincular el id provoca un `PUT` que sobrescribe el registro editado | `limpiarFormulario` llama siempre a `onLimpiar()`. Criterio de aceptación específico.                                                                            |
-| El backend aún no tiene el `PUT` desplegado y la edición falla con 404 de ruta                   | Esta spec depende de la SPEC 05 del backend; se implementa después. El error se ve en el `console.error` del hook.                                              |
-| Quitar `useActionState` pierde el `isPending` que deshabilita el submit                          | Se sustituye por un `useState<boolean>` propio, puesto a `true` antes del `await` y a `false` en el `finally`.                                                  |
-| El botón `Borrar formulario` envía el formulario al no llevar `type`                             | `type="button"` explícito, con criterio de aceptación propio.                                                                                                   |
+| Guardar en modo edición dispara un `POST` y duplica el registro                                  | La página decide entre `create` y `update` según el estado de edición, con criterio de aceptación explícito de que se lanza `PUT`.                                  |
+| Limpiar el formulario sin desvincular el id provoca un `PUT` que sobrescribe el registro editado | `limpiarFormulario` llama siempre a `onLimpiar()`. Criterio de aceptación específico.                                                                               |
+| El backend aún no tiene el `PUT` desplegado y la edición falla con 404 de ruta                   | Esta spec depende de la SPEC 05 del backend; se implementa después. El error se ve en el `console.error` del hook.                                                  |
+| Quitar `useActionState` pierde el `isPending` que deshabilita el submit                          | Se sustituye por un `useState<boolean>` propio, puesto a `true` antes del `await` y a `false` en el `finally`.                                                      |
+| El botón `Borrar formulario` envía el formulario al no llevar `type`                             | `type="button"` explícito, con criterio de aceptación propio.                                                                                                       |

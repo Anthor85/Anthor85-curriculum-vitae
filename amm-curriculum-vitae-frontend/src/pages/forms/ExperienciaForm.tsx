@@ -230,11 +230,11 @@ export const ExperienciaForm = ({
         <button type="submit" disabled={isPending}>
           {experienciaEnEdicion
             ? isPending
-              ? 'Updating...'
+              ? 'Actualizando...'
               : 'Actualizar'
             : isPending
-              ? 'Submitting...'
-              : 'Submit'}
+              ? 'Agregando...'
+              : 'Agregar Experiencia'}
         </button>
         <button type="button" onClick={limpiarFormulario}>
           Borrar formulario

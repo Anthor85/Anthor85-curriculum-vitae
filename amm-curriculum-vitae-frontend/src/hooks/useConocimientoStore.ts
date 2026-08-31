@@ -1,6 +1,10 @@
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/api';
 import { setConocimiento } from '../store/conocimiento/conocimientoSlice';
+import type {
+  Conocimiento,
+  ConocimientoPayload,
+} from '../interfaces/conocimiento.interface';
 
 export const useConocimientoStore = () => {
   const dispatch = useDispatch();
@@ -18,12 +22,30 @@ export const useConocimientoStore = () => {
     }
   };
 
-  const createConocimiento = async (formData: FormData) => {
+  const createConocimiento = async (payload: ConocimientoPayload) => {
     try {
-      const { data } = await api.post('/conocimiento', formData);
+      const { data } = await api.post('/conocimiento', payload);
       dispatch(setConocimiento([...conocimiento, data]));
     } catch (error) {
       console.error('Error creating conocimiento:', error);
+    }
+  };
+
+  const updateConocimiento = async (
+    id: string,
+    payload: ConocimientoPayload,
+  ) => {
+    try {
+      const { data } = await api.put(`/conocimiento/${id}`, payload);
+      dispatch(
+        setConocimiento(
+          conocimiento.map((con: Conocimiento) =>
+            con.id === data.id ? data : con,
+          ),
+        ),
+      );
+    } catch (error) {
+      console.error('Error updating conocimiento:', error);
     }
   };
 
@@ -46,6 +68,7 @@ export const useConocimientoStore = () => {
 
     getConocimiento,
     createConocimiento,
+    updateConocimiento,
     deleteConocimiento,
   };
 };

@@ -32,16 +32,20 @@ export const ExperienciaCard = ({
             ? new Date(experiencia.fechaFin).toLocaleDateString()
             : 'En la actualidad'}
         </p>
-        <div className={styles.coleccion}>
-          <p>Tecnologías:</p>
-          <ul className={styles.colecciones}>
-            {conocimiento
-              .filter((tech: any) => experiencia.tecnologias.includes(tech.id))
-              .map((tech: any) => (
-                <li key={tech.id}>{tech.titulo}</li>
-              ))}
-          </ul>
-        </div>
+        {experiencia.tecnologias.length > 0 && (
+          <div className={styles.coleccion}>
+            <p>Tecnologías:</p>
+            <ul className={styles.colecciones}>
+              {conocimiento
+                .filter((tech: any) =>
+                  experiencia.tecnologias.includes(tech.id),
+                )
+                .map((tech: any) => (
+                  <li key={tech.id}>{tech.titulo}</li>
+                ))}
+            </ul>
+          </div>
+        )}
         {experiencia.hitos?.length ? (
           <div className={styles.coleccion}>
             <p>Hitos:</p>

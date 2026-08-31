@@ -1,7 +1,7 @@
 export enum ConocimientoNivel {
-  BASICO = 'basico',
-  INTERMEDIO = 'intermedio',
-  AVANZADO = 'avanzado',
+  BASICO = 'Básico',
+  INTERMEDIO = 'Intermedio',
+  AVANZADO = 'Avanzado',
 }
 
 export interface Conocimiento {
@@ -10,15 +10,10 @@ export interface Conocimiento {
   nivel: ConocimientoNivel;
 }
 
+export interface ConocimientoPayload extends Omit<Conocimiento, 'id'> {}
+
 export interface ConocimientoState {
   conocimiento: Conocimiento[];
   loading: boolean;
   error: string | null;
 }
-
-export interface ConocimientoAction {
-  type: string;
-  payload: any;
-}
-
-export type ConocimientoDispatch = (action: ConocimientoAction) => void;

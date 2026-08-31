@@ -53,10 +53,17 @@ export interface ConocimientoPayload {
 Estado local de `ConocimientoForm`:
 
 ```ts
-const [titulo, setTitulo] = useState('');
-const [nivel, setNivel] = useState<ConocimientoNivel>(ConocimientoNivel.BASICO);
+const CONOCIMIENTO_VACIO: ConocimientoPayload = {
+  titulo: '',
+  nivel: ConocimientoNivel.BASICO,
+};
+
+const [conocimiento, setConocimiento] =
+  useState<ConocimientoPayload>(CONOCIMIENTO_VACIO);
 const [isPending, setIsPending] = useState(false);
 ```
+
+Un único estado con la forma del payload, no un `useState` por campo: mismo criterio que `ExperienciaForm`, el payload de envío ya está montado y limpiar el formulario es una sola asignación.
 
 Props de `ConocimientoForm`:
 
@@ -94,8 +101,8 @@ Al salir de edición (`conocimientoEnEdicion === null`): `titulo` a `''` y `nive
 2. En `useConocimientoStore`, cambiar `createConocimiento` para que reciba un `ConocimientoPayload` y lo mande tal cual con `api.post("/conocimiento", payload)`. Prueba: crear un conocimiento desde el form guarda `titulo` y `nivel` correctos en Mongo, no un documento vacío.
 3. En `useConocimientoStore`, añadir `updateConocimiento(id, payload)`: `api.put(`/conocimiento/${id}`, payload)` y `dispatch(setConocimiento(conocimiento.map((con: Conocimiento) => (con.id === data.id ? data : con))))`. Exportarla en el objeto de retorno. Prueba: llamarla a mano desde la consola actualiza la card sin recargar.
 4. Convertir `ConocimientoForm` a controlado: `value` + `onChange` en el input de `titulo` y en el `<select>` de `nivel`, opciones generadas desde `Object.values(ConocimientoNivel)`. Sustituir `useActionState` por un `onSubmit` con `e.preventDefault()` y un `isPending` propio (`useState<boolean>`), puesto a `true` antes del `await` y a `false` en el `finally`. Prueba: crear un conocimiento nuevo desde el form funciona igual que antes.
-5. Añadir a `ConocimientoForm` la prop `conocimientoEnEdicion` y un `useEffect` con dependencia `[conocimientoEnEdicion]` que rellene los dos estados según la tabla de mapeo, o los vacíe si es `null`. Prueba: pulsar `Editar` en una card rellena título y nivel.
-6. Añadir la función `limpiarFormulario()` en `ConocimientoForm`, que vacía los dos estados y llama a `props.onLimpiar()`. Renderizar bajo el botón de submit un `<button type="button">Borrar formulario</button>` que la invoque. Prueba: con un conocimiento cargado, pulsarlo deja el form vacío y el título vuelve a `Crear Conocimiento`.
+5. Añadir a `ConocimientoForm` la prop `conocimientoEnEdicion` y un `useEffect` con dependencia `[conocimientoEnEdicion]` que rellene el estado `conocimiento` según la tabla de mapeo, o lo devuelva a `CONOCIMIENTO_VACIO` si es `null`. Prueba: pulsar `Editar` en una card rellena título y nivel.
+6. Añadir la función `limpiarFormulario()` en `ConocimientoForm`, que devuelve el estado a `CONOCIMIENTO_VACIO` y llama a `props.onLimpiar()`. Renderizar bajo el botón de submit un `<button type="button">Borrar formulario</button>` que la invoque. Prueba: con un conocimiento cargado, pulsarlo deja el form vacío y el título vuelve a `Crear Conocimiento`.
 7. En el submit de `ConocimientoForm`, montar el `ConocimientoPayload` desde el estado (con `titulo.trim()`) y llamar a `onSubmitConocimiento`. Al terminar con éxito, llamar a `limpiarFormulario()`. El texto del botón es `Actualizar Conocimiento` / `Actualizando...` si hay `conocimientoEnEdicion`, y `Agregar Conocimiento` / `Agregando...` si no. Prueba: editar un conocimiento y guardar deja el form vacío y la card actualizada.
 8. En `ConocimientoCard`, añadir las props `onEditar` y `enEdicion`, un `<button onClick={() => onEditar(conocimiento)}>Editar</button>` **antes** del de `Delete` dentro de `.actions`, la clase `.actionsFila` junto a `.actions` y la clase `.enEdicion` en el `.Card` cuando `enEdicion` es `true`. Prueba: el botón aparece a la izquierda de `Delete` y la card se resalta.
 9. En `Conocimiento.tsx`, añadir `const [conocimientoEnEdicion, setConocimientoEnEdicion] = useState<IConocimiento | null>(null)`, pasar `onEditar={setConocimientoEnEdicion}` y `enEdicion={con.id === conocimientoEnEdicion?.id}` a cada card, y al form `conocimientoEnEdicion`, `onLimpiar={() => setConocimientoEnEdicion(null)}` y un `onSubmitConocimiento` que llame a `updateConocimiento(conocimientoEnEdicion.id, payload)` si hay conocimiento en edición y a `createConocimiento(payload)` si no. El `h1` muestra `Editar Conocimiento` o `Crear Conocimiento` según el estado. Prueba: el ciclo completo editar → guardar → volver a crear funciona sin recargar la página.

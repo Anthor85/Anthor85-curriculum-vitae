@@ -14,29 +14,10 @@ export interface Experiencia {
   hitos: Hito[];
 }
 
+export interface ExperienciaPayload extends Omit<Experiencia, 'id'> {}
+
 export interface ExperienciaState {
-  experiencia: Experiencia[];
+  experiencia: Experiencia[] | null;
   loading: boolean;
   error: string | null;
-}
-
-export interface ExperienciaAction {
-  type: string;
-  payload: any;
-}
-
-export type ExperienciaDispatch = (action: ExperienciaAction) => void;
-
-export interface HitoForm {
-  id?: string;
-  descripcion: string;
-}
-
-export interface ExperienciaPayload {
-  empresa: string;
-  descripcion: string;
-  fechaInicio: string;
-  fechaFin: string;
-  tecnologias: string[];
-  hitos: HitoForm[];
 }

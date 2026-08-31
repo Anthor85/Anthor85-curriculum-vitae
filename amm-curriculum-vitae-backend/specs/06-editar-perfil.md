@@ -1,6 +1,6 @@
 # SPEC 06 — Edición de Perfil (PUT único)
 
-> **Estado:** Aprobada
+> **Estado:** Implementada
 > **Depende de:** SPEC 05 del backend (`05-editar-formacion-complementaria.md`, Implementada) — solo como precedente de patrón, no hay dependencia técnica
 > **Fecha:** 2026-08-31
 > **Objetivo:** Añadir `PUT /api/perfil` (sin `:id`) que actualice el único perfil existente y devuelva el documento actualizado, con 404 si todavía no hay ninguno, manteniendo el `POST` actual como vía de creación.

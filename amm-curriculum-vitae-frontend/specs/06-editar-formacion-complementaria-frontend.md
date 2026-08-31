@@ -1,6 +1,6 @@
 # SPEC 06 — Editar formación complementaria desde la card
 
-> **Estado:** Aprobada
+> **Estado:** Implementada
 > **Depende de:** SPEC 05 del frontend (`05-editar-formacion-frontend.md`, Borrador) y SPEC 05 del backend (`../amm-curriculum-vitae-backend/specs/05-editar-formacion-complementaria.md`, Aprobada), que aporta tanto el `PUT` como el campo opcional `fechaFin`
 > **Fecha:** 2026-08-31
 > **Objetivo:** Añadir un botón `Editar` en cada `FormacionComplementariaCard` que cargue ese registro en el formulario para actualizarlo vía `PUT`, y un botón `Borrar formulario` que limpie los campos y desvincule el id, replicando el patrón de la SPEC 05. Se incorpora además el campo **opcional** `fechaFin`, ya disponible en el backend desde la SPEC 05 del backend.

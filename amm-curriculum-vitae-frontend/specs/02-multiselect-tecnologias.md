@@ -1,6 +1,6 @@
 # SPEC 02 — Multiselect de tecnologías con chips
 
-> **Estado:** Aprobado
+> **Estado:** Implementada
 > **Depende de:** SPEC 01 del frontend (`01-hitos-experiencia-frontend.md`, Implementada)
 > **Fecha:** 2026-08-28
 > **Objetivo:** Sustituir el multiselect de tecnologías de `ExperienciaForm` por un componente reutilizable `MultiSelect` con label, chips eliminables en la cabecera y lista desplegable flotante con scroll.

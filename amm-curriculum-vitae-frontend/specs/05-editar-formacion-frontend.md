@@ -1,6 +1,6 @@
 # SPEC 05 — Editar formación desde la card
 
-> **Estado:** Aprobada
+> **Estado:** Implementada
 > **Depende de:** SPEC 04 del frontend (`04-editar-conocimiento-frontend.md`, Implementada) y SPEC 04 del backend (`../amm-curriculum-vitae-backend/specs/04-editar-formacion.md`, Borrador)
 > **Fecha:** 2026-08-31
 > **Objetivo:** Añadir un botón `Editar` en cada `FormacionCard` que cargue esa formación en el formulario para actualizarla vía `PUT`, y un botón `Borrar formulario` que limpie los campos y desvincule el id, replicando el patrón de la SPEC 04.

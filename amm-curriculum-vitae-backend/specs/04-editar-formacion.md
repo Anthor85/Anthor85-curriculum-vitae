@@ -1,6 +1,6 @@
 # SPEC 04 — Edición de Formación (PUT)
 
-> **Estado:** Aprobada
+> **Estado:** Implementada
 > **Depende de:** SPEC 03 del backend (`03-editar-conocimiento.md`, Implementada) — solo como precedente de patrón, no hay dependencia técnica
 > **Fecha:** 2026-08-31
 > **Objetivo:** Añadir `PUT /api/formacion/:id` que actualice `titulo`, `institucion`, `descripcion` y `fechaFin` de una formación y devuelva el documento actualizado, con 404 si el id no existe, y añadir ese mismo 404 al `DELETE`.

@@ -1,6 +1,6 @@
 # SPEC 05 — Edición de Formación Complementaria (PUT)
 
-> **Estado:** Aprobada
+> **Estado:** Implementada
 > **Depende de:** SPEC 04 del backend (`04-editar-formacion.md`, Borrador) — solo como precedente de patrón, no hay dependencia técnica
 > **Fecha:** 2026-08-31
 > **Objetivo:** Añadir `PUT /api/formacionComplementaria/:id` que actualice `titulo`, `institucion` y `fechaFin` de una formación complementaria y devuelva el documento actualizado, con 404 si el id no existe, y añadir ese mismo 404 al `DELETE`. Se añade además el campo **opcional** `fechaFin` al modelo, al `POST` y al `PUT`.

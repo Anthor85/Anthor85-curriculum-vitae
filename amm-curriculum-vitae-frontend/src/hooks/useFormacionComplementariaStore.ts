@@ -1,6 +1,10 @@
 ﻿import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/api';
 import { setFormacionComplementaria } from '../store';
+import type {
+  FormacionComplementaria,
+  FormacionComplementariaPayload,
+} from '../interfaces/formacionComplementaria.interface';
 
 export const useFormacionComplementariaStore = () => {
   const dispatch = useDispatch();
@@ -19,13 +23,34 @@ export const useFormacionComplementariaStore = () => {
     }
   };
 
-  const createFormacionComplementaria = async (formData: FormData) => {
+  const createFormacionComplementaria = async (
+    payload: FormacionComplementariaPayload,
+  ) => {
     try {
-      const { data } = await api.post('/formacionComplementaria', formData);
+      const { data } = await api.post('/formacionComplementaria', payload);
 
       dispatch(setFormacionComplementaria([...formacionComplementaria, data]));
     } catch (error) {
       console.error('Error creating formacionComplementaria:', error);
+    }
+  };
+
+  const updateFormacionComplementaria = async (
+    id: string,
+    payload: FormacionComplementariaPayload,
+  ) => {
+    try {
+      const { data } = await api.put(`/formacionComplementaria/${id}`, payload);
+
+      dispatch(
+        setFormacionComplementaria(
+          formacionComplementaria.map((form: FormacionComplementaria) =>
+            form.id === data.id ? data : form,
+          ),
+        ),
+      );
+    } catch (error) {
+      console.error('Error updating formacionComplementaria:', error);
     }
   };
 
@@ -57,6 +82,7 @@ export const useFormacionComplementariaStore = () => {
 
     getFormacionComplementaria,
     createFormacionComplementaria,
+    updateFormacionComplementaria,
     deleteFormacionComplementaria,
   };
 };

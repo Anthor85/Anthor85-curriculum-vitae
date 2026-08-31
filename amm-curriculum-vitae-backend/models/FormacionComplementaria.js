@@ -10,6 +10,9 @@ const FormacionComplementariaSchema = Schema({
     required: true,
     trim: true,
   },
+  fechaFin: {
+    type: Date,
+  },
 });
 
 FormacionComplementariaSchema.method('toJSON', function () {

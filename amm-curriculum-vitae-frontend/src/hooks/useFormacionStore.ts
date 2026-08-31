@@ -1,6 +1,10 @@
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/api';
 import { setFormacion } from '../store';
+import type {
+  Formacion,
+  FormacionPayload,
+} from '../interfaces/formacion.interface';
 
 export const useFormacionStore = () => {
   const dispatch = useDispatch();
@@ -11,28 +15,43 @@ export const useFormacionStore = () => {
   const getFormacion = async () => {
     try {
       const { data } = await api.get('/formacion');
-      console.log('Formacion data:', data);
+      console.log('Formación data:', data);
 
       dispatch(setFormacion(data));
     } catch (error) {
-      console.error('Error fetching formacion:', error);
+      console.error('Error obteniendo formación:', error);
     }
   };
 
-  const createFormacion = async (formData: FormData) => {
+  const createFormacion = async (payload: FormacionPayload) => {
     try {
-      const { data } = await api.post('/formacion', formData);
+      const { data } = await api.post('/formacion', payload);
 
       dispatch(setFormacion([...formacion, data]));
     } catch (error) {
-      console.error('Error creating formacion:', error);
+      console.error('Error creando formación:', error);
+    }
+  };
+
+  const updateFormacion = async (id: string, payload: FormacionPayload) => {
+    try {
+      const { data } = await api.put(`/formacion/${id}`, payload);
+      dispatch(
+        setFormacion(
+          formacion.map((form: Formacion) =>
+            form.id === data.id ? data : form,
+          ),
+        ),
+      );
+    } catch (error) {
+      console.error('Error actualizando formación:', error);
     }
   };
 
   const deleteFormacion = async (id: string) => {
     try {
       const { data } = await api.delete(`/formacion/${id}`);
-      console.log('Formacion deleted:', formacion, data);
+      console.log('Formación eliminada:', formacion, data);
 
       dispatch(
         setFormacion(
@@ -40,7 +59,7 @@ export const useFormacionStore = () => {
         ),
       );
     } catch (error) {
-      console.error('Error deleting formacion:', error);
+      console.error('Error eliminando formación:', error);
     }
   };
 
@@ -51,6 +70,7 @@ export const useFormacionStore = () => {
 
     getFormacion,
     createFormacion,
+    updateFormacion,
     deleteFormacion,
   };
 };

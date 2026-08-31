@@ -3,8 +3,10 @@ export interface Formacion {
   titulo: string;
   institucion: string;
   descripcion?: string;
-  fechaFin: Date;
+  fechaFin: string;
 }
+
+export interface FormacionPayload extends Omit<Formacion, 'id'> {}
 
 export interface FormacionState {
   formacion: Formacion[];

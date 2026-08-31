@@ -3,15 +3,15 @@
 import styles from './Form.module.scss';
 
 interface Props {
-  onAddFormacionComplementaria: (data: FormData) => void;
+  onSubmitFormacionComplementaria: (data: FormData) => void;
 }
 
 export const FormacionComplementariaForm = ({
-  onAddFormacionComplementaria,
+  onSubmitFormacionComplementaria,
 }: Props) => {
   const [state, formAction, isPending] = useActionState(
     async (prevState: unknown, queryData: FormData) =>
-      onAddFormacionComplementaria(queryData),
+      onSubmitFormacionComplementaria(queryData),
     null,
   );
 

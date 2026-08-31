@@ -32,7 +32,7 @@ export const ConocimientoCard = ({
       </div>
       <div className={`${styles.actions} ${styles.actionsFila}`}>
         <button onClick={() => onEditar(conocimiento)}>Editar</button>
-        <button onClick={() => deleteConocimiento(id)}>Delete</button>
+        <button onClick={() => deleteConocimiento(id)}>Eliminar</button>
       </div>
     </div>
   );

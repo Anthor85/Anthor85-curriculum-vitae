@@ -29,10 +29,42 @@ const crearFormacionComplementaria = async (req, res = response) => {
   }
 };
 
+const actualizarFormacionComplementaria = async (req, res = response) => {
+  const { id } = req.params;
+
+  try {
+    const formacionComplementaria = await FormacionComplementaria.findById(id);
+    if (!formacionComplementaria) {
+      return res
+        .status(404)
+        .json({ msg: 'Formación complementaria no encontrada' });
+    }
+
+    formacionComplementaria.titulo = req.body.titulo;
+    formacionComplementaria.institucion = req.body.institucion;
+
+    await formacionComplementaria.save();
+
+    res.json(formacionComplementaria);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ msg: 'Error al actualizar la formación complementaria' });
+  }
+};
+
 const deleteFormacionComplementaria = async (req, res = response) => {
   const { id } = req.params;
   console.log('ID recibido para eliminación:', id);
   try {
+    const formacionComplementaria = await FormacionComplementaria.findById(id);
+    if (!formacionComplementaria) {
+      return res
+        .status(404)
+        .json({ msg: 'Formación complementaria no encontrada' });
+    }
+
     const formacionComplementariaEliminada =
       await FormacionComplementaria.findByIdAndDelete(id);
     res.json({
@@ -50,5 +82,6 @@ const deleteFormacionComplementaria = async (req, res = response) => {
 module.exports = {
   obtenerFormacionesComplementarias,
   crearFormacionComplementaria,
+  actualizarFormacionComplementaria,
   deleteFormacionComplementaria,
 };

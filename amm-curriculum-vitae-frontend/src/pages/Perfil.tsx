@@ -23,7 +23,6 @@ export const Perfil = () => {
 
   return (
     <div className={styles.Page}>
-      {perfil && <div className={styles.data}>{perfil.nombre}</div>}
       <div className={styles.form}>
         <h1>Crear Perfil</h1>
         <PerfilForm onAddPerfil={createPerfil} />

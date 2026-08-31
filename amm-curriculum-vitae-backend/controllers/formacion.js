@@ -34,10 +34,38 @@ const crearFormacion = async (req, res = response) => {
   }
 };
 
+const actualizarFormacion = async (req, res = response) => {
+  const { id } = req.params;
+
+  try {
+    const formacion = await Formacion.findById(id);
+    if (!formacion) {
+      return res.status(404).json({ msg: 'Formación no encontrada' });
+    }
+
+    formacion.titulo = req.body.titulo;
+    formacion.institucion = req.body.institucion;
+    formacion.descripcion = req.body.descripcion;
+    formacion.fechaFin = req.body.fechaFin;
+
+    await formacion.save();
+
+    res.json(formacion);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al actualizar la formación' });
+  }
+};
+
 const deleteFormacion = async (req, res = response) => {
   const { id } = req.params;
   console.log('ID recibido para eliminación:', id);
   try {
+    const formacion = await Formacion.findById(id);
+    if (!formacion) {
+      return res.status(404).json({ msg: 'Formación no encontrada' });
+    }
+
     const formacionEliminada = await Formacion.findByIdAndDelete(id);
     res.json({ msg: 'Formación eliminada', formacion: formacionEliminada });
   } catch (error) {
@@ -49,5 +77,6 @@ const deleteFormacion = async (req, res = response) => {
 module.exports = {
   obtenerFormaciones,
   crearFormacion,
+  actualizarFormacion,
   deleteFormacion,
 };

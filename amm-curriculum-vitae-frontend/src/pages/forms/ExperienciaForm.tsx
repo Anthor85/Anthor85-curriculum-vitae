@@ -9,6 +9,15 @@ import type {
 
 import styles from './Form.module.scss';
 
+const EXPERIENCIA_VACIA: ExperienciaPayload = {
+  empresa: '',
+  descripcion: '',
+  fechaInicio: '',
+  fechaFin: '',
+  tecnologias: [],
+  hitos: [],
+};
+
 interface Props {
   experienciaEnEdicion: Experiencia | null;
   onSubmitExperiencia: (payload: ExperienciaPayload) => Promise<void> | void;
@@ -22,9 +31,8 @@ export const ExperienciaForm = ({
 }: Props) => {
   const { conocimiento, getConocimiento } = useConocimientoStore();
 
-  const [experiencia, setExperiencia] = useState<Experiencia>(
-    {} as Experiencia,
-  );
+  const [experiencia, setExperiencia] =
+    useState<Omit<Experiencia, 'id'>>(EXPERIENCIA_VACIA);
   const [isPending, setIsPending] = useState<boolean>(false);
 
   useEffect(() => {
@@ -35,15 +43,7 @@ export const ExperienciaForm = ({
 
   useEffect(() => {
     if (!experienciaEnEdicion) {
-      setExperiencia({
-        id: '',
-        empresa: '',
-        descripcion: '',
-        fechaInicio: '',
-        fechaFin: '',
-        tecnologias: [],
-        hitos: [],
-      } as Experiencia);
+      setExperiencia(EXPERIENCIA_VACIA);
       return;
     }
 
@@ -94,15 +94,7 @@ export const ExperienciaForm = ({
     );
 
   const limpiarFormulario = () => {
-    setExperiencia({
-      id: '',
-      empresa: '',
-      descripcion: '',
-      fechaInicio: '',
-      fechaFin: '',
-      tecnologias: [],
-      hitos: [],
-    } as Experiencia);
+    setExperiencia(EXPERIENCIA_VACIA);
     onLimpiar();
   };
 
@@ -140,7 +132,7 @@ export const ExperienciaForm = ({
         />
       </div>
       <div className={styles.field}>
-        <label htmlFor="descripcion">Position:</label>
+        <label htmlFor="descripcion">Posición:</label>
         <input
           type="text"
           id="descripcion"
@@ -153,7 +145,7 @@ export const ExperienciaForm = ({
         />
       </div>
       <div className={styles.field}>
-        <label htmlFor="fechaInicio">Start Date:</label>
+        <label htmlFor="fechaInicio">Fecha inicio:</label>
         <input
           type="date"
           id="fechaInicio"
@@ -166,7 +158,7 @@ export const ExperienciaForm = ({
         />
       </div>
       <div className={styles.field}>
-        <label htmlFor="fechaFin">End Date:</label>
+        <label htmlFor="fechaFin">Fecha fin:</label>
         <input
           type="date"
           id="fechaFin"
@@ -199,7 +191,7 @@ export const ExperienciaForm = ({
           />
         </div>
       ) : (
-        <p>No technologies available</p>
+        <p>No hay tecnologías disponibles</p>
       )}
       <div className={styles.hitos}>
         <label>Hitos:</label>

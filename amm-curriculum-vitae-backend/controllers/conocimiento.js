@@ -1,5 +1,5 @@
-﻿const { response } = require("express");
-const Conocimiento = require("../models/Conocimiento");
+﻿const { response } = require('express');
+const Conocimiento = require('../models/Conocimiento');
 
 // Obtener todos los conocimientos
 const obtenerConocimientos = async (req, res = response) => {
@@ -8,7 +8,7 @@ const obtenerConocimientos = async (req, res = response) => {
     res.json(conocimientos);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ msg: "Error al obtener los conocimientos" });
+    res.status(500).json({ msg: 'Error al obtener los conocimientos' });
   }
 };
 
@@ -17,12 +17,12 @@ const crearConocimiento = async (req, res = response) => {
   try {
     const nuevoConocimiento = new Conocimiento(req.body);
     const conocimientoCreado = await nuevoConocimiento.save();
-    console.log("nuevo y creado", nuevoConocimiento, conocimientoCreado);
+    console.log('nuevo y creado', nuevoConocimiento, conocimientoCreado);
 
     res.status(201).json(conocimientoCreado);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ msg: "Error al crear el conocimiento" });
+    res.status(500).json({ msg: 'Error al crear el conocimiento' });
   }
 };
 
@@ -35,7 +35,7 @@ const crearConocimientos = async (req, res = response) => {
     res.status(201).json(conocimientosCreado);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ msg: "Error al crear los conocimientos" });
+    res.status(500).json({ msg: 'Error al crear los conocimientos' });
   }
 };
 
@@ -45,12 +45,12 @@ const eliminarConocimiento = async (req, res = response) => {
   try {
     const conocimiento = await Conocimiento.findByIdAndDelete(id);
     if (!conocimiento) {
-      return res.status(404).json({ msg: "Conocimiento no encontrado" });
+      return res.status(404).json({ msg: 'Conocimiento no encontrado' });
     }
-    res.json({ msg: "Conocimiento eliminado", id });
+    res.json({ msg: 'Conocimiento eliminado', id });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ msg: "Error al eliminar el conocimiento" });
+    res.status(500).json({ msg: 'Error al eliminar el conocimiento' });
   }
 };
 

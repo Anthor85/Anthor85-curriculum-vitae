@@ -1,16 +1,16 @@
-const { Router } = require("express");
+const { Router } = require('express');
 const {
   obtenerExperiencias,
   crearExperiencia,
   actualizarExperiencia,
   eliminarExperiencia,
-} = require("../controllers/experiencia");
+} = require('../controllers/experiencia');
 
 const router = Router();
 
-router.get("/", obtenerExperiencias);
-router.post("/", crearExperiencia);
-router.put("/:id", actualizarExperiencia);
-router.delete("/:id", eliminarExperiencia);
+router.get('/', obtenerExperiencias);
+router.post('/', crearExperiencia);
+router.put('/:id', actualizarExperiencia);
+router.delete('/:id', eliminarExperiencia);
 
 module.exports = router;

@@ -1,7 +1,7 @@
 export enum ConocimientoNivel {
-  BASICO = "basico",
-  INTERMEDIO = "intermedio",
-  AVANZADO = "avanzado",
+  BASICO = 'basico',
+  INTERMEDIO = 'intermedio',
+  AVANZADO = 'avanzado',
 }
 
 export interface Conocimiento {

@@ -1,8 +1,8 @@
-﻿import { createSlice } from "@reduxjs/toolkit";
-import { CurriculumState } from "../../interfaces/curriculum.interface";
+﻿import { createSlice } from '@reduxjs/toolkit';
+import { CurriculumState } from '../../interfaces/curriculum.interface';
 
 export const slice = createSlice({
-  name: "curriculum",
+  name: 'curriculum',
   initialState: {
     conocimiento: [],
     experiencia: [],
@@ -41,5 +41,4 @@ export const slice = createSlice({
   },
 });
 
-export const { setCurriculum, setLoading, setError } =
-  slice.actions;
+export const { setCurriculum, setLoading, setError } = slice.actions;

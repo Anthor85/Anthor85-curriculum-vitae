@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model } = require('mongoose');
 const FormacionSchema = Schema({
   titulo: {
     type: String,
@@ -20,10 +20,10 @@ const FormacionSchema = Schema({
   },
 });
 
-FormacionSchema.method("toJSON", function () {
+FormacionSchema.method('toJSON', function () {
   const { __v, _id, ...object } = this.toObject();
   object.id = _id;
   return object;
 });
 
-module.exports = model("Formacion", FormacionSchema);
+module.exports = model('Formacion', FormacionSchema);

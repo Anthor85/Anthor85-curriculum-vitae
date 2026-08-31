@@ -1,4 +1,4 @@
-﻿const { Schema, model } = require("mongoose");
+﻿const { Schema, model } = require('mongoose');
 
 const PerfilSchema = Schema({
   nombre: {
@@ -42,10 +42,10 @@ const PerfilSchema = Schema({
   },
 });
 
-PerfilSchema.method("toJSON", function () {
+PerfilSchema.method('toJSON', function () {
   const { __v, _id, ...object } = this.toObject();
   object.id = _id;
   return object;
 });
 
-module.exports = model("Perfil", PerfilSchema);
+module.exports = model('Perfil', PerfilSchema);

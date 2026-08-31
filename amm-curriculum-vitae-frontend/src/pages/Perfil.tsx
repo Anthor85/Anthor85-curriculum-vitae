@@ -1,38 +1,33 @@
-﻿import { useEffect } from "react";
-import { usePerfilStore } from "../hooks";
-import { PerfilForm } from "./forms/PerfilForm";
+﻿import { useEffect } from 'react';
+import { usePerfilStore } from '../hooks';
+import { PerfilForm } from './forms/PerfilForm';
 
-import styles from "./Layout.module.scss";
+import styles from './Layout.module.scss';
 
 export const Perfil = () => {
-	const {
-		perfil,
-		loading,
-		error,
-		getPerfil,
-		createPerfil,
-		deletePerfil, //TODO: cambiar deletePerfil por updatePerfil
-	} = usePerfilStore();
-	
-	if (loading) return <p>Loading...</p>;
-	if (error) return <p>Error: {error}</p>;
+  const {
+    perfil,
+    loading,
+    error,
+    getPerfil,
+    createPerfil,
+    deletePerfil, //TODO: cambiar deletePerfil por updatePerfil
+  } = usePerfilStore();
 
-	useEffect(() => {
-		perfil === null && getPerfil();
-	}, [getPerfil]);
+  useEffect(() => {
+    if (perfil === null) getPerfil();
+  }, [getPerfil]);
 
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
-	return (
-		<div className={styles.Page}>
-			{ perfil && (
-				<div className={styles.data}>
-					{ perfil.nombre}
-					</div>
-			)}
-			<div className={styles.form}>
-				<h1>Crear Perfil</h1>
-				<PerfilForm onAddPerfil={createPerfil} />
-			</div>
-		</div>
-	);
+  return (
+    <div className={styles.Page}>
+      {perfil && <div className={styles.data}>{perfil.nombre}</div>}
+      <div className={styles.form}>
+        <h1>Crear Perfil</h1>
+        <PerfilForm onAddPerfil={createPerfil} />
+      </div>
+    </div>
+  );
 };

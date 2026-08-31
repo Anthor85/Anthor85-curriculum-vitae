@@ -53,7 +53,7 @@ interface MultiSelectProps {
 `options` recibe ids y etiquetas ya normalizados; el componente no conoce `Conocimiento`. En `ExperienciaForm` se mapea:
 
 ```ts
-conocimiento.map((t: Conocimiento) => ({ id: t.id, label: t.titulo }))
+conocimiento.map((t: Conocimiento) => ({ id: t.id, label: t.titulo }));
 ```
 
 El componente es controlado: `selected` y `onChange` viven en `ExperienciaForm` (el estado `selectedTecnologias` que ya existe). El único estado propio del componente es `const [abierto, setAbierto] = useState(false)`.
@@ -110,11 +110,11 @@ El componente es controlado: `selected` y `onChange` viven en `ExperienciaForm` 
 
 ## Riesgos
 
-| Riesgo | Mitigación |
-| --- | --- |
-| La `X` de un chip burbujea al `onClick` de la cabecera y abre/cierra el desplegable al borrar | `e.stopPropagation()` en el handler de la `X` (paso 2), con criterio de aceptación específico. |
-| Los botones del chip heredan `button { width: 100px }` de `.Form` y deforman los chips | Los estilos viven en `MultiSelect.module.scss` con ancho explícito, y la especificidad de la clase propia gana al selector de elemento. |
-| Al cerrar el desplegable se pierden las selecciones si los inputs viven dentro de la lista | Los inputs ocultos están fuera del bloque condicionado a `abierto` (paso 4). |
-| El desplegable queda por detrás de los campos siguientes o recortado por un `overflow` del contenedor | `z-index` en la lista y contenedor sin `overflow: hidden`; criterio de aceptación que lo verifica visualmente. |
-| Eliminar `.show` y `.multiselect` de `Form.module.scss` rompe algún otro form que las usara | Son clases de módulo, solo alcanzables desde quien importa `Form.module.scss`; se comprueba con una búsqueda de `styles.show` y `styles.multiselect` antes de borrar. |
-| Un `<button>` sin `type` dentro del form envía el formulario | Todos los botones del componente (`X` y `+`) llevan `type="button"`. |
+| Riesgo                                                                                                | Mitigación                                                                                                                                                            |
+| ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| La `X` de un chip burbujea al `onClick` de la cabecera y abre/cierra el desplegable al borrar         | `e.stopPropagation()` en el handler de la `X` (paso 2), con criterio de aceptación específico.                                                                        |
+| Los botones del chip heredan `button { width: 100px }` de `.Form` y deforman los chips                | Los estilos viven en `MultiSelect.module.scss` con ancho explícito, y la especificidad de la clase propia gana al selector de elemento.                               |
+| Al cerrar el desplegable se pierden las selecciones si los inputs viven dentro de la lista            | Los inputs ocultos están fuera del bloque condicionado a `abierto` (paso 4).                                                                                          |
+| El desplegable queda por detrás de los campos siguientes o recortado por un `overflow` del contenedor | `z-index` en la lista y contenedor sin `overflow: hidden`; criterio de aceptación que lo verifica visualmente.                                                        |
+| Eliminar `.show` y `.multiselect` de `Form.module.scss` rompe algún otro form que las usara           | Son clases de módulo, solo alcanzables desde quien importa `Form.module.scss`; se comprueba con una búsqueda de `styles.show` y `styles.multiselect` antes de borrar. |
+| Un `<button>` sin `type` dentro del form envía el formulario                                          | Todos los botones del componente (`X` y `+`) llevan `type="button"`.                                                                                                  |

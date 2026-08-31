@@ -1,6 +1,6 @@
-import { useActionState } from "react";
+import { useActionState } from 'react';
 
-import styles from "./Form.module.scss";
+import styles from './Form.module.scss';
 
 interface Props {
   onAddConocimiento: (data: FormData) => void;
@@ -10,7 +10,7 @@ export const ConocimientoForm = ({ onAddConocimiento }: Props) => {
   const [state, formAction, isPending] = useActionState(
     async (prevState: unknown, queryData: FormData) =>
       onAddConocimiento(queryData),
-    null
+    null,
   );
 
   return (

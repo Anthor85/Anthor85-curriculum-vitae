@@ -1,11 +1,11 @@
 // import React from 'react';
 
-import { BrowserRouter /* , Route  */ } from "react-router-dom";
+import { BrowserRouter /* , Route  */ } from 'react-router-dom';
 
-import { Router } from "./router/Router";
+import { Router } from './router/Router';
 // import { getEnvVariables } from "./helpers/getEnvVariables";
-import { Provider } from "react-redux";
-import { store } from "./store";
+import { Provider } from 'react-redux';
+import { store } from './store';
 
 function Curriculum() {
   // const { VITE_BASE_URL: baseUrl } = getEnvVariables();

@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model } = require('mongoose');
 
 const ExperienciaSchema = Schema(
   {
@@ -23,24 +23,24 @@ const ExperienciaSchema = Schema(
     },
     tecnologias: {
       type: [Schema.Types.ObjectId],
-      ref: "Conocimiento",
+      ref: 'Conocimiento',
     },
   },
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
 
 // Relación inversa: los hitos guardan la referencia a la experiencia.
 // Solo aparece en el JSON si se ha hecho .populate("hitos").
-ExperienciaSchema.virtual("hitos", {
-  ref: "Hito",
-  localField: "_id",
-  foreignField: "experiencia",
+ExperienciaSchema.virtual('hitos', {
+  ref: 'Hito',
+  localField: '_id',
+  foreignField: 'experiencia',
 });
 
-ExperienciaSchema.method("toJSON", function () {
+ExperienciaSchema.method('toJSON', function () {
   const { __v, _id, hitos, ...object } = this.toObject({ virtuals: true });
   object.id = _id;
   if (Array.isArray(hitos)) {
@@ -52,4 +52,4 @@ ExperienciaSchema.method("toJSON", function () {
   return object;
 });
 
-module.exports = model("Experiencia", ExperienciaSchema);
+module.exports = model('Experiencia', ExperienciaSchema);

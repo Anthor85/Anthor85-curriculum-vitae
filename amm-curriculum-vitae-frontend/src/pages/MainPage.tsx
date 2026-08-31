@@ -1,9 +1,9 @@
-﻿import { useEffect, useRef } from "react";
-import { exportToPDF } from "../helpers/exportToPDF";
-import { Button } from "../components/Button";
-import { useCurriculumStore } from "../hooks/useCurriculumStore";
+﻿import { useEffect, useRef } from 'react';
+import { exportToPDF } from '../helpers/exportToPDF';
+import { Button } from '../components/Button';
+import { useCurriculumStore } from '../hooks/useCurriculumStore';
 
-import styles from "./MainPage.module.scss";
+import styles from './MainPage.module.scss';
 
 export const MainPage = () => {
   const exportableHTML = useRef<HTMLDivElement>(null);
@@ -13,9 +13,15 @@ export const MainPage = () => {
     getCurriculum();
   }, []);
 
-  const { conocimiento, experiencia, formaciones, formacionesComplementarias, perfil } = curriculum || {};
+  const {
+    conocimiento,
+    experiencia,
+    formaciones,
+    formacionesComplementarias,
+    perfil,
+  } = curriculum || {};
 
-  console.log("Curriculum in MainPage:", curriculum);
+  console.log('Curriculum in MainPage:', curriculum);
 
   return (
     <>
@@ -37,21 +43,19 @@ export const MainPage = () => {
               icon="download"
             />
           </div>
-          { perfil && (<div className={styles.information}>
-            <div className={styles.name}>
-              <span>{perfil.nombre} {perfil.apellidos}</span>
+          {perfil && (
+            <div className={styles.information}>
+              <div className={styles.name}>
+                <span>
+                  {perfil.nombre} {perfil.apellidos}
+                </span>
+              </div>
+              <span className={styles.role}>{perfil.descripcion}</span>
+              <div className={styles.info}>{perfil.direccion}</div>
+              <div className={styles.info}>{perfil.telefono}</div>
+              <div className={styles.info}>{perfil.email}</div>
             </div>
-            <span className={styles.role}>{perfil.descripcion}</span>
-            <div className={styles.info}>
-              {perfil.direccion}
-            </div>
-            <div className={styles.info}>
-              {perfil.telefono}
-            </div>
-            <div className={styles.info}>
-              {perfil.email}
-            </div>
-          </div>)}
+          )}
         </div>
         {/* <div className={styles.photo}> */}
         {/* </div> */}

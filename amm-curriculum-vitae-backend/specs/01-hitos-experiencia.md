@@ -32,7 +32,11 @@
 ```js
 const HitoSchema = Schema({
   descripcion: { type: String, required: true, trim: true },
-  experiencia: { type: Schema.Types.ObjectId, ref: "Experiencia", required: true },
+  experiencia: {
+    type: Schema.Types.ObjectId,
+    ref: 'Experiencia',
+    required: true,
+  },
 });
 ```
 
@@ -41,10 +45,10 @@ const HitoSchema = Schema({
 En `models/Experiencia.js` se añade un virtual, sin campo persistido:
 
 ```js
-ExperienciaSchema.virtual("hitos", {
-  ref: "Hito",
-  localField: "_id",
-  foreignField: "experiencia",
+ExperienciaSchema.virtual('hitos', {
+  ref: 'Hito',
+  localField: '_id',
+  foreignField: 'experiencia',
 });
 ```
 
@@ -60,7 +64,13 @@ Forma del recurso que devuelve `GET /api/experiencia`:
   "fechaInicio": "2020-01-01T00:00:00.000Z",
   "fechaFin": null,
   "tecnologias": ["664..."],
-  "hitos": [{ "id": "667...", "descripcion": "Migré el monolito a servicios", "experiencia": "665..." }]
+  "hitos": [
+    {
+      "id": "667...",
+      "descripcion": "Migré el monolito a servicios",
+      "experiencia": "665..."
+    }
+  ]
 }
 ```
 
@@ -72,14 +82,14 @@ Mongo crea la colección al primer insert, así que el `createCollection` es opc
 
 ```js
 // mongosh
-db.createCollection("hitos");
+db.createCollection('hitos');
 db.hitos.createIndex({ experiencia: 1 });
 ```
 
 Verificación manual:
 
 ```js
-db.hitos.find({ experiencia: ObjectId("<id de la experiencia>") });
+db.hitos.find({ experiencia: ObjectId('<id de la experiencia>') });
 db.hitos.countDocuments();
 ```
 
@@ -119,11 +129,11 @@ db.hitos.countDocuments();
 
 ## Riesgos
 
-| Riesgo | Mitigación |
-| --- | --- |
+| Riesgo                                                                                                                      | Mitigación                                                                                                                                  |
+| --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | Activar `toJSON: { virtuals: true }` cambia el JSON de Experiencia (aparece `id` duplicado por el virtual `id` de Mongoose) | El `toJSON` personalizado ya construye `object.id`; verificar en el paso 2 que la respuesta no cambia respecto a la actual antes de seguir. |
-| `insertMany` falla tras haber guardado la experiencia y deja una experiencia sin sus hitos | Devolver 500 y documentar que la experiencia queda creada; el usuario puede borrarla y repetir. Sin transacciones (requieren replica set). |
-| El campo `hitos` llega como string único cuando solo hay un input | La normalización con `[].concat(...)` cubre string, array y `undefined`. |
+| `insertMany` falla tras haber guardado la experiencia y deja una experiencia sin sus hitos                                  | Devolver 500 y documentar que la experiencia queda creada; el usuario puede borrarla y repetir. Sin transacciones (requieren replica set).  |
+| El campo `hitos` llega como string único cuando solo hay un input                                                           | La normalización con `[].concat(...)` cubre string, array y `undefined`.                                                                    |
 
 ## Lo que **no** entra en esta spec
 

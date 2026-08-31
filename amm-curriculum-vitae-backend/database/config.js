@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-require("dotenv").config();
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 const dbConnection = async () => {
   try {
@@ -8,10 +8,10 @@ const dbConnection = async () => {
       // useUnifiedTopology: true,
     });
 
-    console.log("Base de datos online");
+    console.log('Base de datos online');
   } catch (error) {
     console.log(error);
-    throw new Error("Error al inicializar BD");
+    throw new Error('Error al inicializar BD');
   }
 };
 

@@ -1,7 +1,7 @@
-﻿import { useConocimientoStore } from "../../hooks";
-import { Experiencia } from "../../interfaces/experiencia.interface";
+﻿import { useConocimientoStore } from '../../hooks';
+import { Experiencia } from '../../interfaces/experiencia.interface';
 
-import styles from "./Cards.module.scss";
+import styles from './Cards.module.scss';
 
 interface Props {
   experiencia: Experiencia;
@@ -20,17 +20,17 @@ export const ExperienciaCard = ({
 
   return (
     <div
-      className={`${styles.Card} ${enEdicion ? styles.enEdicion : ""}`}
+      className={`${styles.Card} ${enEdicion ? styles.enEdicion : ''}`}
       key={experiencia.id}
     >
       <div className={styles.data}>
         <h2>{experiencia.empresa}</h2>
         <p>{experiencia.descripcion}</p>
         <p>
-          {new Date(experiencia.fechaInicio).toLocaleDateString()} -{" "}
+          {new Date(experiencia.fechaInicio).toLocaleDateString()} -{' '}
           {experiencia.fechaFin
             ? new Date(experiencia.fechaFin).toLocaleDateString()
-            : "En la actualidad"}
+            : 'En la actualidad'}
         </p>
         <div className={styles.coleccion}>
           <p>Tecnologías:</p>
@@ -43,7 +43,7 @@ export const ExperienciaCard = ({
           </ul>
         </div>
         {experiencia.hitos?.length ? (
-        <div className={styles.coleccion}>
+          <div className={styles.coleccion}>
             <p>Hitos:</p>
             <ul className={styles.colecciones}>
               {experiencia.hitos.map((hito) => (

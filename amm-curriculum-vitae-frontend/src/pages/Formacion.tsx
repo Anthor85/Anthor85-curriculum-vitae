@@ -7,38 +7,40 @@ import { Formacion as IFormacion } from '../interfaces/formacion.interface';
 import styles from './Layout.module.scss';
 
 export const Formacion = () => {
-    const {
-        formacion,
-        loading,
-        error,
+  const {
+    formacion,
+    loading,
+    error,
 
-        getFormacion,
-        createFormacion,
-        deleteFormacion,
-    } = useFormacionStore();
+    getFormacion,
+    createFormacion,
+    deleteFormacion,
+  } = useFormacionStore();
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error}</p>;
+  useEffect(() => {
+    if (formacion === null) getFormacion();
+  }, []);
 
-    useEffect(() => {
-        formacion === null && getFormacion();
-    }, []);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
-	return (
-        <div className={styles.Page}>
-        {formacion && formacion.length > 0 && (
-            <div className={styles.data}>
-                {formacion.map((f: IFormacion) => (
-                <FormacionCard
-                    key={f.id}
-                    formacion={f}
-                    deleteFormacion={() => deleteFormacion(f.id)}
-                />))}
-            </div>)}
-        <div className={styles.form}>
-            <h1>Crear Formación</h1>
-            <FormacionForm onAddFormacion={createFormacion} />
+  return (
+    <div className={styles.Page}>
+      {formacion && formacion.length > 0 && (
+        <div className={styles.data}>
+          {formacion.map((f: IFormacion) => (
+            <FormacionCard
+              key={f.id}
+              formacion={f}
+              deleteFormacion={() => deleteFormacion(f.id)}
+            />
+          ))}
         </div>
-     </div>
-     );
+      )}
+      <div className={styles.form}>
+        <h1>Crear Formación</h1>
+        <FormacionForm onAddFormacion={createFormacion} />
+      </div>
+    </div>
+  );
 };

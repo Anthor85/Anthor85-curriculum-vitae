@@ -1,11 +1,11 @@
-﻿import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+﻿import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
   Experiencia,
   ExperienciaState,
-} from "../../interfaces/experiencia.interface";
+} from '../../interfaces/experiencia.interface';
 
 export const experienciaSlice = createSlice({
-  name: "experienciaSlice",
+  name: 'experienciaSlice',
   initialState: {
     experiencia: null,
     loading: false,
@@ -28,4 +28,3 @@ export const experienciaSlice = createSlice({
 
 export const { setExperiencia, setLoadingExperiencia, setErrorExperiencia } =
   experienciaSlice.actions;
-

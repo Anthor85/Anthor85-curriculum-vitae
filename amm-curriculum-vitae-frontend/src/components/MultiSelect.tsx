@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
-import type { KeyboardEvent } from "react";
+import { useEffect, useRef, useState } from 'react';
+import type { KeyboardEvent } from 'react';
 
-import styles from "./MultiSelect.module.scss";
+import styles from './MultiSelect.module.scss';
 
 export interface MultiSelectOption {
   id: string;
@@ -21,7 +21,7 @@ export const MultiSelect = ({
   options,
   selected,
   onChange,
-  placeholder = "Seleccionar...",
+  placeholder = 'Seleccionar...',
 }: MultiSelectProps) => {
   const [abierto, setAbierto] = useState(false);
   const [indiceActivo, setIndiceActivo] = useState(-1);
@@ -34,7 +34,7 @@ export const MultiSelect = ({
     onChange(
       selected.includes(id)
         ? selected.filter((item) => item !== id)
-        : [...selected, id]
+        : [...selected, id],
     );
 
   const cerrar = () => {
@@ -51,8 +51,8 @@ export const MultiSelect = ({
       }
     };
 
-    document.addEventListener("mousedown", alClicarFuera);
-    return () => document.removeEventListener("mousedown", alClicarFuera);
+    document.addEventListener('mousedown', alClicarFuera);
+    return () => document.removeEventListener('mousedown', alClicarFuera);
   }, [abierto]);
 
   useEffect(() => {
@@ -62,36 +62,33 @@ export const MultiSelect = ({
   }, [abierto, indiceActivo]);
 
   const teclasCabecera = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "ArrowDown") {
+    if (e.key === 'ArrowDown') {
       e.preventDefault();
       setAbierto(true);
       setIndiceActivo(0);
-    } else if (e.key === "ArrowUp") {
+    } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setAbierto(true);
       setIndiceActivo(options.length - 1);
-    } else if (e.key === "Enter" || e.key === " ") {
+    } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       setAbierto((prev) => !prev);
-    } else if (e.key === "Escape") {
+    } else if (e.key === 'Escape') {
       cerrar();
     }
   };
 
-  const teclasOpcion = (
-    e: KeyboardEvent<HTMLDivElement>,
-    indice: number
-  ) => {
-    if (e.key === "ArrowDown") {
+  const teclasOpcion = (e: KeyboardEvent<HTMLDivElement>, indice: number) => {
+    if (e.key === 'ArrowDown') {
       e.preventDefault();
       setIndiceActivo((indice + 1) % options.length);
-    } else if (e.key === "ArrowUp") {
+    } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setIndiceActivo((indice - 1 + options.length) % options.length);
-    } else if (e.key === "Enter" || e.key === " ") {
+    } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       alternar(options[indice].id);
-    } else if (e.key === "Escape") {
+    } else if (e.key === 'Escape') {
       e.preventDefault();
       cerrar();
       cabeceraRef.current?.focus();
@@ -138,7 +135,11 @@ export const MultiSelect = ({
       </div>
 
       {abierto && (
-        <div className={styles.lista} role="listbox" aria-multiselectable="true">
+        <div
+          className={styles.lista}
+          role="listbox"
+          aria-multiselectable="true"
+        >
           {options.map((opcion, indice) => (
             <div
               key={opcion.id}

@@ -51,7 +51,7 @@ export interface Experiencia {
 Estado local del form, en `ExperienciaForm`:
 
 ```ts
-const [hitos, setHitos] = useState<string[]>([""]);
+const [hitos, setHitos] = useState<string[]>(['']);
 ```
 
 Un string por fila. Arranca con una fila vacía. Cada fila es un `<input name="hitos" value={...} />` controlado, así el `FormData` del `useActionState` recoge un valor por fila.
@@ -110,10 +110,10 @@ El controlador `crearExperiencia` ya normaliza ambos campos con `[].concat(...)`
 
 ## Riesgos
 
-| Riesgo | Mitigación |
-| --- | --- |
-| El cambio a JSON rompe el envío de `tecnologias`, que hoy se manda como cadena unida por comas | El controlador ya normaliza con `[].concat(...).flatMap(split(","))`, que acepta array. Criterio de aceptación específico para verificarlo. |
-| Los botones de añadir/borrar heredan `button { width: 100px }` de `.Form` y descuadran las filas | Clases propias en `Form.module.scss` con ancho explícito (paso 5). |
-| Un `<button>` sin `type` dentro del form envía el formulario al pulsarlo | Todos los botones de la lista llevan `type="button"` (paso 3). |
-| Experiencias antiguas guardadas antes de la SPEC 01 del backend podrían no traer `hitos` | El render usa `hitos?.length` y no asume el array. |
-| Usar el índice del array como `key` de las filas al borrar del medio puede confundir a React | Filas controladas por valor y `key` por índice es aceptable aquí; si aparece comportamiento raro al borrar, pasar el estado a `{ id: crypto.randomUUID(), texto }`. |
+| Riesgo                                                                                           | Mitigación                                                                                                                                                          |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| El cambio a JSON rompe el envío de `tecnologias`, que hoy se manda como cadena unida por comas   | El controlador ya normaliza con `[].concat(...).flatMap(split(","))`, que acepta array. Criterio de aceptación específico para verificarlo.                         |
+| Los botones de añadir/borrar heredan `button { width: 100px }` de `.Form` y descuadran las filas | Clases propias en `Form.module.scss` con ancho explícito (paso 5).                                                                                                  |
+| Un `<button>` sin `type` dentro del form envía el formulario al pulsarlo                         | Todos los botones de la lista llevan `type="button"` (paso 3).                                                                                                      |
+| Experiencias antiguas guardadas antes de la SPEC 01 del backend podrían no traer `hitos`         | El render usa `hitos?.length` y no asume el array.                                                                                                                  |
+| Usar el índice del array como `key` de las filas al borrar del medio puede confundir a React     | Filas controladas por valor y `key` por índice es aceptable aquí; si aparece comportamiento raro al borrar, pasar el estado a `{ id: crypto.randomUUID(), texto }`. |

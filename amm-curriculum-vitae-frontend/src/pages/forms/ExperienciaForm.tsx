@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
-import { useConocimientoStore } from "../../hooks";
-import { MultiSelect } from "../../components/MultiSelect";
-import type { Conocimiento } from "../../interfaces/conocimiento.interface";
+import { useEffect, useState } from 'react';
+import { useConocimientoStore } from '../../hooks';
+import { MultiSelect } from '../../components/MultiSelect';
+import type { Conocimiento } from '../../interfaces/conocimiento.interface';
 import type {
   Experiencia,
   ExperienciaPayload,
-} from "../../interfaces/experiencia.interface";
+} from '../../interfaces/experiencia.interface';
 
-import styles from "./Form.module.scss";
+import styles from './Form.module.scss';
 
 interface Props {
   experienciaEnEdicion: Experiencia | null;
@@ -36,11 +36,11 @@ export const ExperienciaForm = ({
   useEffect(() => {
     if (!experienciaEnEdicion) {
       setExperiencia({
-        id: "",
-        empresa: "",
-        descripcion: "",
-        fechaInicio: "",
-        fechaFin: "",
+        id: '',
+        empresa: '',
+        descripcion: '',
+        fechaInicio: '',
+        fechaFin: '',
         tecnologias: [],
         hitos: [],
       } as Experiencia);
@@ -52,14 +52,14 @@ export const ExperienciaForm = ({
       fechaInicio: experienciaEnEdicion.fechaInicio.slice(0, 10),
       fechaFin: experienciaEnEdicion.fechaFin
         ? experienciaEnEdicion.fechaFin.slice(0, 10)
-        : "",
+        : '',
       hitos:
         experienciaEnEdicion.hitos.length > 0
           ? experienciaEnEdicion.hitos.map(({ id, descripcion }) => ({
               id,
               descripcion,
             }))
-          : [{ descripcion: "" }],
+          : [{ descripcion: '' }],
     } as Experiencia);
   }, [experienciaEnEdicion]);
 
@@ -68,7 +68,7 @@ export const ExperienciaForm = ({
       (prev) =>
         ({
           ...prev,
-          hitos: [...(prev.hitos || []), { descripcion: "" }],
+          hitos: [...(prev.hitos || []), { descripcion: '' }],
         }) as Experiencia,
     );
 
@@ -95,11 +95,11 @@ export const ExperienciaForm = ({
 
   const limpiarFormulario = () => {
     setExperiencia({
-      id: "",
-      empresa: "",
-      descripcion: "",
-      fechaInicio: "",
-      fechaFin: "",
+      id: '',
+      empresa: '',
+      descripcion: '',
+      fechaInicio: '',
+      fechaFin: '',
       tecnologias: [],
       hitos: [],
     } as Experiencia);
@@ -111,8 +111,8 @@ export const ExperienciaForm = ({
 
     const payload: ExperienciaPayload = {
       ...experiencia,
-      fechaFin: experiencia.fechaFin ?? "",
-      hitos: experiencia.hitos.filter((hito) => hito.descripcion.trim() !== ""),
+      fechaFin: experiencia.fechaFin ?? '',
+      hitos: experiencia.hitos.filter((hito) => hito.descripcion.trim() !== ''),
     };
 
     setIsPending(true);
@@ -230,11 +230,11 @@ export const ExperienciaForm = ({
         <button type="submit" disabled={isPending}>
           {experienciaEnEdicion
             ? isPending
-              ? "Updating..."
-              : "Actualizar"
+              ? 'Updating...'
+              : 'Actualizar'
             : isPending
-              ? "Submitting..."
-              : "Submit"}
+              ? 'Submitting...'
+              : 'Submit'}
         </button>
         <button type="button" onClick={limpiarFormulario}>
           Borrar formulario

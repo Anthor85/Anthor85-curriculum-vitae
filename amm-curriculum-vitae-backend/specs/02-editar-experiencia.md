@@ -60,22 +60,25 @@ const normalizarHitos = (hitos) =>
   []
     .concat(hitos ?? [])
     .map((hito) =>
-      typeof hito === "string"
+      typeof hito === 'string'
         ? { id: undefined, descripcion: hito }
-        : { id: hito?.id, descripcion: hito?.descripcion ?? "" }
+        : { id: hito?.id, descripcion: hito?.descripcion ?? '' },
     )
-    .map(({ id, descripcion }) => ({ id, descripcion: String(descripcion).trim() }))
-    .filter(({ descripcion }) => descripcion !== "");
+    .map(({ id, descripcion }) => ({
+      id,
+      descripcion: String(descripcion).trim(),
+    }))
+    .filter(({ descripcion }) => descripcion !== '');
 ```
 
 Reglas de reconciliación de hitos en el PUT, dado el array normalizado y los hitos actuales en base de datos:
 
-| Caso | Acción |
-| --- | --- |
-| Hito con `id` que **sí** pertenece a esa experiencia | `updateOne` de su `descripcion` |
+| Caso                                                       | Acción                                          |
+| ---------------------------------------------------------- | ----------------------------------------------- |
+| Hito con `id` que **sí** pertenece a esa experiencia       | `updateOne` de su `descripcion`                 |
 | Hito con `id` que no existe o pertenece a otra experiencia | Se ignora el `id` y se **crea** como hito nuevo |
-| Hito sin `id` | Se crea con `experiencia: id` |
-| Hito en base de datos cuyo `id` no aparece en el body | Se **borra** |
+| Hito sin `id`                                              | Se crea con `experiencia: id`                   |
+| Hito en base de datos cuyo `id` no aparece en el body      | Se **borra**                                    |
 
 Respuesta 200, mismo shape que `POST /api/experiencia`:
 
@@ -94,8 +97,8 @@ Respuesta 200, mismo shape que `POST /api/experiencia`:
 ### Verificación manual (mongosh)
 
 ```js
-db.hitos.find({ experiencia: ObjectId("<id de la experiencia>") });
-db.hitos.countDocuments({ experiencia: ObjectId("<id de la experiencia>") });
+db.hitos.find({ experiencia: ObjectId('<id de la experiencia>') });
+db.hitos.countDocuments({ experiencia: ObjectId('<id de la experiencia>') });
 ```
 
 ## Plan de implementación
@@ -143,11 +146,11 @@ db.hitos.countDocuments({ experiencia: ObjectId("<id de la experiencia>") });
 
 ## Riesgos
 
-| Riesgo | Mitigación |
-| --- | --- |
-| Un `id` de hito de **otra** experiencia llega en el body y su `updateOne` lo reasigna | Los ids se cotejan contra `Hito.find({ experiencia: id })` antes de decidir; los que no están en ese conjunto van al grupo "crear", nunca al de actualizar. Criterio de aceptación específico. |
-| El `deleteMany` borra hitos que sí seguían en el form porque el frontend no mandó sus ids | El grupo "a borrar" se calcula solo con los ids existentes en base de datos; un hito que llegue sin `id` se crea, nunca provoca un borrado indebido. Se verifica con el caso end to end del paso 8. |
-| La experiencia se guarda pero falla la reconciliación de hitos, dejando estado a medias | Se responde 500 y se documenta que la experiencia puede haber quedado actualizada. Sin transacciones no hay alternativa; el usuario puede repetir el `PUT`, que es idempotente. |
-| Cambiar `crearExperiencia` para usar el helper rompe el `POST` que ya funciona | El paso 1 se prueba con los dos formatos antes de tocar nada más, y hay criterios de aceptación para ambos. |
-| `tecnologias` llega vacío y se borran todas las tecnologías de la experiencia sin querer | Es el comportamiento esperado del `PUT` (reemplazo completo); el frontend siempre manda el array actual del formulario. Documentado como criterio de aceptación, no como bug. |
-| Un `:id` con formato no válido de ObjectId hace que `findById` lance y devuelva 500 en lugar de 404 | Aceptado: es el mismo comportamiento que ya tiene `eliminarExperiencia`. La ruta solo la consume el frontend, con ids que vienen del propio `GET`. |
+| Riesgo                                                                                              | Mitigación                                                                                                                                                                                          |
+| --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Un `id` de hito de **otra** experiencia llega en el body y su `updateOne` lo reasigna               | Los ids se cotejan contra `Hito.find({ experiencia: id })` antes de decidir; los que no están en ese conjunto van al grupo "crear", nunca al de actualizar. Criterio de aceptación específico.      |
+| El `deleteMany` borra hitos que sí seguían en el form porque el frontend no mandó sus ids           | El grupo "a borrar" se calcula solo con los ids existentes en base de datos; un hito que llegue sin `id` se crea, nunca provoca un borrado indebido. Se verifica con el caso end to end del paso 8. |
+| La experiencia se guarda pero falla la reconciliación de hitos, dejando estado a medias             | Se responde 500 y se documenta que la experiencia puede haber quedado actualizada. Sin transacciones no hay alternativa; el usuario puede repetir el `PUT`, que es idempotente.                     |
+| Cambiar `crearExperiencia` para usar el helper rompe el `POST` que ya funciona                      | El paso 1 se prueba con los dos formatos antes de tocar nada más, y hay criterios de aceptación para ambos.                                                                                         |
+| `tecnologias` llega vacío y se borran todas las tecnologías de la experiencia sin querer            | Es el comportamiento esperado del `PUT` (reemplazo completo); el frontend siempre manda el array actual del formulario. Documentado como criterio de aceptación, no como bug.                       |
+| Un `:id` con formato no válido de ObjectId hace que `findById` lance y devuelva 500 en lugar de 404 | Aceptado: es el mismo comportamiento que ya tiene `eliminarExperiencia`. La ruta solo la consume el frontend, con ids que vienen del propio `GET`.                                                  |

@@ -1,23 +1,23 @@
-const { Router } = require("express");
+const { Router } = require('express');
 const {
   obtenerConocimientos,
   crearConocimiento,
   crearConocimientos,
   eliminarConocimiento,
-} = require("../controllers/conocimiento");
+} = require('../controllers/conocimiento');
 
 const router = Router();
 
 // Obtener todos los conocimientos
-router.get("/", obtenerConocimientos);
+router.get('/', obtenerConocimientos);
 
 // Crear un nuevo conocimiento
-router.post("/", crearConocimiento);
+router.post('/', crearConocimiento);
 
 // Crear múltiples conocimientos
-router.post("/multiple", crearConocimientos);
+router.post('/multiple', crearConocimientos);
 
 // Eliminar un conocimiento
-router.delete("/:id", eliminarConocimiento);
+router.delete('/:id', eliminarConocimiento);
 
 module.exports = router;

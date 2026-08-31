@@ -53,12 +53,12 @@ export interface ExperienciaPayload {
 Estado local de `ExperienciaForm`:
 
 ```ts
-const [empresa, setEmpresa] = useState("");
-const [descripcion, setDescripcion] = useState("");
-const [fechaInicio, setFechaInicio] = useState("");
-const [fechaFin, setFechaFin] = useState("");
+const [empresa, setEmpresa] = useState('');
+const [descripcion, setDescripcion] = useState('');
+const [fechaInicio, setFechaInicio] = useState('');
+const [fechaFin, setFechaFin] = useState('');
 const [selectedTecnologias, setSelectedTecnologias] = useState<string[]>([]);
-const [hitos, setHitos] = useState<HitoForm[]>([{ descripcion: "" }]);
+const [hitos, setHitos] = useState<HitoForm[]>([{ descripcion: '' }]);
 ```
 
 Props de `ExperienciaForm`:
@@ -84,20 +84,20 @@ interface Props {
 
 Mapeo de `Experiencia` (API) → estado del formulario, al entrar en modo edición:
 
-| Campo del form | Origen |
-| --- | --- |
-| `empresa` | `experiencia.empresa` |
-| `descripcion` | `experiencia.descripcion` |
-| `fechaInicio` | `experiencia.fechaInicio.slice(0, 10)` — el input `type="date"` exige `YYYY-MM-DD` y la API devuelve ISO completo |
-| `fechaFin` | `experiencia.fechaFin ? experiencia.fechaFin.slice(0, 10) : ""` |
-| `selectedTecnologias` | `experiencia.tecnologias` (ya es `string[]` de ids) |
-| `hitos` | `experiencia.hitos.map(({ id, descripcion }) => ({ id, descripcion }))`, o `[{ descripcion: "" }]` si no tiene ninguno |
+| Campo del form        | Origen                                                                                                                 |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `empresa`             | `experiencia.empresa`                                                                                                  |
+| `descripcion`         | `experiencia.descripcion`                                                                                              |
+| `fechaInicio`         | `experiencia.fechaInicio.slice(0, 10)` — el input `type="date"` exige `YYYY-MM-DD` y la API devuelve ISO completo      |
+| `fechaFin`            | `experiencia.fechaFin ? experiencia.fechaFin.slice(0, 10) : ""`                                                        |
+| `selectedTecnologias` | `experiencia.tecnologias` (ya es `string[]` de ids)                                                                    |
+| `hitos`               | `experiencia.hitos.map(({ id, descripcion }) => ({ id, descripcion }))`, o `[{ descripcion: "" }]` si no tiene ninguno |
 
 ## Plan de implementación
 
 1. Añadir `HitoForm` y `ExperienciaPayload` a `interfaces/experiencia.interface.ts`. Prueba: `npx tsc --noEmit` sin errores nuevos.
 2. En `useExperienciaStore`, cambiar `createExperiencia` para que reciba un `ExperienciaPayload` y lo mande tal cual con `api.post("/experiencia", payload)`, eliminando el `Object.fromEntries` y los `formData.getAll`. Prueba: crear una experiencia sigue funcionando y el `console.log` del payload muestra `hitos` como array de objetos.
-3. En `useExperienciaStore`, añadir `updateExperiencia(id, payload)`: `api.put(\`/experiencia/${id}\`, payload)` y, con la experiencia poblada de la respuesta, `dispatch(setExperiencia(experiencia.map((e) => (e.id === data.id ? data : e))))`. Exportarla en el objeto de retorno. Prueba: llamarla a mano desde la consola actualiza la card sin recargar.
+3. En `useExperienciaStore`, añadir `updateExperiencia(id, payload)`: `api.put(\`/experiencia/${id}\`, payload)`y, con la experiencia poblada de la respuesta,`dispatch(setExperiencia(experiencia.map((e) => (e.id === data.id ? data : e))))`. Exportarla en el objeto de retorno. Prueba: llamarla a mano desde la consola actualiza la card sin recargar.
 4. Convertir `ExperienciaForm` a controlado: un `useState` por campo, `value` + `onChange` en cada input, y `hitos` como `HitoForm[]` (`cambiarHito` actualiza solo `descripcion` y conserva el `id`). Sustituir `useActionState` por un `onSubmit` con `e.preventDefault()` y un `isPending` propio (`useState<boolean>`), porque ya no hay `FormData` que enviar. Los inputs ocultos del `MultiSelect` dejan de ser necesarios para el envío, pero el componente no se toca: se sigue leyendo `selectedTecnologias`. Prueba: crear una experiencia nueva desde el form funciona igual que antes.
 5. Añadir a `ExperienciaForm` la prop `experienciaEnEdicion` y un `useEffect` con dependencia `[experienciaEnEdicion]` que rellene los seis estados según la tabla de mapeo, o los vacíe si es `null`. Prueba: pulsar `Editar` en una card rellena todos los campos, incluidos tecnologías e hitos.
 6. Añadir la función `limpiarFormulario()` en `ExperienciaForm`, que vacía los seis estados y llama a `props.onLimpiar()`. Renderizar bajo el botón de submit un `<button type="button">Borrar formulario</button>` que la invoque. Prueba: con una experiencia cargada, pulsarlo deja el form vacío y el título vuelve a `Crear Experiencia`.
@@ -154,13 +154,13 @@ Mapeo de `Experiencia` (API) → estado del formulario, al entrar en modo edici�
 
 ## Riesgos
 
-| Riesgo | Mitigación |
-| --- | --- |
-| La API devuelve `fechaInicio` en ISO completo y el input `type="date"` lo rechaza, quedando vacío | Mapeo explícito con `.slice(0, 10)` documentado en la tabla, y criterio de aceptación que verifica que las fechas se cargan. |
-| Guardar en modo edición dispara un `POST` y duplica la experiencia | `Experiencia.tsx` decide entre `createExperiencia` y `updateExperiencia` según `experienciaEnEdicion`, y hay criterio de aceptación explícito de que se lanza `PUT`. |
-| Limpiar el formulario sin desvincular el id provoca un `PUT` que vacía la experiencia editada | `limpiarFormulario` llama siempre a `onLimpiar()`, que pone `experienciaEnEdicion` a `null`. Criterio de aceptación específico. |
-| Los hitos pierden su `id` al pasar por el estado del form y el backend los recrea en cada guardado | El estado guarda `HitoForm` con `id` opcional y `cambiarHito` solo toca `descripcion`. Se verifica en el paso 11 comprobando que el `id` se conserva. |
-| El backend aún no tiene el `PUT` desplegado y la edición falla con 404 de ruta | Esta spec depende de la SPEC 02 del backend; se implementa después. El error se ve en el `console.error` del hook. |
-| Cambiar la firma de `createExperiencia` rompe otro consumidor del hook | `useExperienciaStore` solo lo consume `Experiencia.tsx`; se comprueba con una búsqueda de `createExperiencia` antes de tocarlo. `createExperiencia.action.ts` es código muerto y no usa el hook. |
-| Quitar `useActionState` pierde el estado `isPending` que deshabilita el submit | Se sustituye por un `useState<boolean>` propio, puesto a `true` antes del `await` y a `false` en el `finally`. |
-| El botón `Borrar formulario` envía el formulario al no llevar `type` | `type="button"` explícito, con criterio de aceptación propio, igual que se hizo con los botones de hitos y del `MultiSelect`. |
+| Riesgo                                                                                             | Mitigación                                                                                                                                                                                       |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| La API devuelve `fechaInicio` en ISO completo y el input `type="date"` lo rechaza, quedando vacío  | Mapeo explícito con `.slice(0, 10)` documentado en la tabla, y criterio de aceptación que verifica que las fechas se cargan.                                                                     |
+| Guardar en modo edición dispara un `POST` y duplica la experiencia                                 | `Experiencia.tsx` decide entre `createExperiencia` y `updateExperiencia` según `experienciaEnEdicion`, y hay criterio de aceptación explícito de que se lanza `PUT`.                             |
+| Limpiar el formulario sin desvincular el id provoca un `PUT` que vacía la experiencia editada      | `limpiarFormulario` llama siempre a `onLimpiar()`, que pone `experienciaEnEdicion` a `null`. Criterio de aceptación específico.                                                                  |
+| Los hitos pierden su `id` al pasar por el estado del form y el backend los recrea en cada guardado | El estado guarda `HitoForm` con `id` opcional y `cambiarHito` solo toca `descripcion`. Se verifica en el paso 11 comprobando que el `id` se conserva.                                            |
+| El backend aún no tiene el `PUT` desplegado y la edición falla con 404 de ruta                     | Esta spec depende de la SPEC 02 del backend; se implementa después. El error se ve en el `console.error` del hook.                                                                               |
+| Cambiar la firma de `createExperiencia` rompe otro consumidor del hook                             | `useExperienciaStore` solo lo consume `Experiencia.tsx`; se comprueba con una búsqueda de `createExperiencia` antes de tocarlo. `createExperiencia.action.ts` es código muerto y no usa el hook. |
+| Quitar `useActionState` pierde el estado `isPending` que deshabilita el submit                     | Se sustituye por un `useState<boolean>` propio, puesto a `true` antes del `await` y a `false` en el `finally`.                                                                                   |
+| El botón `Borrar formulario` envía el formulario al no llevar `type`                               | `type="button"` explícito, con criterio de aceptación propio, igual que se hizo con los botones de hitos y del `MultiSelect`.                                                                    |

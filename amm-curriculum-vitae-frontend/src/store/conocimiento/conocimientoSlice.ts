@@ -1,11 +1,11 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
   Conocimiento,
   ConocimientoState,
-} from "../../interfaces/conocimiento.interface";
+} from '../../interfaces/conocimiento.interface';
 
 export const conocimientoSlice = createSlice({
-  name: "conocimientoSlice",
+  name: 'conocimientoSlice',
   initialState: {
     conocimiento: [],
     loading: false,

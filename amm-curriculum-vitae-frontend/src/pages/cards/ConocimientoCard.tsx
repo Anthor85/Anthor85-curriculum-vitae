@@ -1,6 +1,6 @@
-import { Conocimiento } from "../../interfaces/conocimiento.interface";
+import { Conocimiento } from '../../interfaces/conocimiento.interface';
 
-import styles from "./Cards.module.scss";
+import styles from './Cards.module.scss';
 
 interface Props {
   conocimiento: Conocimiento;

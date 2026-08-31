@@ -7,38 +7,44 @@ import { FormacionComplementaria as IFormacionComplementaria } from '../interfac
 import styles from './Layout.module.scss';
 
 export const FormacionComplementaria = () => {
-    const {
-        formacionComplementaria,
-        loading,
-        error,
+  const {
+    formacionComplementaria,
+    loading,
+    error,
 
-        getFormacionComplementaria,
-        createFormacionComplementaria,
-        deleteFormacionComplementaria,
-    } = useFormacionComplementariaStore();
+    getFormacionComplementaria,
+    createFormacionComplementaria,
+    deleteFormacionComplementaria,
+  } = useFormacionComplementariaStore();
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error}</p>;
-    
-    useEffect(() => {
-        formacionComplementaria === null && getFormacionComplementaria();
-    }, []);
+  useEffect(() => {
+    if (formacionComplementaria === null) getFormacionComplementaria();
+  }, []);
 
-	return (
-        <div className={styles.Page}>
-        {formacionComplementaria && formacionComplementaria.length > 0 && (
-            <div className={styles.data}>
-                {formacionComplementaria.map((f: IFormacionComplementaria) => (
-                <FormacionComplementariaCard
-                    key={f.id}
-                    formacionComplementaria={f}
-                    deleteFormacionComplementaria={() => deleteFormacionComplementaria(f.id)}
-                />))}
-            </div>)}
-        <div className={styles.form}>
-            <h1>Crear Formación Complementaria</h1>
-            <FormacionComplementariaForm onAddFormacionComplementaria={createFormacionComplementaria} />
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
+  return (
+    <div className={styles.Page}>
+      {formacionComplementaria && formacionComplementaria.length > 0 && (
+        <div className={styles.data}>
+          {formacionComplementaria.map((f: IFormacionComplementaria) => (
+            <FormacionComplementariaCard
+              key={f.id}
+              formacionComplementaria={f}
+              deleteFormacionComplementaria={() =>
+                deleteFormacionComplementaria(f.id)
+              }
+            />
+          ))}
         </div>
-     </div>
-     );
+      )}
+      <div className={styles.form}>
+        <h1>Crear Formación Complementaria</h1>
+        <FormacionComplementariaForm
+          onAddFormacionComplementaria={createFormacionComplementaria}
+        />
+      </div>
+    </div>
+  );
 };

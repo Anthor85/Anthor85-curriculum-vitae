@@ -27,8 +27,10 @@ export const useExperienciaStore = () => {
       const { data } = await api.post('/experiencia', payload);
 
       dispatch(setExperiencia([...experiencia, data]));
+      return true;
     } catch (error) {
       console.error('Error creating experiencia:', error);
+      return false;
     }
   };
 
@@ -42,8 +44,10 @@ export const useExperienciaStore = () => {
           experiencia.map((exp: any) => (exp.id === data.id ? data : exp)),
         ),
       );
+      return true;
     } catch (error) {
       console.error('Error updating experiencia:', error);
+      return false;
     }
   };
 
@@ -57,8 +61,10 @@ export const useExperienciaStore = () => {
           experiencia.filter((exp: any) => exp.id !== data.experiencia.id),
         ),
       );
+      return true;
     } catch (error) {
       console.error('Error deleting experiencia:', error);
+      return false;
     }
   };
 

@@ -28,8 +28,10 @@ export const useFormacionStore = () => {
       const { data } = await api.post('/formacion', payload);
 
       dispatch(setFormacion([...formacion, data]));
+      return true;
     } catch (error) {
       console.error('Error creando formación:', error);
+      return false;
     }
   };
 
@@ -43,8 +45,10 @@ export const useFormacionStore = () => {
           ),
         ),
       );
+      return true;
     } catch (error) {
       console.error('Error actualizando formación:', error);
+      return false;
     }
   };
 
@@ -58,8 +62,10 @@ export const useFormacionStore = () => {
           formacion.filter((form: any) => form.id !== data.formacion.id),
         ),
       );
+      return true;
     } catch (error) {
       console.error('Error eliminando formación:', error);
+      return false;
     }
   };
 

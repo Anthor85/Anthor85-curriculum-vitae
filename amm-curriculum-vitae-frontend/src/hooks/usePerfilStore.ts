@@ -25,8 +25,10 @@ export const usePerfilStore = () => {
       const { data } = await api.post('/perfil', payload);
 
       dispatch(setPerfil(data));
+      return true;
     } catch (error) {
       console.error('Error creando perfil:', error);
+      return false;
     }
   };
 
@@ -35,8 +37,10 @@ export const usePerfilStore = () => {
       const { data } = await api.put('/perfil', payload);
 
       dispatch(setPerfil(data));
+      return true;
     } catch (error) {
       console.error('Error actualizando perfil:', error);
+      return false;
     }
   };
 

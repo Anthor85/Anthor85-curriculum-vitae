@@ -1,5 +1,6 @@
 ﻿import { useEffect, useState } from 'react';
 import { useExperienciaStore } from '../hooks/useExperienciaStore';
+import { useMensajeAccion } from '../hooks';
 import {
   Experiencia as IExperiencia,
   ExperienciaPayload,
@@ -20,16 +21,28 @@ export const Experiencia = () => {
     deleteExperiencia,
   } = useExperienciaStore();
 
+  const { mensaje, mostrarMensaje } = useMensajeAccion();
+
   const [experienciaEnEdicion, setExperienciaEnEdicion] =
     useState<IExperiencia | null>(null);
 
   const enviarExperiencia = async (payload: ExperienciaPayload) => {
     if (experienciaEnEdicion) {
-      await updateExperiencia(experienciaEnEdicion.id, payload);
+      const actualizada = await updateExperiencia(
+        experienciaEnEdicion.id,
+        payload,
+      );
+      if (actualizada) mostrarMensaje('Experiencia actualizada');
       return;
     }
 
-    await createExperiencia(payload);
+    const creada = await createExperiencia(payload);
+    if (creada) mostrarMensaje('Experiencia creada');
+  };
+
+  const eliminarExperiencia = async (id: string) => {
+    const eliminada = await deleteExperiencia(id);
+    if (eliminada) mostrarMensaje('Experiencia eliminada');
   };
 
   useEffect(() => {
@@ -47,7 +60,7 @@ export const Experiencia = () => {
             <ExperienciaCard
               key={exp.id}
               experiencia={exp}
-              deleteExperiencia={() => deleteExperiencia(exp.id)}
+              deleteExperiencia={() => eliminarExperiencia(exp.id)}
               onEditar={setExperienciaEnEdicion}
               enEdicion={exp.id === experienciaEnEdicion?.id}
             />
@@ -62,6 +75,7 @@ export const Experiencia = () => {
           experienciaEnEdicion={experienciaEnEdicion}
           onAddExperiencia={enviarExperiencia}
           onLimpiar={() => setExperienciaEnEdicion(null)}
+          mensaje={mensaje}
         />
       </div>
     </div>

@@ -7,6 +7,9 @@ import type {
   ExperienciaPayload,
 } from '../../interfaces/experiencia.interface';
 
+import { MensajeAccion } from '../../components/MensajeAccion';
+import type { MensajeAccion as MensajeAccionType } from '../../interfaces/mensajeAccion.interface';
+
 import styles from './Form.module.scss';
 
 const EXPERIENCIA_VACIA: ExperienciaPayload = {
@@ -22,12 +25,14 @@ interface Props {
   experienciaEnEdicion: Experiencia | null;
   onAddExperiencia: (payload: ExperienciaPayload) => Promise<void> | void;
   onLimpiar: () => void;
+  mensaje: MensajeAccionType | null;
 }
 
 export const ExperienciaForm = ({
   experienciaEnEdicion,
   onAddExperiencia,
   onLimpiar,
+  mensaje,
 }: Props) => {
   const { conocimiento, getConocimiento } = useConocimientoStore();
 
@@ -232,6 +237,7 @@ export const ExperienciaForm = ({
           Borrar formulario
         </button>
       </div>
+      <MensajeAccion mensaje={mensaje} />
     </form>
   );
 };

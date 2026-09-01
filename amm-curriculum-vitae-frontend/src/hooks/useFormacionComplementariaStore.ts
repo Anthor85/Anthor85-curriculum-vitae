@@ -30,8 +30,10 @@ export const useFormacionComplementariaStore = () => {
       const { data } = await api.post('/formacionComplementaria', payload);
 
       dispatch(setFormacionComplementaria([...formacionComplementaria, data]));
+      return true;
     } catch (error) {
       console.error('Error creating formacionComplementaria:', error);
+      return false;
     }
   };
 
@@ -49,8 +51,10 @@ export const useFormacionComplementariaStore = () => {
           ),
         ),
       );
+      return true;
     } catch (error) {
       console.error('Error updating formacionComplementaria:', error);
+      return false;
     }
   };
 
@@ -70,8 +74,10 @@ export const useFormacionComplementariaStore = () => {
           ),
         ),
       );
+      return true;
     } catch (error) {
       console.error('Error deleting formacionComplementaria:', error);
+      return false;
     }
   };
 

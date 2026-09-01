@@ -26,8 +26,10 @@ export const useConocimientoStore = () => {
     try {
       const { data } = await api.post('/conocimiento', payload);
       dispatch(setConocimiento([...conocimiento, data]));
+      return true;
     } catch (error) {
       console.error('Error creating conocimiento:', error);
+      return false;
     }
   };
 
@@ -44,8 +46,10 @@ export const useConocimientoStore = () => {
           ),
         ),
       );
+      return true;
     } catch (error) {
       console.error('Error updating conocimiento:', error);
+      return false;
     }
   };
 
@@ -56,8 +60,10 @@ export const useConocimientoStore = () => {
       dispatch(
         setConocimiento(conocimiento.filter((con: any) => con.id !== data.id)),
       );
+      return true;
     } catch (error) {
       console.error('Error deleting conocimiento:', error);
+      return false;
     }
   };
 

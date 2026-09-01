@@ -4,6 +4,9 @@ import type {
   FormacionPayload,
 } from '../../interfaces/formacion.interface';
 
+import { MensajeAccion } from '../../components/MensajeAccion';
+import type { MensajeAccion as MensajeAccionType } from '../../interfaces/mensajeAccion.interface';
+
 import styles from './Form.module.scss';
 
 const FORMACION_VACIA: FormacionPayload = {
@@ -17,12 +20,14 @@ interface Props {
   formacionEnEdicion: Formacion | null;
   onSubmitFormacion: (payload: FormacionPayload) => Promise<void> | void;
   onLimpiar: () => void;
+  mensaje: MensajeAccionType | null;
 }
 
 export const FormacionForm = ({
   formacionEnEdicion,
   onSubmitFormacion,
   onLimpiar,
+  mensaje,
 }: Props) => {
   const [formacion, setFormacion] = useState<FormacionPayload>(FORMACION_VACIA);
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -131,6 +136,7 @@ export const FormacionForm = ({
           Borrar formulario
         </button>
       </div>
+      <MensajeAccion mensaje={mensaje} />
     </form>
   );
 };

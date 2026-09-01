@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import type { Perfil, PerfilPayload } from '../../interfaces/perfil.interface';
 
+import { MensajeAccion } from '../../components/MensajeAccion';
+import type { MensajeAccion as MensajeAccionType } from '../../interfaces/mensajeAccion.interface';
+
 import styles from './Form.module.scss';
 
 const PERFIL_VACIO: PerfilPayload = {
@@ -17,9 +20,10 @@ const PERFIL_VACIO: PerfilPayload = {
 interface Props {
   perfil: Perfil | null;
   onSubmitPerfil: (payload: PerfilPayload) => Promise<void> | void;
+  mensaje: MensajeAccionType | null;
 }
 
-export const PerfilForm = ({ perfil, onSubmitPerfil }: Props) => {
+export const PerfilForm = ({ perfil, onSubmitPerfil, mensaje }: Props) => {
   const [datosPerfil, setDatosPerfil] = useState<PerfilPayload>(PERFIL_VACIO);
   const [isPending, setIsPending] = useState<boolean>(false);
 
@@ -174,6 +178,7 @@ export const PerfilForm = ({ perfil, onSubmitPerfil }: Props) => {
               : 'Crear Perfil'}
         </button>
       </div>
+      <MensajeAccion mensaje={mensaje} />
     </form>
   );
 };

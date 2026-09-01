@@ -5,6 +5,9 @@ import {
   type ConocimientoPayload,
 } from '../../interfaces/conocimiento.interface';
 
+import { MensajeAccion } from '../../components/MensajeAccion';
+import type { MensajeAccion as MensajeAccionType } from '../../interfaces/mensajeAccion.interface';
+
 import styles from './Form.module.scss';
 
 const CONOCIMIENTO_VACIO: ConocimientoPayload = {
@@ -16,12 +19,14 @@ interface Props {
   conocimientoEnEdicion: Conocimiento | null;
   onAddConocimiento: (payload: ConocimientoPayload) => Promise<void> | void;
   onLimpiar: () => void;
+  mensaje: MensajeAccionType | null;
 }
 
 export const ConocimientoForm = ({
   conocimientoEnEdicion,
   onAddConocimiento,
   onLimpiar,
+  mensaje,
 }: Props) => {
   const [conocimiento, setConocimiento] =
     useState<ConocimientoPayload>(CONOCIMIENTO_VACIO);
@@ -55,6 +60,7 @@ export const ConocimientoForm = ({
     setIsPending(true);
     try {
       await onAddConocimiento(payload);
+      limpiarFormulario();
     } finally {
       setIsPending(false);
     }
@@ -98,12 +104,19 @@ export const ConocimientoForm = ({
       </div>
       <div className={styles.actions}>
         <button type="submit" disabled={isPending}>
-          {isPending ? 'Agregando...' : 'Agregar Conocimiento'}
+          {conocimientoEnEdicion
+            ? isPending
+              ? 'Actualizando...'
+              : 'Actualizar Conocimiento'
+            : isPending
+              ? 'Agregando...'
+              : 'Agregar Conocimiento'}
         </button>
         <button type="button" onClick={limpiarFormulario}>
           Borrar formulario
         </button>
       </div>
+      <MensajeAccion mensaje={mensaje} />
     </form>
   );
 };

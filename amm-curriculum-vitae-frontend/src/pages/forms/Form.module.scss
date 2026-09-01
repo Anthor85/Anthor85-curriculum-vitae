@@ -65,3 +65,27 @@
     width: auto;
   }
 }
+
+@media (max-width: 768px) {
+  .Form {
+    padding: 1rem 0;
+    .field {
+      flex-direction: column;
+      gap: 0.25rem;
+
+      label {
+        width: auto;
+      }
+
+      input,
+      select {
+        width: 100%;
+        max-width: none;
+      }
+    }
+
+    .hitos .hitoFila {
+      flex-direction: row;
+    }
+  }
+}

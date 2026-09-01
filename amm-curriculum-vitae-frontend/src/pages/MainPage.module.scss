@@ -11,7 +11,32 @@
     // linear-gradient(to right, var(--primary-color), var(--secondary-color));
     border-image-slice: 1;
     height: calc(3rem + 45px);
-    z-index: -1;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    padding-left: 405px;
+    padding-right: 35px;
+    pointer-events: none;
+
+    .name {
+      font-size: clamp(1.5rem, 3.6vw, 3rem);
+      font-weight: bold;
+      text-align: left;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      span {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .title {
+        font-weight: bold;
+      }
+    }
   }
 
   .vacio {
@@ -30,16 +55,7 @@
       flex: 1;
       min-width: 0;
       padding-right: 35px;
-      .name {
-        font-size: 3rem;
-        font-weight: bold;
-        text-align: left;
-        padding-top: 5px;
-
-        .title {
-          font-weight: bold;
-        }
-      }
+      padding-top: calc(3rem + 50px);
       .role {
         font-size: 1.5rem;
         color: #555;
@@ -51,6 +67,11 @@
       align-items: center;
       justify-content: flex-start;
       gap: 2rem;
+
+      .identidad {
+        display: contents;
+      }
+
       .photo {
         left: 35px;
         top: 30px;
@@ -61,6 +82,7 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         object-fit: cover;
         margin: 30px 35px;
+        z-index: 1;
       }
 
       .contacto {
@@ -93,4 +115,70 @@
   position: absolute;
   left: -10000px;
   top: 0;
+}
+
+@media (max-width: 768px) {
+  .MainPage {
+    .header {
+      position: static;
+      height: calc(2rem + 45px);
+      flex-shrink: 0;
+      padding-left: 1rem;
+      padding-right: 1rem;
+
+      .name {
+        font-size: clamp(1.25rem, 6vw, 2rem);
+      }
+    }
+
+    .basicInformation {
+      flex-direction: column;
+      gap: 1rem;
+      box-sizing: border-box;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      padding-top: 1rem;
+
+      .information {
+        display: contents;
+        padding-top: 0;
+
+        .role {
+          order: -3;
+        }
+      }
+
+      .column {
+        display: contents;
+
+        .identidad {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 1rem;
+          order: -2;
+        }
+
+        .photo {
+          width: 120px;
+          height: 120px;
+          margin: 0;
+          object-fit: cover;
+          border-radius: 15%;
+          flex-shrink: 0;
+        }
+
+        .contacto {
+          width: auto;
+          flex: 1;
+          min-width: 0;
+        }
+
+        > button {
+          order: -1;
+          width: 100%;
+        }
+      }
+    }
+  }
 }

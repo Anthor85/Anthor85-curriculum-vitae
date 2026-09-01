@@ -49,3 +49,77 @@
     }
   }
 }
+
+.Tabs {
+  .menuMovil {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .Tabs {
+    .lista {
+      display: none;
+    }
+
+    .menuMovil {
+      display: block;
+      position: relative;
+    }
+
+    .barraMovil {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      border-bottom: 2px solid #ddd;
+      padding: 0.75rem 0;
+    }
+
+    .tituloActiva {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #0024ea;
+    }
+
+    .hamburguesa {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      line-height: 1;
+      color: #555;
+      cursor: pointer;
+      padding: 0 0.25rem;
+    }
+
+    .desplegable {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #ddd;
+      border-top: none;
+      background: #fff;
+    }
+
+    .opcion {
+      background: none;
+      border: none;
+      border-bottom: 1px solid #eee;
+      padding: 0.75rem 1rem;
+      font-size: 1.1rem;
+      color: #555;
+      text-align: left;
+      cursor: pointer;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    .panel {
+      max-height: none;
+      overflow-y: visible;
+      padding-right: 0;
+    }
+  }
+}

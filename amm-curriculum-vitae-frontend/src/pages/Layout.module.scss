@@ -19,3 +19,22 @@
     flex: 1;
   }
 }
+
+@media (max-width: 768px) {
+  .Page {
+    flex-direction: column;
+    height: auto;
+    padding: 1rem;
+
+    .form {
+      order: 1;
+    }
+
+    .data {
+      order: 2;
+      height: auto;
+      overflow-y: visible;
+      margin-right: 0;
+    }
+  }
+}

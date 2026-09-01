@@ -53,3 +53,11 @@
     background-color: #eef5fc;
   }
 }
+
+@media (max-width: 768px) {
+  .Card {
+    flex-direction: column;
+    max-width: none;
+    margin-right: 0;
+  }
+}

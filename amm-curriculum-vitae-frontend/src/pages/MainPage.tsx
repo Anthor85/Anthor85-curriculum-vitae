@@ -88,31 +88,41 @@ export const MainPage = () => {
   return (
     <>
       <div id="mainPage" className={styles.MainPage} ref={exportableHTML}>
-        <div className={styles.header} />
+        <div className={styles.header}>
+          {perfil && (
+            <div className={styles.name}>
+              <span>
+                {perfil.nombre} {perfil.apellidos}
+              </span>
+            </div>
+          )}
+        </div>
         <div className={styles.basicInformation}>
           <div className={styles.column}>
-            <img
-              className={styles.photo}
-              src={perfil?.foto || '/references/foto.jpg'}
-              alt="Profile"
-              width={150}
-            />
-            {perfil && (
-              <div className={styles.contacto}>
-                <div className={styles.contacto__linea}>
-                  <img src={getIcons('chincheta')} alt="" width={18} />
-                  <span>{perfil.direccion}</span>
+            <div className={styles.identidad}>
+              <img
+                className={styles.photo}
+                src={perfil?.foto || '/references/foto.jpg'}
+                alt="Profile"
+                width={150}
+              />
+              {perfil && (
+                <div className={styles.contacto}>
+                  <div className={styles.contacto__linea}>
+                    <img src={getIcons('chincheta')} alt="" width={18} />
+                    <span>{perfil.direccion}</span>
+                  </div>
+                  <div className={styles.contacto__linea}>
+                    <img src={getIcons('telefono')} alt="" width={18} />
+                    <span>{perfil.telefono}</span>
+                  </div>
+                  <div className={styles.contacto__linea}>
+                    <img src={getIcons('sobre')} alt="" width={18} />
+                    <span>{perfil.email}</span>
+                  </div>
                 </div>
-                <div className={styles.contacto__linea}>
-                  <img src={getIcons('telefono')} alt="" width={18} />
-                  <span>{perfil.telefono}</span>
-                </div>
-                <div className={styles.contacto__linea}>
-                  <img src={getIcons('sobre')} alt="" width={18} />
-                  <span>{perfil.email}</span>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
             <Button
               onClick={() =>
                 pdfRef.current && exportToPDF(pdfRef.current, nombrePDF)
@@ -123,14 +133,7 @@ export const MainPage = () => {
           </div>
           <div className={styles.information}>
             {perfil && (
-              <>
-                <div className={styles.name}>
-                  <span>
-                    {perfil.nombre} {perfil.apellidos}
-                  </span>
-                </div>
-                <span className={styles.role}>{perfil.descripcion}</span>
-              </>
+              <span className={styles.role}>{perfil.descripcion}</span>
             )}
             <Tabs tabs={tabs} />
           </div>

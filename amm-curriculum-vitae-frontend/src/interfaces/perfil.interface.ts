@@ -5,8 +5,12 @@
   email: string;
   telefono: string;
   direccion: string;
-  fechaNacimiento: Date;
+  fechaNacimiento: string;
   descripcion: string;
+  foto?: string;
+}
+
+export interface PerfilPayload extends Omit<Perfil, 'id'> {
   foto: string;
 }
 

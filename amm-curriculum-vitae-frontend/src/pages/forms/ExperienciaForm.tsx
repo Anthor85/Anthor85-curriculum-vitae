@@ -228,7 +228,7 @@ export const ExperienciaForm = ({
           {experienciaEnEdicion
             ? isPending
               ? 'Actualizando...'
-              : 'Actualizar'
+              : 'Actualizar Experiencia'
             : isPending
               ? 'Agregando...'
               : 'Agregar Experiencia'}

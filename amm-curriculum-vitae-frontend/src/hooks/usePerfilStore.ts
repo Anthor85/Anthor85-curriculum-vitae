@@ -1,6 +1,7 @@
 ﻿import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/api';
 import { setPerfil } from '../store';
+import type { PerfilPayload } from '../interfaces/perfil.interface';
 
 export const usePerfilStore = () => {
   const dispatch = useDispatch();
@@ -13,31 +14,34 @@ export const usePerfilStore = () => {
 
       dispatch(setPerfil(data));
     } catch (error) {
-      console.error('Error fetching formacion:', error);
+      if ((error as any)?.response?.status === 404) return;
+
+      console.error('Error recuperando perfil:', error);
     }
   };
 
-  const createPerfil = async (formData: FormData) => {
+  const createPerfil = async (payload: PerfilPayload) => {
     try {
-      const { data } = await api.post('/perfil', formData);
+      const { data } = await api.post('/perfil', payload);
 
-      dispatch(setPerfil([...perfil, data]));
+      dispatch(setPerfil(data));
     } catch (error) {
-      console.error('Error creating perfil:', error);
+      console.error('Error creando perfil:', error);
     }
   };
 
-  const deletePerfil = async (id: string) => {
+  const updatePerfil = async (payload: PerfilPayload) => {
     try {
-      const { data } = await api.delete(`/perfil/${id}`);
-      console.log('Perfil deleted:', perfil, data);
+      const { data } = await api.put('/perfil', payload);
 
-      dispatch(
-        setFormacion(perfil.filter((form: any) => form.id !== data.perfil.id)),
-      );
+      dispatch(setPerfil(data));
     } catch (error) {
-      console.error('Error deleting perfil:', error);
+      console.error('Error actualizando perfil:', error);
     }
+  };
+
+  const guardarPerfil = async (payload: PerfilPayload) => {
+    return perfil?.id ? updatePerfil(payload) : createPerfil(payload);
   };
 
   return {
@@ -47,6 +51,7 @@ export const usePerfilStore = () => {
 
     getPerfil,
     createPerfil,
-    deletePerfil,
+    updatePerfil,
+    guardarPerfil,
   };
 };

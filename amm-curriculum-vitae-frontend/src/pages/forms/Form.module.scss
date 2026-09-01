@@ -16,7 +16,8 @@
     input,
     select {
       flex: 1;
-      min-height: 2rem;
+      height: 2rem;
+      max-width: 50vw;
     }
   }
 

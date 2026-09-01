@@ -4,11 +4,7 @@ import { CurriculumState } from '../../interfaces/curriculum.interface';
 export const slice = createSlice({
   name: 'curriculum',
   initialState: {
-    conocimiento: [],
-    experiencia: [],
-    formaciones: [],
-    formacionesComplementarias: [],
-    perfil: null,
+    curriculum: null,
     loading: false,
     error: null,
   } as CurriculumState,

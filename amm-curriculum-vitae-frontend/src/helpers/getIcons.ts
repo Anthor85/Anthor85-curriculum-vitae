@@ -1,6 +1,3 @@
-﻿export const getIcons = (iconName: string) => {
-  switch (iconName) {
-    case 'sobre':
-      return '/public/icons/sobre.png';
-  }
-};
+export type IconName = 'sobre' | 'chincheta' | 'telefono';
+
+export const getIcons = (iconName: IconName) => `/icons/${iconName}.svg`;

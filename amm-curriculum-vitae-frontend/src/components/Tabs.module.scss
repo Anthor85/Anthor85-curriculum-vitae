@@ -1,0 +1,51 @@
+.Tabs {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  .lista {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 2px solid #ddd;
+    flex-shrink: 0;
+  }
+
+  .boton {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: -2px;
+    font-size: 1.1rem;
+    color: #555;
+    cursor: pointer;
+
+    &:hover {
+      color: #0024ea;
+    }
+  }
+
+  .activa {
+    color: #0024ea;
+    font-weight: bold;
+    border-bottom-color: #0024ea;
+  }
+
+  .panel {
+    padding: 1.5rem 0;
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+    padding-right: 0.75rem;
+
+    scrollbar-width: thin;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #ccc;
+      border-radius: 4px;
+    }
+  }
+}

@@ -1,0 +1,73 @@
+.Item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #eee;
+  background: #f7e1dc;
+  margin: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 3px solid #fcbdae;
+
+  .titulo {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  .subtitulo {
+    font-size: 1rem;
+    color: #555;
+  }
+
+  .fechas {
+    font-size: 0.95rem;
+    color: #777;
+  }
+
+  .descripcion {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .coleccion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    .etiqueta {
+      font-weight: bold;
+      margin: 0;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+  }
+
+  .tecnologias {
+    list-style: none;
+    padding-left: 0;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    li {
+      background: #eef1ff;
+      color: #0024ea;
+      border-radius: 12px;
+      padding: 0.15rem 0.7rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  .nivel {
+    font-size: 0.95rem;
+    color: #777;
+  }
+}

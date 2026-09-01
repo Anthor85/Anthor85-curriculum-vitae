@@ -1,14 +1,19 @@
-﻿import { Conocimiento } from './conocimiento.interface';
+import { Conocimiento } from './conocimiento.interface';
 import { Experiencia } from './experiencia.interface';
 import { Formacion } from './formacion.interface';
 import { FormacionComplementaria } from './formacionComplementaria.interface';
+import { Perfil } from './perfil.interface';
 
-export interface CurriculumState {
+export interface Curriculum {
   conocimiento: Conocimiento[];
   experiencia: Experiencia[];
-  formacion: Formacion[];
-  formacionComplementaria: FormacionComplementaria[];
-  perfil: any; //TODO: CAMBIAR A UN TIPO DEFINIDO
+  formaciones: Formacion[];
+  formacionesComplementarias: FormacionComplementaria[];
+  perfil: Perfil | null;
+}
+
+export interface CurriculumState {
+  curriculum: Curriculum | null;
   loading: boolean;
   error: string | null;
 }

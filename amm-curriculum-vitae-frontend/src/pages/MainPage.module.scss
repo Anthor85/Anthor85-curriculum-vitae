@@ -14,6 +14,11 @@
     z-index: -1;
   }
 
+  .vacio {
+    color: #777;
+    font-style: italic;
+  }
+
   .basicInformation {
     width: 100%;
     display: flex;
@@ -22,10 +27,13 @@
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      flex: 1;
+      min-width: 0;
+      padding-right: 35px;
       .name {
         font-size: 3rem;
         font-weight: bold;
-        text-align: center;
+        text-align: left;
         padding-top: 5px;
 
         .title {
@@ -36,17 +44,12 @@
         font-size: 1.5rem;
         color: #555;
       }
-
-      .info {
-        margin-top: 20px;
-        display: flex;
-      }
     }
     .column {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 2rem;
       .photo {
         left: 35px;
@@ -58,6 +61,29 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         object-fit: cover;
         margin: 30px 35px;
+      }
+
+      .contacto {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        width: 300px;
+
+        &__linea {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          font-size: 1rem;
+          line-height: 1.4;
+          color: #333;
+          overflow-wrap: anywhere;
+
+          img {
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+          }
+        }
       }
     }
   }

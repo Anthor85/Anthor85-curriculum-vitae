@@ -6,13 +6,12 @@ import { setCurriculum } from '../store';
 export const useCurriculumStore = () => {
   const dispatch = useDispatch();
   const { curriculum, loading, error } = useSelector(
-    (state: CurriculumState) => state.curriculum,
+    (state: { curriculum: CurriculumState }) => state.curriculum,
   );
 
   const getCurriculum = async () => {
     try {
       const { data } = await api.get('/curriculum');
-      console.log('Curriculum data:', data);
 
       dispatch(setCurriculum(data));
     } catch (error) {

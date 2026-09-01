@@ -4,6 +4,9 @@ import type {
   FormacionComplementariaPayload,
 } from '../../interfaces/formacionComplementaria.interface';
 
+import { MensajeAccion } from '../../components/MensajeAccion';
+import type { MensajeAccion as MensajeAccionType } from '../../interfaces/mensajeAccion.interface';
+
 import styles from './Form.module.scss';
 
 const FORMACION_COMPLEMENTARIA_VACIA: FormacionComplementariaPayload = {
@@ -18,12 +21,14 @@ interface Props {
     payload: FormacionComplementariaPayload,
   ) => Promise<void> | void;
   onLimpiar: () => void;
+  mensaje: MensajeAccionType | null;
 }
 
 export const FormacionComplementariaForm = ({
   formacionComplementariaEnEdicion,
   onSubmitFormacionComplementaria,
   onLimpiar,
+  mensaje,
 }: Props) => {
   const [formacionComplementaria, setFormacionComplementaria] =
     useState<FormacionComplementariaPayload>(FORMACION_COMPLEMENTARIA_VACIA);
@@ -128,6 +133,7 @@ export const FormacionComplementariaForm = ({
           Borrar formulario
         </button>
       </div>
+      <MensajeAccion mensaje={mensaje} />
     </form>
   );
 };

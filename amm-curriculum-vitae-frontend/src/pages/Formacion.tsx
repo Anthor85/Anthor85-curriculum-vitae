@@ -1,5 +1,5 @@
 ﻿import { useEffect, useState } from 'react';
-import { useFormacionStore } from '../hooks';
+import { useFormacionStore, useMensajeAccion } from '../hooks';
 import { FormacionForm } from './forms/FormacionForm';
 import { FormacionCard } from './cards';
 import {
@@ -21,16 +21,25 @@ export const Formacion = () => {
     deleteFormacion,
   } = useFormacionStore();
 
+  const { mensaje, mostrarMensaje } = useMensajeAccion();
+
   const [formacionEnEdicion, setFormacionEnEdicion] =
     useState<IFormacion | null>(null);
 
   const enviarFormacion = async (payload: FormacionPayload) => {
     if (formacionEnEdicion) {
-      await updateFormacion(formacionEnEdicion.id, payload);
+      const actualizada = await updateFormacion(formacionEnEdicion.id, payload);
+      if (actualizada) mostrarMensaje('Formación actualizada');
       return;
     }
 
-    await createFormacion(payload);
+    const creada = await createFormacion(payload);
+    if (creada) mostrarMensaje('Formación creada');
+  };
+
+  const eliminarFormacion = async (id: string) => {
+    const eliminada = await deleteFormacion(id);
+    if (eliminada) mostrarMensaje('Formación eliminada');
   };
 
   useEffect(() => {
@@ -48,7 +57,7 @@ export const Formacion = () => {
             <FormacionCard
               key={f.id}
               formacion={f}
-              deleteFormacion={() => deleteFormacion(f.id)}
+              deleteFormacion={() => eliminarFormacion(f.id)}
               onEditar={setFormacionEnEdicion}
               enEdicion={f.id === formacionEnEdicion?.id}
             />
@@ -61,6 +70,7 @@ export const Formacion = () => {
           formacionEnEdicion={formacionEnEdicion}
           onSubmitFormacion={enviarFormacion}
           onLimpiar={() => setFormacionEnEdicion(null)}
+          mensaje={mensaje}
         />
       </div>
     </div>

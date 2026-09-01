@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useConocimientoStore } from '../hooks';
+import { useConocimientoStore, useMensajeAccion } from '../hooks';
 import { ConocimientoForm } from './forms/ConocimientoForm';
 import {
   Conocimiento as IConocimiento,
@@ -21,16 +21,28 @@ export const Conocimiento = () => {
     deleteConocimiento,
   } = useConocimientoStore();
 
+  const { mensaje, mostrarMensaje } = useMensajeAccion();
+
   const [conocimientoEnEdicion, setConocimientoEnEdicion] =
     useState<IConocimiento | null>(null);
 
   const enviarConocimiento = async (payload: ConocimientoPayload) => {
     if (conocimientoEnEdicion) {
-      await updateConocimiento(conocimientoEnEdicion.id, payload);
+      const actualizado = await updateConocimiento(
+        conocimientoEnEdicion.id,
+        payload,
+      );
+      if (actualizado) mostrarMensaje('Conocimiento actualizado');
       return;
     }
 
-    await createConocimiento(payload);
+    const creado = await createConocimiento(payload);
+    if (creado) mostrarMensaje('Conocimiento creado');
+  };
+
+  const eliminarConocimiento = async (id: string) => {
+    const eliminado = await deleteConocimiento(id);
+    if (eliminado) mostrarMensaje('Conocimiento eliminado');
   };
 
   useEffect(() => {
@@ -47,7 +59,7 @@ export const Conocimiento = () => {
           <ConocimientoCard
             key={con.id}
             conocimiento={con}
-            deleteConocimiento={() => deleteConocimiento(con.id)}
+            deleteConocimiento={() => eliminarConocimiento(con.id)}
             onEditar={setConocimientoEnEdicion}
             enEdicion={con.id === conocimientoEnEdicion?.id}
           />
@@ -61,6 +73,7 @@ export const Conocimiento = () => {
           conocimientoEnEdicion={conocimientoEnEdicion}
           onAddConocimiento={enviarConocimiento}
           onLimpiar={() => setConocimientoEnEdicion(null)}
+          mensaje={mensaje}
         />
       </div>
     </div>

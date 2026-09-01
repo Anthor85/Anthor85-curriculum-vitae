@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useFormacionComplementariaStore } from '../hooks';
+import { useFormacionComplementariaStore, useMensajeAccion } from '../hooks';
 import { FormacionComplementariaForm } from './forms/FormacionComplementariaForm';
 import { FormacionComplementariaCard } from './cards';
 import {
@@ -21,6 +21,8 @@ export const FormacionComplementaria = () => {
     deleteFormacionComplementaria,
   } = useFormacionComplementariaStore();
 
+  const { mensaje, mostrarMensaje } = useMensajeAccion();
+
   const [
     formacionComplementariaEnEdicion,
     setFormacionComplementariaEnEdicion,
@@ -30,14 +32,21 @@ export const FormacionComplementaria = () => {
     payload: FormacionComplementariaPayload,
   ) => {
     if (formacionComplementariaEnEdicion) {
-      await updateFormacionComplementaria(
+      const actualizada = await updateFormacionComplementaria(
         formacionComplementariaEnEdicion.id,
         payload,
       );
+      if (actualizada) mostrarMensaje('Formación Complementaria actualizada');
       return;
     }
 
-    await createFormacionComplementaria(payload);
+    const creada = await createFormacionComplementaria(payload);
+    if (creada) mostrarMensaje('Formación Complementaria creada');
+  };
+
+  const eliminarFormacionComplementaria = async (id: string) => {
+    const eliminada = await deleteFormacionComplementaria(id);
+    if (eliminada) mostrarMensaje('Formación Complementaria eliminada');
   };
 
   useEffect(() => {
@@ -56,7 +65,7 @@ export const FormacionComplementaria = () => {
               key={f.id}
               formacionComplementaria={f}
               deleteFormacionComplementaria={() =>
-                deleteFormacionComplementaria(f.id)
+                eliminarFormacionComplementaria(f.id)
               }
               onEditar={setFormacionComplementariaEnEdicion}
               enEdicion={f.id === formacionComplementariaEnEdicion?.id}
@@ -74,6 +83,7 @@ export const FormacionComplementaria = () => {
           formacionComplementariaEnEdicion={formacionComplementariaEnEdicion}
           onSubmitFormacionComplementaria={enviarFormacionComplementaria}
           onLimpiar={() => setFormacionComplementariaEnEdicion(null)}
+          mensaje={mensaje}
         />
       </div>
     </div>

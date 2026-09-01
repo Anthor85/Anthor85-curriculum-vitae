@@ -1,26 +1,31 @@
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
-export const exportToPDF = (exportableHTML: HTMLDivElement) => {
+export const exportToPDF = (
+  exportableHTML: HTMLDivElement,
+  nombreFichero: string,
+) => {
   html2canvas(exportableHTML, {
     useCORS: true,
-    allowTaint: true,
-    proxy: 'https://cors-anywhere.herokuapp.com/',
-    scale: 2, // Increase scale for better quality
-    logging: true, // Enable logging for debugging
+    scale: 2,
   }).then((canvas) => {
-    const document = new jsPDF();
-    const imgData = canvas.toDataURL('image/png');
-    const pdfWidth = document.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    const doc = new jsPDF();
+    const imgData = canvas.toDataURL('image/jpeg', 0.92);
+    const pdfWidth = doc.internal.pageSize.getWidth();
+    const pdfHeight = doc.internal.pageSize.getHeight();
+    const imgHeight = (canvas.height * pdfWidth) / canvas.width;
 
-    document.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    console.log('HTML content to export:', imgData);
-    document.save('CV Antonio Macián Martínez.pdf');
+    let restante = imgHeight;
+    let posicion = 0;
+
+    doc.addImage(imgData, 'JPEG', 0, posicion, pdfWidth, imgHeight);
+
+    while ((restante -= pdfHeight) > 0) {
+      posicion -= pdfHeight;
+      doc.addPage();
+      doc.addImage(imgData, 'JPEG', 0, posicion, pdfWidth, imgHeight);
+    }
+
+    doc.save(`${nombreFichero}.pdf`);
   });
-
-  // document.html(exportableHTML.innerHTML, {
-  //   callback: () => {
-  //   },
-  // });
 };

@@ -1,0 +1,116 @@
+.CurriculumPDF {
+  width: 794px;
+  background: #ffffff;
+  display: flex;
+  gap: 24px;
+  padding: 32px 28px;
+  box-sizing: border-box;
+  color: #222;
+
+  .izquierda {
+    width: 35%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .photo {
+      width: 75%;
+      height: auto;
+      border-radius: 15%;
+      object-fit: cover;
+      align-self: center;
+    }
+
+    .contacto {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+
+      &__linea {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.8rem;
+        line-height: 1.4;
+        color: #333;
+        overflow-wrap: anywhere;
+
+        img {
+          flex-shrink: 0;
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+  }
+
+  .derecha {
+    width: 65%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+
+    .name {
+      font-size: 2rem;
+      font-weight: bold;
+      line-height: 1.2;
+    }
+
+    .role {
+      font-size: 1.1rem;
+      color: #555;
+    }
+  }
+
+  .seccion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+
+    .tituloSeccion {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin: 0 0 0.3rem;
+      padding-bottom: 0.2rem;
+      border-bottom: 2px solid #0024ea;
+      color: #0024ea;
+    }
+  }
+
+  // Experiencia y Formación Académica: tarjetas sin fondo, sin borde y sin padding
+  .seccionPlana > div {
+    background: none;
+    border: none;
+    border-radius: 0;
+    margin: 0 0 1rem;
+    padding: 0;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  // Conocimientos y Formación Complementaria: texto plano compacto
+  .lineas {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    &--sangrada {
+      margin-left: 0.75rem;
+    }
+
+    .linea {
+      font-size: 0.8rem;
+      line-height: 1.35;
+      margin: 0;
+      color: #333;
+
+      strong {
+        font-weight: bold;
+        color: #222;
+      }
+    }
+  }
+}

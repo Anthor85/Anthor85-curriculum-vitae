@@ -1,11 +1,13 @@
 ﻿import { useEffect, useRef } from 'react';
 import { exportToPDF } from '../helpers/exportToPDF';
 import { getIcons } from '../helpers/getIcons';
+import { ordenarCurriculum } from '../helpers/ordenarCurriculum';
 import { Button } from '../components/Button';
 import { Tabs } from '../components/Tabs';
 import { useCurriculumStore } from '../hooks/useCurriculumStore';
 import {
   ConocimientoItem,
+  CurriculumPDF,
   ExperienciaItem,
   FormacionComplementariaItem,
   FormacionItem,
@@ -13,34 +15,27 @@ import {
 
 import styles from './MainPage.module.scss';
 
-const tiempo = (fecha?: string) => (fecha ? new Date(fecha).getTime() || 0 : 0);
-
 export const MainPage = () => {
   const exportableHTML = useRef<HTMLDivElement>(null);
+  const pdfRef = useRef<HTMLDivElement>(null);
   const { curriculum, getCurriculum } = useCurriculumStore();
 
   useEffect(() => {
     getCurriculum();
   }, []);
 
+  const { perfil } = curriculum || {};
   const {
-    conocimiento,
-    experiencia,
-    formaciones,
-    formacionesComplementarias,
-    perfil,
-  } = curriculum || {};
+    conocimientos,
+    experienciaOrdenada,
+    formacionesOrdenadas,
+    complementariasOrdenadas,
+  } = ordenarCurriculum(curriculum);
 
-  const experienciaOrdenada = [...(experiencia || [])].sort(
-    (a, b) => tiempo(b.fechaInicio) - tiempo(a.fechaInicio),
-  );
-  const formacionesOrdenadas = [...(formaciones || [])].sort(
-    (a, b) => tiempo(b.fechaFin) - tiempo(a.fechaFin),
-  );
-  const complementariasOrdenadas = [
-    ...(formacionesComplementarias || []),
-  ].sort((a, b) => tiempo(b.fechaFin) - tiempo(a.fechaFin));
-  const conocimientos = conocimiento || [];
+  const nombreFichero = [perfil?.nombre, perfil?.apellidos]
+    .filter((parte) => parte?.trim())
+    .join(' ');
+  const nombrePDF = nombreFichero ? `CV ${nombreFichero}` : 'CV';
 
   const vacio = (mensaje: string) => <p className={styles.vacio}>{mensaje}</p>;
 
@@ -120,7 +115,7 @@ export const MainPage = () => {
             )}
             <Button
               onClick={() =>
-                exportableHTML.current && exportToPDF(exportableHTML.current)
+                pdfRef.current && exportToPDF(pdfRef.current, nombrePDF)
               }
               name="Export to PDF"
               icon="download"
@@ -140,6 +135,16 @@ export const MainPage = () => {
             <Tabs tabs={tabs} />
           </div>
         </div>
+      </div>
+
+      <div ref={pdfRef} className={styles.pdfOculto}>
+        <CurriculumPDF
+          perfil={perfil || null}
+          experiencia={experienciaOrdenada}
+          formaciones={formacionesOrdenadas}
+          formacionesComplementarias={complementariasOrdenadas}
+          conocimiento={conocimientos}
+        />
       </div>
     </>
   );

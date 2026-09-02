@@ -114,10 +114,12 @@ describe('<Formacion />', () => {
 
     const titulo = screen.getByLabelText('Título:');
     const institucion = screen.getByLabelText('Institución:');
+    const aTenerEnCuenta = screen.getByLabelText('A tener en cuenta:');
     const fechaFin = screen.getByLabelText('Fecha de Fin:');
 
     await user.type(titulo, 'Máster en IA');
     await user.type(institucion, 'UNED');
+    await user.type(aTenerEnCuenta, 'Especialización en Machine Learning');
     escribirFecha(fechaFin, '2024-06-30');
     expect(titulo).toHaveValue('Máster en IA');
 
@@ -125,7 +127,7 @@ describe('<Formacion />', () => {
 
     expect(titulo).toHaveValue('');
     expect(institucion).toHaveValue('');
-    expect(screen.getByLabelText('A tener en cuenta:')).toHaveValue('');
+    expect(aTenerEnCuenta).toHaveValue('');
     expect(fechaFin).toHaveValue('');
   });
 

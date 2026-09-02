@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { avanzarMensaje, flush, renderConStore, textoMensaje } from '../utils';
@@ -60,10 +60,47 @@ const configurarApi = () => {
   );
 };
 
+const CONOCIMIENTO = [
+  { id: 't1', titulo: 'React', nivel: 'Avanzado' },
+  { id: 't2', titulo: 'TypeScript', nivel: 'Intermedio' },
+];
+
+// Variante de configurarApi con tecnologias: el form pinta el MultiSelect y la
+// Card resuelve los ids de `tecnologias` contra los titulos del store.
+const configurarApiConTecnologias = () => {
+  apiMock.get.mockImplementation((url: string) =>
+    Promise.resolve({
+      data: url === '/experiencia' ? EXPERIENCIAS : CONOCIMIENTO,
+    }),
+  );
+};
+
 const renderPagina = async () => {
   const utils = renderConStore(<Experiencia />);
   await flush();
   return utils;
+};
+
+const renderPaginaConTecnologias = async () => {
+  configurarApiConTecnologias();
+  return renderPagina();
+};
+
+const inputsHito = () =>
+  screen
+    .queryAllByRole('textbox')
+    .filter(
+      (input) => input.getAttribute('name') === 'hitos',
+    ) as HTMLInputElement[];
+
+// Deja la promesa de la api en vuelo para poder assertar el estado pendiente
+// del boton de envio antes de resolverla.
+const promesaPendiente = <T,>() => {
+  let resolver!: (valor: T) => void;
+  const promesa = new Promise<T>((resolve) => {
+    resolver = resolve;
+  });
+  return { promesa, resolver };
 };
 
 // Los input type="date" no responden bien a user.type en jsdom.
@@ -349,5 +386,216 @@ describe('<Experiencia />', () => {
     expect(screen.queryByLabelText('Company:')).not.toBeInTheDocument();
 
     await flush();
+  });
+
+  test('la Card pinta el rango de fechas y «En la actualidad» sin fechaFin', async () => {
+    await renderPagina();
+
+    expect(screen.getByText('15/01/2020 - 30/06/2022')).toBeInTheDocument();
+    expect(
+      screen.getByText('01/07/2022 - En la actualidad'),
+    ).toBeInTheDocument();
+  });
+
+  test('la Card pinta los hitos de la experiencia y nada si no tiene', async () => {
+    await renderPagina();
+
+    // «Hitos:» es un <label> en el form siempre y un <p> en la Card: solo Acme
+    // tiene hitos, así que solo hay un <p>.
+    const titulosEnCards = screen
+      .getAllByText('Hitos:')
+      .filter((el) => el.tagName === 'P');
+    expect(titulosEnCards).toHaveLength(1);
+    expect(screen.getByText('Migración a React 19')).toBeInTheDocument();
+  });
+
+  test('la Card resuelve los ids de tecnologías contra los títulos del store', async () => {
+    await renderPaginaConTecnologias();
+
+    // Acme tiene t1: se pinta «React» y no «TypeScript». Globex no tiene
+    // tecnologías, así que su Card no pinta la sección.
+    const listas = screen.getAllByRole('list');
+    expect(within(listas[0]).getByText('React')).toBeInTheDocument();
+    expect(within(listas[0]).queryByText('TypeScript')).not.toBeInTheDocument();
+  });
+
+  test('la Card con tecnologías que no están en el store no pinta títulos', async () => {
+    apiMock.get.mockImplementation((url: string) =>
+      Promise.resolve({
+        data:
+          url === '/experiencia'
+            ? [{ ...EXPERIENCIAS[0], tecnologias: ['fantasma'], hitos: [] }]
+            : CONOCIMIENTO,
+      }),
+    );
+    await renderPagina();
+
+    const seccion = screen.getAllByText('Tecnologías:')[0]
+      .parentElement as HTMLElement;
+    expect(within(seccion).queryByRole('listitem')).not.toBeInTheDocument();
+  });
+
+  test('crear con tecnologías seleccionadas las manda en el post', async () => {
+    const user = setupUser();
+    await renderPaginaConTecnologias();
+
+    await user.type(screen.getByLabelText('Company:'), 'Initech');
+    await user.type(screen.getByLabelText('Posición:'), 'Tech Lead');
+    escribirFecha(screen.getByLabelText('Fecha inicio:'), '2023-02-01');
+    escribirFecha(screen.getByLabelText('Fecha fin:'), '2024-03-15');
+
+    await user.click(screen.getByRole('combobox'));
+    await user.click(screen.getByRole('option', { name: 'React' }));
+    await user.click(screen.getByRole('option', { name: 'TypeScript' }));
+    // El chip de TypeScript se quita: solo debe viajar React.
+    await user.click(screen.getByRole('button', { name: 'Quitar TypeScript' }));
+
+    await user.click(
+      screen.getByRole('button', { name: 'Agregar Experiencia' }),
+    );
+    await flush();
+
+    expect(apiMock.post).toHaveBeenCalledWith(
+      '/experiencia',
+      expect.objectContaining({ tecnologias: ['t1'], fechaFin: '2024-03-15' }),
+    );
+  });
+
+  test('«+ Añadir hito» añade filas y el post recoge las descripciones', async () => {
+    const user = setupUser();
+    await renderPagina();
+
+    expect(inputsHito()).toHaveLength(0);
+
+    await user.click(screen.getByRole('button', { name: '+ Añadir hito' }));
+    await user.type(inputsHito()[0], 'Primer hito');
+    await user.click(screen.getByRole('button', { name: '+ Añadir hito' }));
+    await user.type(inputsHito()[1], 'Segundo hito');
+
+    await user.type(screen.getByLabelText('Company:'), 'Initech');
+    await user.type(screen.getByLabelText('Posición:'), 'Tech Lead');
+    escribirFecha(screen.getByLabelText('Fecha inicio:'), '2023-02-01');
+
+    await user.click(
+      screen.getByRole('button', { name: 'Agregar Experiencia' }),
+    );
+    await flush();
+
+    expect(apiMock.post).toHaveBeenCalledWith(
+      '/experiencia',
+      expect.objectContaining({
+        hitos: [
+          { descripcion: 'Primer hito' },
+          { descripcion: 'Segundo hito' },
+        ],
+      }),
+    );
+  });
+
+  test('la «X» de un hito borra solo esa fila', async () => {
+    const user = setupUser();
+    await renderPagina();
+
+    await user.click(screen.getByRole('button', { name: '+ Añadir hito' }));
+    await user.type(inputsHito()[0], 'Primer hito');
+    await user.click(screen.getByRole('button', { name: '+ Añadir hito' }));
+    await user.type(inputsHito()[1], 'Segundo hito');
+
+    const primeraFila = inputsHito()[0].parentElement as HTMLElement;
+    await user.click(within(primeraFila).getByRole('button', { name: 'X' }));
+
+    expect(inputsHito()).toHaveLength(1);
+    expect(inputsHito()[0]).toHaveValue('Segundo hito');
+  });
+
+  test('los hitos en blanco no viajan en el post', async () => {
+    const user = setupUser();
+    await renderPagina();
+
+    await user.click(screen.getByRole('button', { name: '+ Añadir hito' }));
+    await user.type(inputsHito()[0], '   ');
+
+    await user.type(screen.getByLabelText('Company:'), 'Initech');
+    await user.type(screen.getByLabelText('Posición:'), 'Tech Lead');
+    escribirFecha(screen.getByLabelText('Fecha inicio:'), '2023-02-01');
+
+    await user.click(
+      screen.getByRole('button', { name: 'Agregar Experiencia' }),
+    );
+    await flush();
+
+    expect(apiMock.post).toHaveBeenCalledWith(
+      '/experiencia',
+      expect.objectContaining({ hitos: [] }),
+    );
+  });
+
+  test('«Editar» vuelca hitos y tecnologías en el formulario', async () => {
+    const user = setupUser();
+    await renderPaginaConTecnologias();
+
+    await user.click(screen.getAllByRole('button', { name: 'Editar' })[0]);
+
+    expect(inputsHito()).toHaveLength(1);
+    expect(inputsHito()[0]).toHaveValue('Migración a React 19');
+    expect(
+      screen.getByRole('button', { name: 'Quitar React' }),
+    ).toBeInTheDocument();
+  });
+
+  test('«Editar» una experiencia sin hitos deja una fila en blanco', async () => {
+    const user = setupUser();
+    await renderPagina();
+
+    await user.click(screen.getAllByRole('button', { name: 'Editar' })[1]);
+
+    expect(inputsHito()).toHaveLength(1);
+    expect(inputsHito()[0]).toHaveValue('');
+  });
+
+  test('mientras el post está en vuelo el botón se deshabilita', async () => {
+    const user = setupUser();
+    const { promesa, resolver } = promesaPendiente<{ data: unknown }>();
+    apiMock.post.mockReturnValue(promesa);
+    await renderPagina();
+
+    await user.type(screen.getByLabelText('Company:'), 'Initech');
+    await user.type(screen.getByLabelText('Posición:'), 'Tech Lead');
+    escribirFecha(screen.getByLabelText('Fecha inicio:'), '2023-02-01');
+    await user.click(
+      screen.getByRole('button', { name: 'Agregar Experiencia' }),
+    );
+
+    expect(screen.getByRole('button', { name: 'Agregando...' })).toBeDisabled();
+
+    resolver({ data: { ...EXPERIENCIAS[0], id: '3', empresa: 'Initech' } });
+    await flush();
+
+    expect(
+      screen.getByRole('button', { name: 'Agregar Experiencia' }),
+    ).toBeEnabled();
+  });
+
+  test('mientras el put está en vuelo el botón pone «Actualizando...»', async () => {
+    const user = setupUser();
+    const { promesa, resolver } = promesaPendiente<{ data: unknown }>();
+    apiMock.put.mockReturnValue(promesa);
+    await renderPagina();
+
+    await user.click(screen.getAllByRole('button', { name: 'Editar' })[0]);
+    await user.click(
+      screen.getByRole('button', { name: 'Actualizar Experiencia' }),
+    );
+
+    expect(
+      screen.getByRole('button', { name: 'Actualizando...' }),
+    ).toBeDisabled();
+
+    resolver({ data: { ...EXPERIENCIAS[0] } });
+    await flush();
+
+    expect(
+      screen.getByRole('button', { name: 'Agregar Experiencia' }),
+    ).toBeEnabled();
   });
 });

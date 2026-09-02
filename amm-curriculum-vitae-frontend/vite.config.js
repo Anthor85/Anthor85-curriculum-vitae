@@ -38,16 +38,6 @@ export default defineConfig({
         statements: 80,
         functions: 80,
         branches: 80,
-        // ExperienciaForm queda por debajo del 80% en ramas y funciones porque
-        // el MultiSelect de tecnologias y los hitos dinamicos estan fuera del
-        // alcance de la SPEC 12. Umbral propio y explicito en vez de inflar
-        // los tests. Los globs no heredan los umbrales globales.
-        'src/pages/forms/ExperienciaForm.tsx': {
-          lines: 70,
-          statements: 70,
-          functions: 40,
-          branches: 60,
-        },
       },
     },
   },

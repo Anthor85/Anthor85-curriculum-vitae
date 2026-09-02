@@ -14,10 +14,12 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html'],
       include: [
+        'src/pages/Perfil.tsx',
         'src/pages/Conocimiento.tsx',
         'src/pages/Experiencia.tsx',
         'src/pages/Formacion.tsx',
         'src/pages/FormacionComplementaria.tsx',
+        'src/pages/forms/PerfilForm.tsx',
         'src/pages/forms/ConocimientoForm.tsx',
         'src/pages/forms/ExperienciaForm.tsx',
         'src/pages/forms/FormacionForm.tsx',

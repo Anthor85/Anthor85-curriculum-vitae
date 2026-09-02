@@ -28,6 +28,10 @@ export default defineConfig({
         'src/pages/cards/ExperienciaCard.tsx',
         'src/pages/cards/FormacionCard.tsx',
         'src/pages/cards/FormacionComplementariaCard.tsx',
+        'src/components/Button.tsx',
+        'src/components/MensajeAccion.tsx',
+        'src/components/MultiSelect.tsx',
+        'src/components/Tabs.tsx',
       ],
       thresholds: {
         lines: 80,

@@ -5,6 +5,7 @@ import {
   type ConocimientoPayload,
 } from '../../interfaces/conocimiento.interface';
 
+import { Button } from '../../components/Button';
 import { MensajeAccion } from '../../components/MensajeAccion';
 import type { MensajeAccion as MensajeAccionType } from '../../interfaces/mensajeAccion.interface';
 
@@ -103,18 +104,24 @@ export const ConocimientoForm = ({
         </select>
       </div>
       <div className={styles.actions}>
-        <button type="submit" disabled={isPending}>
-          {conocimientoEnEdicion
-            ? isPending
-              ? 'Actualizando...'
-              : 'Actualizar Conocimiento'
-            : isPending
-              ? 'Agregando...'
-              : 'Agregar Conocimiento'}
-        </button>
-        <button type="button" onClick={limpiarFormulario}>
-          Borrar formulario
-        </button>
+        <Button
+          type="submit"
+          disabled={isPending}
+          name={
+            conocimientoEnEdicion
+              ? isPending
+                ? 'Actualizando...'
+                : 'Actualizar Conocimiento'
+              : isPending
+                ? 'Agregando...'
+                : 'Agregar Conocimiento'
+          }
+        />
+        <Button
+          type="button"
+          name="Borrar formulario"
+          onClick={limpiarFormulario}
+        />
       </div>
       <MensajeAccion mensaje={mensaje} />
     </form>

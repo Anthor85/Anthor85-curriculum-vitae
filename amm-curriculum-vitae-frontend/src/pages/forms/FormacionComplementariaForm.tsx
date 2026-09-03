@@ -4,6 +4,7 @@ import type {
   FormacionComplementariaPayload,
 } from '../../interfaces/formacionComplementaria.interface';
 
+import { Button } from '../../components/Button';
 import { MensajeAccion } from '../../components/MensajeAccion';
 import type { MensajeAccion as MensajeAccionType } from '../../interfaces/mensajeAccion.interface';
 
@@ -120,18 +121,24 @@ export const FormacionComplementariaForm = ({
         />
       </div>
       <div className={styles.actions}>
-        <button type="submit" disabled={isPending}>
-          {formacionComplementariaEnEdicion
-            ? isPending
-              ? 'Actualizando...'
-              : 'Actualizar Formación Complementaria'
-            : isPending
-              ? 'Agregando...'
-              : 'Agregar Formación Complementaria'}
-        </button>
-        <button type="button" onClick={limpiarFormulario}>
-          Borrar formulario
-        </button>
+        <Button
+          type="submit"
+          disabled={isPending}
+          name={
+            formacionComplementariaEnEdicion
+              ? isPending
+                ? 'Actualizando...'
+                : 'Actualizar Formación Complementaria'
+              : isPending
+                ? 'Agregando...'
+                : 'Agregar Formación Complementaria'
+          }
+        />
+        <Button
+          type="button"
+          name="Borrar formulario"
+          onClick={limpiarFormulario}
+        />
       </div>
       <MensajeAccion mensaje={mensaje} />
     </form>

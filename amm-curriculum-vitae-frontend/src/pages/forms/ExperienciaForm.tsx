@@ -7,6 +7,7 @@ import type {
   ExperienciaPayload,
 } from '../../interfaces/experiencia.interface';
 
+import { Button } from '../../components/Button';
 import { MensajeAccion } from '../../components/MensajeAccion';
 import type { MensajeAccion as MensajeAccionType } from '../../interfaces/mensajeAccion.interface';
 
@@ -224,18 +225,24 @@ export const ExperienciaForm = ({
         </button>
       </div>
       <div className={styles.actions}>
-        <button type="submit" disabled={isPending}>
-          {experienciaEnEdicion
-            ? isPending
-              ? 'Actualizando...'
-              : 'Actualizar Experiencia'
-            : isPending
-              ? 'Agregando...'
-              : 'Agregar Experiencia'}
-        </button>
-        <button type="button" onClick={limpiarFormulario}>
-          Borrar formulario
-        </button>
+        <Button
+          type="submit"
+          disabled={isPending}
+          name={
+            experienciaEnEdicion
+              ? isPending
+                ? 'Actualizando...'
+                : 'Actualizar Experiencia'
+              : isPending
+                ? 'Agregando...'
+                : 'Agregar Experiencia'
+          }
+        />
+        <Button
+          type="button"
+          name="Borrar formulario"
+          onClick={limpiarFormulario}
+        />
       </div>
       <MensajeAccion mensaje={mensaje} />
     </form>

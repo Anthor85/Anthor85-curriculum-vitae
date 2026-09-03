@@ -4,6 +4,7 @@ import type {
   FormacionPayload,
 } from '../../interfaces/formacion.interface';
 
+import { Button } from '../../components/Button';
 import { MensajeAccion } from '../../components/MensajeAccion';
 import type { MensajeAccion as MensajeAccionType } from '../../interfaces/mensajeAccion.interface';
 
@@ -123,18 +124,24 @@ export const FormacionForm = ({
         />
       </div>
       <div className={styles.actions}>
-        <button type="submit" disabled={isPending}>
-          {formacionEnEdicion
-            ? isPending
-              ? 'Actualizando...'
-              : 'Actualizar Formación'
-            : isPending
-              ? 'Agregando...'
-              : 'Agregar Formación'}
-        </button>
-        <button type="button" onClick={limpiarFormulario}>
-          Borrar formulario
-        </button>
+        <Button
+          type="submit"
+          disabled={isPending}
+          name={
+            formacionEnEdicion
+              ? isPending
+                ? 'Actualizando...'
+                : 'Actualizar Formación'
+              : isPending
+                ? 'Agregando...'
+                : 'Agregar Formación'
+          }
+        />
+        <Button
+          type="button"
+          name="Borrar formulario"
+          onClick={limpiarFormulario}
+        />
       </div>
       <MensajeAccion mensaje={mensaje} />
     </form>

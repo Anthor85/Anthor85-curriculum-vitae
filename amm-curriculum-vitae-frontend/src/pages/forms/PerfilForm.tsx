@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Perfil, PerfilPayload } from '../../interfaces/perfil.interface';
 
+import { Button } from '../../components/Button';
 import { MensajeAccion } from '../../components/MensajeAccion';
 import type { MensajeAccion as MensajeAccionType } from '../../interfaces/mensajeAccion.interface';
 
@@ -168,15 +169,19 @@ export const PerfilForm = ({ perfil, onSubmitPerfil, mensaje }: Props) => {
         />
       </div>
       <div className={styles.actions}>
-        <button type="submit" disabled={isPending}>
-          {perfil
-            ? isPending
-              ? 'Actualizando...'
-              : 'Actualizar Perfil'
-            : isPending
-              ? 'Creando...'
-              : 'Crear Perfil'}
-        </button>
+        <Button
+          type="submit"
+          disabled={isPending}
+          name={
+            perfil
+              ? isPending
+                ? 'Actualizando...'
+                : 'Actualizar Perfil'
+              : isPending
+                ? 'Creando...'
+                : 'Crear Perfil'
+          }
+        />
       </div>
       <MensajeAccion mensaje={mensaje} />
     </form>

@@ -12,3 +12,8 @@
     background-color: darken(#3d3db8, 10%);
   }
 }
+
+.Button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

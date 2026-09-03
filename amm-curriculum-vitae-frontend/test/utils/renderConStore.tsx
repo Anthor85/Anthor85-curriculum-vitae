@@ -3,6 +3,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 
+import { authSlice } from '../../src/store/auth/authSlice';
 import { slice } from '../../src/store/curriculum/slice';
 import { conocimientoSlice } from '../../src/store/conocimiento/conocimientoSlice';
 import { experienciaSlice } from '../../src/store/experiencia/experienciaSlice';
@@ -18,6 +19,7 @@ export const crearStore = (preloadedState?: EstadoPrecargado) =>
   configureStore({
     preloadedState,
     reducer: {
+      auth: authSlice.reducer,
       curriculum: slice.reducer,
       conocimiento: conocimientoSlice.reducer,
       experiencia: experienciaSlice.reducer,

@@ -1,6 +1,6 @@
 # SPEC 14 — Login y protección de rutas privadas
 
-> **Estado:** Draft
+> **Estado:** Implementada
 > **Depende de:** SPEC 07 del backend (`07-autenticacion-jwt.md`, Draft), que expone `POST /api/auth` y `GET /api/auth/renew` y protege la escritura; SPEC 08 (`08-mensaje-accion-formularios.md`, Implementada), que fija el comportamiento de `MensajeAccion`; SPEC 12 (`12-tests-paginas-vitest.md`, Implementada) y SPEC 13 (`13-tests-componentes-vitest.md`, Implementada), que montan Vitest, `test/utils/` y el bloque `coverage`
 > **Fecha:** 2026-09-02
 > **Objetivo:** Añadir la página `/login` (email + contraseña, estilos sobrios), un `authSlice` con el token en `localStorage` y revalidación al arrancar, un guard que deje `/experiencia`, `/formacion`, `/formacion-complementaria`, `/perfil` y `/conocimiento` accesibles solo con sesión, y `test/pages/Login.test.tsx`.
@@ -120,24 +120,24 @@ Render con `renderConStore` (el store de test incorpora el `auth` reducer) dentr
 
 ## Criterios de aceptación
 
-- [ ] `/login` pinta un formulario con email, contraseña y un botón `Entrar`.
-- [ ] Un login correcto guarda `token` y `token-init-date` en `localStorage` y deja el store en `status: 'authenticated'`.
-- [ ] Un login correcto desde `/login` navega a `/experiencia`.
-- [ ] Entrar sin sesión en `/perfil` redirige a `/login`, y tras el login se vuelve a `/perfil`.
-- [ ] Lo mismo para `/experiencia`, `/formacion`, `/formacion-complementaria` y `/conocimiento`.
-- [ ] Un login fallido pinta `Credenciales incorrectas` mediante `MensajeAccion`, no escribe nada en `localStorage` y deja el store en `not-authenticated`.
-- [ ] Un fallo de red pinta `No se ha podido conectar`.
-- [ ] El botón `Entrar` está deshabilitado mientras la petición de login está en vuelo.
-- [ ] Refrescar la página estando en una ruta privada con un token válido **no** devuelve a `/login`.
-- [ ] Con un token caducado o manipulado, el arranque limpia `localStorage` y lleva a `/login`.
-- [ ] Mientras `status === 'checking'` no se pinta ni el contenido privado ni la redirección a `/login`.
-- [ ] Entrar en `/login` con sesión activa redirige a `/experiencia`.
-- [ ] `/` sigue accesible sin sesión y el CV se pinta igual que antes de esta spec.
-- [ ] Toda petición de axios lleva el header `x-token` cuando hay token en `localStorage`, y ninguno cuando no lo hay.
-- [ ] Existe `test/pages/Login.test.tsx` con los 8 casos de la sección "Modelo de datos", cada uno en su propio `it`.
-- [ ] `npm test` pasa con los tests existentes más los nuevos.
-- [ ] `vite.config.js` incluye `src/pages/Login.tsx` en `coverage.include` y `npm run test:coverage` termina en verde con el umbral global del 80%, sin umbrales propios nuevos.
-- [ ] `npm run build` y `npm run lint` terminan sin errores nuevos.
+- [x] `/login` pinta un formulario con email, contraseña y un botón `Entrar`.
+- [x] Un login correcto guarda `token` y `token-init-date` en `localStorage` y deja el store en `status: 'authenticated'`.
+- [x] Un login correcto desde `/login` navega a `/experiencia`.
+- [x] Entrar sin sesión en `/perfil` redirige a `/login`, y tras el login se vuelve a `/perfil`.
+- [x] Lo mismo para `/experiencia`, `/formacion`, `/formacion-complementaria` y `/conocimiento`.
+- [x] Un login fallido pinta `Credenciales incorrectas` mediante `MensajeAccion`, no escribe nada en `localStorage` y deja el store en `not-authenticated`.
+- [x] Un fallo de red pinta `No se ha podido conectar`.
+- [x] El botón `Entrar` está deshabilitado mientras la petición de login está en vuelo.
+- [x] Refrescar la página estando en una ruta privada con un token válido **no** devuelve a `/login`.
+- [x] Con un token caducado o manipulado, el arranque limpia `localStorage` y lleva a `/login`.
+- [x] Mientras `status === 'checking'` no se pinta ni el contenido privado ni la redirección a `/login`.
+- [x] Entrar en `/login` con sesión activa redirige a `/experiencia`.
+- [x] `/` sigue accesible sin sesión y el CV se pinta igual que antes de esta spec.
+- [x] Toda petición de axios lleva el header `x-token` cuando hay token en `localStorage`, y ninguno cuando no lo hay.
+- [x] Existe `test/pages/Login.test.tsx` con los 8 casos de la sección "Modelo de datos", cada uno en su propio `it`.
+- [x] `npm test` pasa con los tests existentes más los nuevos.
+- [x] `vite.config.js` incluye `src/pages/Login.tsx` en `coverage.include` y `npm run test:coverage` termina en verde con el umbral global del 80%, sin umbrales propios nuevos.
+- [x] `npm run build` y `npm run lint` terminan sin errores nuevos.
 
 ## Decisiones tomadas y descartadas
 

@@ -14,6 +14,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html'],
       include: [
+        'src/pages/Login.tsx',
         'src/pages/Perfil.tsx',
         'src/pages/Conocimiento.tsx',
         'src/pages/Experiencia.tsx',

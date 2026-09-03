@@ -16,6 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 //Rutas
+app.use('/api/auth', require('./routes/auth'));
 app.use('/api/curriculum', require('./routes/curriculum'));
 app.use('/api/conocimiento', require('./routes/conocimiento'));
 app.use('/api/experiencia', require('./routes/experiencia'));

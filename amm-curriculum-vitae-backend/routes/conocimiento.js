@@ -6,6 +6,7 @@ const {
   actualizarConocimiento,
   eliminarConocimiento,
 } = require('../controllers/conocimiento');
+const { validarJWT } = require('../middlewares/validarJWT');
 
 const router = Router();
 
@@ -13,15 +14,15 @@ const router = Router();
 router.get('/', obtenerConocimientos);
 
 // Crear un nuevo conocimiento
-router.post('/', crearConocimiento);
+router.post('/', validarJWT, crearConocimiento);
 
 // Crear múltiples conocimientos
-router.post('/multiple', crearConocimientos);
+router.post('/multiple', validarJWT, crearConocimientos);
 
 // Actualizar un conocimiento
-router.put('/:id', actualizarConocimiento);
+router.put('/:id', validarJWT, actualizarConocimiento);
 
 // Eliminar un conocimiento
-router.delete('/:id', eliminarConocimiento);
+router.delete('/:id', validarJWT, eliminarConocimiento);
 
 module.exports = router;

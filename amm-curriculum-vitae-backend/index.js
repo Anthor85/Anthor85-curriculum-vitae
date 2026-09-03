@@ -36,7 +36,12 @@ app.get(/(.*)/, (req, res, next) => {
   next();
 });
 
-//Escuchar peticiones (no usar el 3000)
-app.listen(process.env.PORT, () => {
-  console.log(`Servidor corriendo en puerto ${process.env.PORT}`);
-});
+//Escuchar peticiones solo en local; en Vercel se exporta la app
+if (require.main === module) {
+  const port = process.env.PORT || 4000;
+  app.listen(port, () => {
+    console.log(`Servidor corriendo en puerto ${port}`);
+  });
+}
+
+module.exports = app;

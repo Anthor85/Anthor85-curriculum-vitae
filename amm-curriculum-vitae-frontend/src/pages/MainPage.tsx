@@ -43,45 +43,61 @@ export const MainPage = () => {
     {
       id: 'experiencia',
       titulo: 'Experiencia',
-      contenido: experienciaOrdenada.length
-        ? experienciaOrdenada.map((item) => (
+      contenido: experienciaOrdenada.length ? (
+        <div className={styles.twoColumnsPerRow}>
+          {experienciaOrdenada.map((item) => (
             <ExperienciaItem
               key={item.id}
               experiencia={item}
               conocimiento={conocimientos}
             />
-          ))
-        : vacio('Sin experiencia registrada'),
+          ))}
+        </div>
+      ) : (
+        vacio('Sin experiencia registrada')
+      ),
     },
     {
       id: 'formacion',
       titulo: 'Formación Académica',
-      contenido: formacionesOrdenadas.length
-        ? formacionesOrdenadas.map((item) => (
+      contenido: formacionesOrdenadas.length ? (
+        <div className={styles.twoColumnsPerRow}>
+          {formacionesOrdenadas.map((item) => (
             <FormacionItem key={item.id} formacion={item} />
-          ))
-        : vacio('Sin formación académica registrada'),
+          ))}
+        </div>
+      ) : (
+        vacio('Sin formación académica registrada')
+      ),
     },
     {
       id: 'formacion-complementaria',
       titulo: 'Formación Complementaria',
-      contenido: complementariasOrdenadas.length
-        ? complementariasOrdenadas.map((item) => (
+      contenido: complementariasOrdenadas.length ? (
+        <div className={styles.twoColumnsPerRow}>
+          {complementariasOrdenadas.map((item) => (
             <FormacionComplementariaItem
               key={item.id}
               formacionComplementaria={item}
             />
-          ))
-        : vacio('Sin formación complementaria registrada'),
+          ))}
+        </div>
+      ) : (
+        vacio('Sin formación complementaria registrada')
+      ),
     },
     {
       id: 'conocimientos',
       titulo: 'Conocimientos',
-      contenido: conocimientos.length
-        ? conocimientos.map((item) => (
+      contenido: conocimientos.length ? (
+        <div className={styles.twoColumnsPerRow}>
+          {conocimientos.map((item) => (
             <ConocimientoItem key={item.id} conocimiento={item} />
-          ))
-        : vacio('Sin conocimientos registrados'),
+          ))}
+        </div>
+      ) : (
+        vacio('Sin conocimientos registrados')
+      ),
     },
   ];
 

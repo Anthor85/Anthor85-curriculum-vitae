@@ -111,6 +111,13 @@
   }
 }
 
+.twoColumnsPerRow {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  gap: 1rem;
+  align-items: start;
+}
+
 .pdfOculto {
   position: absolute;
   left: -10000px;

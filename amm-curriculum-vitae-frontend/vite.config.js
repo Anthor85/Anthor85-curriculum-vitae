@@ -30,6 +30,7 @@ export default defineConfig({
         'src/pages/cards/FormacionCard.tsx',
         'src/pages/cards/FormacionComplementariaCard.tsx',
         'src/components/Button.tsx',
+        'src/components/Expandable.tsx',
         'src/components/MensajeAccion.tsx',
         'src/components/MultiSelect.tsx',
         'src/components/Tabs.tsx',

@@ -114,7 +114,7 @@
 .twoColumnsPerRow {
   display: grid;
   grid-template-columns: 50% 50%;
-  gap: 1rem;
+  gap: .25rem;
   align-items: start;
 }
 
@@ -125,6 +125,10 @@
 }
 
 @media (max-width: 768px) {
+  .twoColumnsPerRow {
+    grid-template-columns: 100%;
+  }
+
   .MainPage {
     .header {
       position: static;

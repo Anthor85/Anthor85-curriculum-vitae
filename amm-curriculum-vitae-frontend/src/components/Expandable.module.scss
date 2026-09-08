@@ -8,17 +8,18 @@
   padding: 0;
   cursor: pointer;
   display: flex;
-  justify-content: space-between;
+  flex-direction: row-reverse;
+  justify-content: left;
   align-items: center;
   width: 100%;
   font: inherit;
   color: inherit;
   text-align: left;
+  gap: 0.5rem;
 }
 
 .triangulo {
   flex-shrink: 0;
-  margin-left: 10px;
   width: 0;
   height: 0;
   border-left: 6px solid transparent;
@@ -29,4 +30,26 @@
 
 .triangulo.abierto {
   transform: rotate(180deg);
+}
+
+@keyframes desplegar {
+  from {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+  to {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+}
+
+.contenido {
+  display: grid;
+  grid-template-rows: 1fr;
+  animation: desplegar 0.4s ease;
+}
+
+.contenidoInterior {
+  overflow: hidden;
+  min-height: 0;
 }

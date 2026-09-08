@@ -26,7 +26,7 @@ export const MainPage = () => {
 
   const { perfil } = curriculum || {};
   const {
-    conocimientos,
+    conocimientosOrdenados,
     experienciaOrdenada,
     formacionesOrdenadas,
     complementariasOrdenadas,
@@ -43,55 +43,43 @@ export const MainPage = () => {
     {
       id: 'experiencia',
       titulo: 'Experiencia',
-      contenido: experienciaOrdenada.length ? (
-        <div className={styles.twoColumnsPerRow}>
-          {experienciaOrdenada.map((item) => (
+      contenido: experienciaOrdenada.length
+        ? experienciaOrdenada.map((item) => (
             <ExperienciaItem
               key={item.id}
               experiencia={item}
-              conocimiento={conocimientos}
+              conocimiento={conocimientosOrdenados}
             />
-          ))}
-        </div>
-      ) : (
-        vacio('Sin experiencia registrada')
-      ),
+          ))
+        : vacio('Sin experiencia registrada'),
     },
     {
       id: 'formacion',
       titulo: 'Formación Académica',
-      contenido: formacionesOrdenadas.length ? (
-        <div className={styles.twoColumnsPerRow}>
-          {formacionesOrdenadas.map((item) => (
+      contenido: formacionesOrdenadas.length
+        ? formacionesOrdenadas.map((item) => (
             <FormacionItem key={item.id} formacion={item} />
-          ))}
-        </div>
-      ) : (
-        vacio('Sin formación académica registrada')
-      ),
+          ))
+        : vacio('Sin formación académica registrada'),
     },
     {
       id: 'formacion-complementaria',
       titulo: 'Formación Complementaria',
-      contenido: complementariasOrdenadas.length ? (
-        <div className={styles.twoColumnsPerRow}>
-          {complementariasOrdenadas.map((item) => (
+      contenido: complementariasOrdenadas.length
+        ? complementariasOrdenadas.map((item) => (
             <FormacionComplementariaItem
               key={item.id}
               formacionComplementaria={item}
             />
-          ))}
-        </div>
-      ) : (
-        vacio('Sin formación complementaria registrada')
-      ),
+          ))
+        : vacio('Sin formación complementaria registrada'),
     },
     {
       id: 'conocimientos',
       titulo: 'Conocimientos',
-      contenido: conocimientos.length ? (
-        <div className={styles.twoColumnsPerRow}>
-          {conocimientos.map((item) => (
+      contenido: conocimientosOrdenados.length ? (
+        <div className={styles.conocimientos}>
+          {conocimientosOrdenados.map((item) => (
             <ConocimientoItem key={item.id} conocimiento={item} />
           ))}
         </div>
@@ -162,7 +150,7 @@ export const MainPage = () => {
           experiencia={experienciaOrdenada}
           formaciones={formacionesOrdenadas}
           formacionesComplementarias={complementariasOrdenadas}
-          conocimiento={conocimientos}
+          conocimiento={conocimientosOrdenados}
         />
       </div>
     </>

@@ -1,19 +1,39 @@
 .Item {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  // padding: 1rem 0;
-  // border-bottom: 1px solid #eee;
-  // background: #f7e1dc;
-  background: #eee;
+  align-items: flex-start;
+  gap: 0.5rem;
+  background: linear-gradient(160deg, #ffffff, #eef1ff 130%);
   margin: 0.5rem;
-  padding: 0.75rem;
-  border-radius: 8px;
-  // border: 3px solid #fcbdae;
+  border-radius: 18px;
+  box-shadow:
+    0 1px 3px rgba(20, 20, 60, 0.06),
+    0 10px 24px -14px rgba(20, 20, 60, 0.18);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+  padding: 1.1rem 1.25rem;
+
+  &.expandable {
+    padding: 0;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 1px 3px rgba(20, 20, 60, 0.08),
+      0 18px 30px -14px rgba(20, 20, 60, 0.24);
+  }
 
   .titulo {
-    font-size: 1.3rem;
-    font-weight: bold;
+    font-family:
+      'Sora',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
     margin: 0;
   }
 
@@ -25,32 +45,51 @@
   .items {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    align-items: flex-start;
+    gap: 0.75rem;
+    width: 100%;
   }
 
   .fechas {
-    font-size: 0.95rem;
-    color: #777;
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(90deg, #0024ea, #3d3db8);
+    padding: 0.3rem 0.6rem;
+    border-radius: 8px;
+    white-space: nowrap;
   }
 
   .descripcion {
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.55;
+    color: #555;
   }
 
   .coleccion {
     display: grid;
-    // flex-direction: column;
     gap: 0.3rem;
-    max-height: 200px;
+    max-height: 300px;
     overflow-y: auto;
+    width: 100%;
 
     .etiqueta {
-      font-weight: bold;
+      font-family:
+        'Sora',
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #3d3db8;
       margin: 0;
     }
 
-    ul {
+    ul:not(.tecnologias) {
       margin: 0;
       padding-left: 1.25rem;
       display: flex;
@@ -60,23 +99,31 @@
   }
 
   .tecnologias {
-    list-style: inside;
+    list-style: none;
+    display: flex;
     padding-left: 0;
+    padding-right: 0.5rem;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.4rem;
 
     li {
-      // background: #eef1ff;
-      // color: #0024ea;
-      border-radius: 12px;
-      // padding: 0.15rem 0.7rem;
-      font-size: 0.9rem;
+      background: linear-gradient(90deg, #0024ea, #3d3db8);
+      color: #fff;
+      border-radius: 8px;
+      padding: 0.22rem 0.65rem;
+      font-size: 0.78rem;
+      font-weight: 600;
     }
   }
 
   .nivel {
-    font-size: 0.95rem;
-    color: #777;
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(90deg, #0024ea, #3d3db8);
+    padding: 0.3rem 0.6rem;
+    border-radius: 8px;
   }
 }

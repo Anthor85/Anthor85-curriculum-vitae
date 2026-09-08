@@ -2,13 +2,14 @@
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid #eee;
-  background: #f7e1dc;
+  // padding: 1rem 0;
+  // border-bottom: 1px solid #eee;
+  // background: #f7e1dc;
+  background: #eee;
   margin: 0.5rem;
   padding: 0.75rem;
   border-radius: 8px;
-  border: 3px solid #fcbdae;
+  // border: 3px solid #fcbdae;
 
   .titulo {
     font-size: 1.3rem;
@@ -19,6 +20,12 @@
   .subtitulo {
     font-size: 1rem;
     color: #555;
+  }
+
+  .items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .fechas {
@@ -32,9 +39,11 @@
   }
 
   .coleccion {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    // flex-direction: column;
     gap: 0.3rem;
+    max-height: 200px;
+    overflow-y: auto;
 
     .etiqueta {
       font-weight: bold;
@@ -51,17 +60,17 @@
   }
 
   .tecnologias {
-    list-style: none;
+    list-style: inside;
     padding-left: 0;
     flex-direction: row;
     flex-wrap: wrap;
     gap: 0.5rem;
 
     li {
-      background: #eef1ff;
-      color: #0024ea;
+      // background: #eef1ff;
+      // color: #0024ea;
       border-radius: 12px;
-      padding: 0.15rem 0.7rem;
+      // padding: 0.15rem 0.7rem;
       font-size: 0.9rem;
     }
   }

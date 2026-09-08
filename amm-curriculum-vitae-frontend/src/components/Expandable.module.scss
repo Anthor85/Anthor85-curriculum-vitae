@@ -16,6 +16,7 @@
   color: inherit;
   text-align: left;
   gap: 0.5rem;
+  padding: 1.1rem 1.25rem;
 }
 
 .triangulo {
@@ -47,6 +48,7 @@
   display: grid;
   grid-template-rows: 1fr;
   animation: desplegar 0.4s ease;
+  padding: 0 1.1rem 1.1rem;
 }
 
 .contenidoInterior {

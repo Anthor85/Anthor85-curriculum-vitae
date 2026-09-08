@@ -32,10 +32,15 @@
   }
 
   .panel {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 0.25rem;
     padding: 1.5rem 0;
     max-height: calc(100vh - 220px);
     overflow-y: auto;
     padding-right: 0.75rem;
+    margin: 1rem 0;
 
     scrollbar-width: thin;
 

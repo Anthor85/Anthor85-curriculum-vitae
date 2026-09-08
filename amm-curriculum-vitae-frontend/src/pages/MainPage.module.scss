@@ -1,10 +1,15 @@
 ﻿.MainPage {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 1080px;
+  margin: 0 auto;
 
   .header {
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     border-bottom: 5px solid aquamarine;
     border-image: linear-gradient(to right, #7efafa, #0024ea);
@@ -42,6 +47,12 @@
   .vacio {
     color: #777;
     font-style: italic;
+  }
+
+  .conocimientos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    width: 100%;
   }
 
   .basicInformation {
@@ -111,13 +122,6 @@
   }
 }
 
-.twoColumnsPerRow {
-  display: grid;
-  grid-template-columns: 50% 50%;
-  gap: .25rem;
-  align-items: start;
-}
-
 .pdfOculto {
   position: absolute;
   left: -10000px;
@@ -125,10 +129,6 @@
 }
 
 @media (max-width: 768px) {
-  .twoColumnsPerRow {
-    grid-template-columns: 100%;
-  }
-
   .MainPage {
     .header {
       position: static;

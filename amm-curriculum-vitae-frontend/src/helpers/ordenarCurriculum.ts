@@ -7,7 +7,7 @@ import { FormacionComplementaria } from '../interfaces/formacionComplementaria.i
 const tiempo = (fecha?: string) => (fecha ? new Date(fecha).getTime() || 0 : 0);
 
 interface CurriculumOrdenado {
-  conocimientos: Conocimiento[];
+  conocimientosOrdenados: Conocimiento[];
   experienciaOrdenada: Experiencia[];
   formacionesOrdenadas: Formacion[];
   complementariasOrdenadas: FormacionComplementaria[];
@@ -20,7 +20,6 @@ export const ordenarCurriculum = (
     curriculum || {};
 
   return {
-    conocimientos: conocimiento || [],
     experienciaOrdenada: [...(experiencia || [])].sort(
       (a, b) => tiempo(b.fechaInicio) - tiempo(a.fechaInicio),
     ),
@@ -29,6 +28,9 @@ export const ordenarCurriculum = (
     ),
     complementariasOrdenadas: [...(formacionesComplementarias || [])].sort(
       (a, b) => tiempo(b.fechaFin) - tiempo(a.fechaFin),
+    ),
+    conocimientosOrdenados: [...(conocimiento || [])].sort((a, b) =>
+      a.titulo.localeCompare(b.titulo),
     ),
   };
 };

@@ -16,7 +16,7 @@ export const ExperienciaItem = ({ experiencia, conocimiento }: Props) => {
   );
 
   return (
-    <div className={styles.Item}>
+    <div className={`${styles.Item} ${styles.expandable}`}>
       <Expandable
         cabecera={<h2 className={styles.titulo}>{experiencia.empresa}</h2>}
       >
@@ -30,26 +30,22 @@ export const ExperienciaItem = ({ experiencia, conocimiento }: Props) => {
           <p className={styles.descripcion}>{experiencia.descripcion}</p>
           {tecnologias.length > 0 && (
             <div className={styles.coleccion}>
-              <Expandable
-                cabecera={<p className={styles.etiqueta}>Tecnologías:</p>}
-              >
-                <ul className={styles.tecnologias}>
-                  {tecnologias.map((tech) => (
-                    <li key={tech.id}>{tech.titulo}</li>
-                  ))}
-                </ul>
-              </Expandable>
+              <p className={styles.etiqueta}>Tecnologías:</p>
+              <ul className={styles.tecnologias}>
+                {tecnologias.map((tech) => (
+                  <li key={tech.id}>{tech.titulo}</li>
+                ))}
+              </ul>
             </div>
           )}
           {experiencia.hitos?.length ? (
             <div className={styles.coleccion}>
-              <Expandable cabecera={<p className={styles.etiqueta}>Hitos:</p>}>
-                <ul>
-                  {experiencia.hitos.map((hito) => (
-                    <li key={hito.id}>{hito.descripcion}</li>
-                  ))}
-                </ul>
-              </Expandable>
+              <p className={styles.etiqueta}>Hitos:</p>
+              <ul>
+                {experiencia.hitos.map((hito) => (
+                  <li key={hito.id}>{hito.descripcion}</li>
+                ))}
+              </ul>
             </div>
           ) : null}
         </div>

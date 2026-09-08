@@ -10,7 +10,7 @@ export const ConocimientoItem = ({ conocimiento }: Props) => {
   return (
     <div className={styles.Item}>
       <h2 className={styles.titulo}>{conocimiento.titulo}</h2>
-      <span className={styles.nivel}>{conocimiento.nivel}</span>
+      {/* <span className={styles.nivel}>{conocimiento.nivel}</span> */}
     </div>
   );
 };

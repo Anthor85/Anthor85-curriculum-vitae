@@ -1,9 +1,9 @@
-import { Expandable } from '../../components/Expandable';
-import { dateConverter } from '../../helpers/dateConverter';
-import { Conocimiento } from '../../interfaces/conocimiento.interface';
-import { Experiencia } from '../../interfaces/experiencia.interface';
+import { Expandable } from '../../../../components/Expandable';
+import { dateConverter } from '../../../../helpers/dateConverter';
+import { Conocimiento } from '../../../../interfaces/conocimiento.interface';
+import { Experiencia } from '../../../../interfaces/experiencia.interface';
 
-import styles from './Curriculum.module.scss';
+import styles from './Items.module.scss';
 
 interface Props {
   experiencia: Experiencia;

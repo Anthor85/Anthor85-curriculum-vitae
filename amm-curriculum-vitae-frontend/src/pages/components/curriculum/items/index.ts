@@ -1,4 +1,4 @@
-export * from './CurriculumPDF';
+export * from '../pdf/CurriculumPDF';
 export * from './ConocimientoItem';
 export * from './ExperienciaItem';
 export * from './FormacionItem';

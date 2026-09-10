@@ -12,7 +12,6 @@ export const useExperienciaStore = () => {
   const getExperiencia = async () => {
     try {
       const { data } = await api.get('/experiencia');
-      console.log('Experiencia data:', data);
 
       dispatch(setExperiencia(data));
     } catch (error) {
@@ -22,7 +21,6 @@ export const useExperienciaStore = () => {
 
   const createExperiencia = async (payload: ExperienciaPayload) => {
     try {
-      console.log('Experiencia payload:', payload);
 
       const { data } = await api.post('/experiencia', payload);
 
@@ -37,7 +35,6 @@ export const useExperienciaStore = () => {
   const updateExperiencia = async (id: string, payload: ExperienciaPayload) => {
     try {
       const { data } = await api.put(`/experiencia/${id}`, payload);
-      console.log('Experiencia updated:', data);
 
       dispatch(
         setExperiencia(
@@ -54,7 +51,6 @@ export const useExperienciaStore = () => {
   const deleteExperiencia = async (id: string) => {
     try {
       const { data } = await api.delete(`/experiencia/${id}`);
-      console.log('Experiencia deleted:', data);
 
       dispatch(
         setExperiencia(

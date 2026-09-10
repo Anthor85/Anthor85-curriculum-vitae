@@ -13,10 +13,3 @@ export interface FormacionState {
   loading: boolean;
   error: string | null;
 }
-
-export interface FormacionAction {
-  type: string;
-  payload: any;
-}
-
-export type FormacionDispatch = (action: FormacionAction) => void;

@@ -15,7 +15,6 @@ export const useFormacionStore = () => {
   const getFormacion = async () => {
     try {
       const { data } = await api.get('/formacion');
-      console.log('Formación data:', data);
 
       dispatch(setFormacion(data));
     } catch (error) {
@@ -55,7 +54,6 @@ export const useFormacionStore = () => {
   const deleteFormacion = async (id: string) => {
     try {
       const { data } = await api.delete(`/formacion/${id}`);
-      console.log('Formación eliminada:', formacion, data);
 
       dispatch(
         setFormacion(

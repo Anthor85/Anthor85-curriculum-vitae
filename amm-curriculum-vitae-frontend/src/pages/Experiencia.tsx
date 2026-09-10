@@ -1,6 +1,5 @@
 ﻿import { useEffect, useState } from 'react';
-import { useExperienciaStore } from '../hooks/useExperienciaStore';
-import { useMensajeAccion } from '../hooks';
+import { useExperienciaStore, useMensajeAccion } from '../hooks';
 import {
   Experiencia as IExperiencia,
   ExperienciaPayload,
@@ -47,7 +46,7 @@ export const Experiencia = () => {
 
   useEffect(() => {
     if (experiencia === null) getExperiencia();
-  }, [getExperiencia]);
+  }, []);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;

@@ -4,6 +4,11 @@ export interface Hito {
   experiencia: string;
 }
 
+export interface HitoPayload {
+  id?: string;
+  descripcion: string;
+}
+
 export interface Experiencia {
   id: string;
   empresa: string;
@@ -14,7 +19,9 @@ export interface Experiencia {
   hitos: Hito[];
 }
 
-export interface ExperienciaPayload extends Omit<Experiencia, 'id'> {}
+export interface ExperienciaPayload extends Omit<Experiencia, 'id' | 'hitos'> {
+  hitos: HitoPayload[];
+}
 
 export interface ExperienciaState {
   experiencia: Experiencia[] | null;

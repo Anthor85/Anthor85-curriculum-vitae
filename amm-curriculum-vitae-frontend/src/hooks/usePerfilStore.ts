@@ -10,7 +10,6 @@ export const usePerfilStore = () => {
   const getPerfil = async () => {
     try {
       const { data } = await api.get('/perfil');
-      console.log('Perfil data:', data);
 
       dispatch(setPerfil(data));
     } catch (error) {

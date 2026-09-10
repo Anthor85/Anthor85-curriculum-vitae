@@ -15,7 +15,6 @@ export const useFormacionComplementariaStore = () => {
   const getFormacionComplementaria = async () => {
     try {
       const { data } = await api.get('/formacionComplementaria');
-      console.log('FormacionComplementaria data:', data);
 
       dispatch(setFormacionComplementaria(data));
     } catch (error) {
@@ -61,11 +60,6 @@ export const useFormacionComplementariaStore = () => {
   const deleteFormacionComplementaria = async (id: string) => {
     try {
       const { data } = await api.delete(`/formacionComplementaria/${id}`);
-      console.log(
-        'formacionComplementaria deleted:',
-        formacionComplementaria,
-        data,
-      );
 
       dispatch(
         setFormacionComplementaria(

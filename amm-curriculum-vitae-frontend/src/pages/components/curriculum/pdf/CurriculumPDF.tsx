@@ -1,13 +1,13 @@
 import { ReactNode } from 'react';
-import { dateConverter } from '../../helpers/dateConverter';
-import { getIcons } from '../../helpers/getIcons';
-import { Conocimiento } from '../../interfaces/conocimiento.interface';
-import { Experiencia } from '../../interfaces/experiencia.interface';
-import { Formacion } from '../../interfaces/formacion.interface';
-import { FormacionComplementaria } from '../../interfaces/formacionComplementaria.interface';
-import { Perfil } from '../../interfaces/perfil.interface';
-import { ExperienciaItem } from './ExperienciaItem';
-import { FormacionItem } from './FormacionItem';
+import { dateConverter } from '../../../../helpers/dateConverter';
+import { getIcons } from '../../../../helpers/getIcons';
+import { Conocimiento } from '../../../../interfaces/conocimiento.interface';
+import { Experiencia } from '../../../../interfaces/experiencia.interface';
+import { Formacion } from '../../../../interfaces/formacion.interface';
+import { FormacionComplementaria } from '../../../../interfaces/formacionComplementaria.interface';
+import { Perfil } from '../../../../interfaces/perfil.interface';
+import { ExperienciaItem } from '../items/ExperienciaItem';
+import { FormacionItem } from '../items/FormacionItem';
 
 import styles from './CurriculumPDF.module.scss';
 

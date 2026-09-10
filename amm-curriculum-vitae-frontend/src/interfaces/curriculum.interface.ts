@@ -17,8 +17,3 @@ export interface CurriculumState {
   loading: boolean;
   error: string | null;
 }
-export interface CurriculumAction {
-  type: string;
-  payload?: any;
-}
-export type CurriculumDispatch = (action: CurriculumAction) => void;

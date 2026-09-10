@@ -1,7 +1,7 @@
 ﻿import { createSlice } from '@reduxjs/toolkit';
 import { CurriculumState } from '../../interfaces/curriculum.interface';
 
-export const slice = createSlice({
+export const curriculumSlice = createSlice({
   name: 'curriculum',
   initialState: {
     curriculum: null,
@@ -9,19 +9,6 @@ export const slice = createSlice({
     error: null,
   } as CurriculumState,
   reducers: {
-    // getTecnologias: (state) => {
-    //   state.loading = true;
-    //   state.error = null;
-    // },
-    // setTecnologias: (state, action) => {
-    //   state.tecnologias = action.payload;
-    // },
-    // setConocimiento: (state, action) => {
-    //   state.curriculum = {
-    //     ...state.curriculum,
-    //     conocimiento: action.payload,
-    //   };
-    // },
     setCurriculum: (state, action) => {
       state.curriculum = action.payload;
       state.loading = false;
@@ -37,4 +24,4 @@ export const slice = createSlice({
   },
 });
 
-export const { setCurriculum, setLoading, setError } = slice.actions;
+export const { setCurriculum, setLoading, setError } = curriculumSlice.actions;

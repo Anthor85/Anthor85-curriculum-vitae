@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import {
-  MainPage,
+  Curriculum,
   Experiencia,
   Formacion,
   FormacionComplementaria,
@@ -24,7 +24,7 @@ export const Router = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<MainPage />} />
+      <Route path="/" element={<Curriculum />} />
       <Route
         path="/login"
         element={

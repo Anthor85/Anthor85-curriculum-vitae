@@ -5,6 +5,7 @@ import type { Conocimiento } from '../../interfaces/conocimiento.interface';
 import type {
   Experiencia,
   ExperienciaPayload,
+  HitoPayload,
 } from '../../interfaces/experiencia.interface';
 
 import { Button } from '../../components/Button';
@@ -38,7 +39,7 @@ export const ExperienciaForm = ({
   const { conocimiento, getConocimiento } = useConocimientoStore();
 
   const [experiencia, setExperiencia] =
-    useState<Omit<Experiencia, 'id'>>(EXPERIENCIA_VACIA);
+    useState<ExperienciaPayload>(EXPERIENCIA_VACIA);
   const [isPending, setIsPending] = useState<boolean>(false);
 
   useEffect(() => {
@@ -66,38 +67,29 @@ export const ExperienciaForm = ({
               descripcion,
             }))
           : [{ descripcion: '' }],
-    } as Experiencia);
+    });
   }, [experienciaEnEdicion]);
 
   const anadirHito = () =>
-    setExperiencia(
-      (prev) =>
-        ({
-          ...prev,
-          hitos: [...(prev.hitos || []), { descripcion: '' }],
-        }) as Experiencia,
-    );
+    setExperiencia((prev) => ({
+      ...prev,
+      hitos: [...(prev.hitos || []), { descripcion: '' }],
+    }));
 
   const borrarHito = (indice: number) =>
-    setExperiencia(
-      (prev) =>
-        ({
-          ...prev,
-          hitos: prev.hitos?.filter((_, i) => i !== indice) || [],
-        }) as Experiencia,
-    );
+    setExperiencia((prev) => ({
+      ...prev,
+      hitos: prev.hitos?.filter((_, i) => i !== indice) || [],
+    }));
 
   const cambiarHito = (indice: number, valor: string) =>
-    setExperiencia(
-      (prev) =>
-        ({
-          ...prev,
-          hitos:
-            prev.hitos?.map((hito, i) =>
-              i === indice ? { ...hito, descripcion: valor } : hito,
-            ) || [],
-        }) as Experiencia,
-    );
+    setExperiencia((prev) => ({
+      ...prev,
+      hitos:
+        prev.hitos?.map((hito, i) =>
+          i === indice ? { ...hito, descripcion: valor } : hito,
+        ) || [],
+    }));
 
   const limpiarFormulario = () => {
     setExperiencia(EXPERIENCIA_VACIA);
@@ -186,13 +178,10 @@ export const ExperienciaForm = ({
             }))}
             selected={experiencia.tecnologias}
             onChange={(selectedTecnologias) =>
-              setExperiencia(
-                (prev) =>
-                  ({
-                    ...prev,
-                    tecnologias: selectedTecnologias,
-                  }) as Experiencia,
-              )
+              setExperiencia((prev) => ({
+                ...prev,
+                tecnologias: selectedTecnologias,
+              }))
             }
           />
         </div>

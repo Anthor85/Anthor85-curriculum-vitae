@@ -1,5 +1,5 @@
 ﻿import { configureStore } from '@reduxjs/toolkit';
-import { slice } from './curriculum/slice';
+import { curriculumSlice } from './curriculum/slice';
 import { authSlice } from './auth/authSlice';
 import { experienciaSlice } from './experiencia/experienciaSlice';
 import { conocimientoSlice } from './conocimiento/conocimientoSlice';
@@ -10,15 +10,12 @@ import { perfilSlice } from './perfil/perfilSlice';
 export const store = configureStore({
   reducer: {
     auth: authSlice.reducer,
-    curriculum: slice.reducer,
+    curriculum: curriculumSlice.reducer,
     conocimiento: conocimientoSlice.reducer,
     experiencia: experienciaSlice.reducer,
     formacion: formacionSlice.reducer,
     formacionComplementaria: formacionComplementariaSlice.reducer,
     perfil: perfilSlice.reducer,
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-    }),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({}),
 });

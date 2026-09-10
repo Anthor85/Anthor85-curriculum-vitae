@@ -47,7 +47,7 @@ export const Conocimiento = () => {
 
   useEffect(() => {
     if (conocimiento.length === 0) getConocimiento();
-  }, [getConocimiento]);
+  }, []);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;

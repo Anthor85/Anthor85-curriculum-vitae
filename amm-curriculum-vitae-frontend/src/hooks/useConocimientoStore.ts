@@ -15,7 +15,6 @@ export const useConocimientoStore = () => {
   const getConocimiento = async () => {
     try {
       const { data } = await api.get('/conocimiento');
-      console.log('Conocimiento data:', data);
       dispatch(setConocimiento(data));
     } catch (error) {
       console.error('Error fetching conocimiento:', error);
@@ -56,7 +55,6 @@ export const useConocimientoStore = () => {
   const deleteConocimiento = async (id: string) => {
     try {
       const { data } = await api.delete(`/conocimiento/${id}`);
-      console.log('Conocimiento deleted:', data);
       dispatch(
         setConocimiento(conocimiento.filter((con: any) => con.id !== data.id)),
       );

@@ -5,9 +5,7 @@ import type { PerfilPayload } from '../interfaces/perfil.interface';
 
 export const usePerfilStore = () => {
   const dispatch = useDispatch();
-  const { perfil, loading, error } = useSelector(
-    (state: RootState) => state.perfil,
-  );
+  const { perfil, loading, error } = useSelector((state: RootState) => state.perfil);
 
   const getPerfil = async () => {
     try {

@@ -22,6 +22,7 @@ export type ReducersCrud<N extends string, T> = Record<
   Record<`setLoading${Capitalize<N>}`, Reducer<N, T, boolean>> &
   Record<`setError${Capitalize<N>}`, Reducer<N, T, string | null>>;
 
+//La función va en dos llamadas (<T>() y luego (nombre)) porque TS no permite indicar T a mano y a la vez inferir N del argumento.
 export const crearSliceCrud =
   <T>() =>
   <N extends string>(
@@ -39,7 +40,7 @@ export const crearSliceCrud =
       name: `${nombre}Slice`,
       initialState,
       reducers: {
-        [`set${sufijo}`]: (state, action: PayloadAction<T[]>) => {
+        [`set${sufijo}`]: (state, action: PayloadAction<T>) => {
           state[nombre] = action.payload;
           state.loading = false;
           state.error = null;

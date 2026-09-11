@@ -1,82 +1,12 @@
-import { useDispatch, useSelector } from 'react-redux';
-import api from '../api/api';
-import { RootState, setFormacion } from '../store';
+import { setFormacion } from '../store';
 import type {
   Formacion,
   FormacionPayload,
 } from '../interfaces/formacion.interface';
+import { crearCrudStore } from '../helpers/crearCrudStore';
 
-export const useFormacionStore = () => {
-  const dispatch = useDispatch();
-  const { formacion, loading, error } = useSelector(
-    (state: RootState) => state.formacion,
-  );
-
-  const getFormacion = async () => {
-    try {
-      const { data } = await api.get('/formacion');
-
-      dispatch(setFormacion(data));
-    } catch (error) {
-      console.error('Error obteniendo formación:', error);
-    }
-  };
-
-  const createFormacion = async (payload: FormacionPayload) => {
-    try {
-      const { data } = await api.post('/formacion', payload);
-
-      formacion && dispatch(setFormacion([...formacion, data]));
-      return true;
-    } catch (error) {
-      console.error('Error creando formación:', error);
-      return false;
-    }
-  };
-
-  const updateFormacion = async (id: string, payload: FormacionPayload) => {
-    try {
-      const { data } = await api.put(`/formacion/${id}`, payload);
-      formacion &&
-        dispatch(
-          setFormacion(
-            formacion.map((form: Formacion) =>
-              form.id === data.id ? data : form,
-            ),
-          ),
-        );
-      return true;
-    } catch (error) {
-      console.error('Error actualizando formación:', error);
-      return false;
-    }
-  };
-
-  const deleteFormacion = async (id: string) => {
-    try {
-      const { data } = await api.delete(`/formacion/${id}`);
-
-      formacion &&
-        dispatch(
-          setFormacion(
-            formacion.filter((form: any) => form.id !== data.formacion.id),
-          ),
-        );
-      return true;
-    } catch (error) {
-      console.error('Error eliminando formación:', error);
-      return false;
-    }
-  };
-
-  return {
-    formacion,
-    loading,
-    error,
-
-    getFormacion,
-    createFormacion,
-    updateFormacion,
-    deleteFormacion,
-  };
-};
+export const useFormacionStore = crearCrudStore<Formacion, FormacionPayload>()(
+  'formacion',
+  setFormacion,
+  (state) => state.formacion,
+);

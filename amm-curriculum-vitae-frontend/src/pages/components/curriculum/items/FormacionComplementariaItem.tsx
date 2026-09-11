@@ -1,7 +1,7 @@
-import { dateConverter } from '../../helpers/dateConverter';
-import { FormacionComplementaria } from '../../interfaces/formacionComplementaria.interface';
+import { dateConverter } from '../../../../helpers/dateConverter';
+import { FormacionComplementaria } from '../../../../interfaces/formacionComplementaria.interface';
 
-import styles from './Curriculum.module.scss';
+import styles from './Items.module.scss';
 
 interface Props {
   formacionComplementaria: FormacionComplementaria;

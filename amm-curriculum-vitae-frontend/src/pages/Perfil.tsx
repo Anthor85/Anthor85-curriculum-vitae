@@ -1,4 +1,4 @@
-﻿import { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useMensajeAccion, usePerfilStore } from '../hooks';
 import { PerfilForm } from './forms/PerfilForm';
 import type { PerfilPayload } from '../interfaces/perfil.interface';
@@ -20,7 +20,7 @@ export const Perfil = () => {
 
   useEffect(() => {
     if (perfil === null) getPerfil();
-  }, [getPerfil]);
+  }, []);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;

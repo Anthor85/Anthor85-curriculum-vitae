@@ -78,7 +78,7 @@
     }
   }
 
-  // Experiencia y Formación Académica: tarjetas sin fondo, sin borde y sin padding
+  // Experiencia: tarjetas sin fondo, sin borde y sin padding
   .seccionPlana > div {
     background: none;
     border: none;
@@ -91,18 +91,18 @@
     }
   }
 
-  // Conocimientos y Formación Complementaria: texto plano compacto
+  // Conocimientos y Formaciones: texto plano compacto
   .lineas {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
 
     &--sangrada {
-      margin-left: 0.75rem;
+      padding-left: 1.25rem;
     }
 
     .linea {
-      font-size: 0.8rem;
+      font-size: smaller;
       line-height: 1.35;
       margin: 0;
       color: #333;

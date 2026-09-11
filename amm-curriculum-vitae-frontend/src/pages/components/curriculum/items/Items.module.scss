@@ -117,13 +117,33 @@
     }
   }
 
-  .nivel {
-    display: inline-block;
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: #fff;
-    background: linear-gradient(90deg, #0024ea, #3d3db8);
-    padding: 0.3rem 0.6rem;
-    border-radius: 8px;
+  // PDF: fechas y tecnologías en texto plano, sin estilo de etiqueta
+  &.pdf {
+    .fechas {
+      font-size: 0.85rem;
+      color: #555;
+      background: none;
+      padding: 0;
+      border-radius: 0;
+    }
+
+    .tecnologias {
+      gap: 0.5rem;
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+
+      li {
+        background: none;
+        color: #222;
+        border-radius: 0;
+        padding: 0;
+        font-size: 0.85rem;
+        font-weight: 600;
+
+        &:not(:last-child)::after {
+          content: ',';
+        }
+      }
+    }
   }
 }

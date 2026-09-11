@@ -11,14 +11,3 @@ export interface Curriculum {
   formacionesComplementarias: FormacionComplementaria[];
   perfil: Perfil | null;
 }
-
-export interface CurriculumState {
-  curriculum: Curriculum | null;
-  loading: boolean;
-  error: string | null;
-}
-export interface CurriculumAction {
-  type: string;
-  payload?: any;
-}
-export type CurriculumDispatch = (action: CurriculumAction) => void;

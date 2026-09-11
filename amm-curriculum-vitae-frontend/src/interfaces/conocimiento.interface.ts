@@ -11,9 +11,3 @@ export interface Conocimiento {
 }
 
 export interface ConocimientoPayload extends Omit<Conocimiento, 'id'> {}
-
-export interface ConocimientoState {
-  conocimiento: Conocimiento[];
-  loading: boolean;
-  error: string | null;
-}

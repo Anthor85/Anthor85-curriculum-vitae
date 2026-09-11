@@ -1,4 +1,4 @@
-﻿export interface FormacionComplementaria {
+export interface FormacionComplementaria {
   id: string;
   titulo: string;
   institucion: string;
@@ -11,16 +11,7 @@ export interface FormacionComplementariaPayload extends Omit<
 > {}
 
 export interface FormacionComplementariaState {
-  formacionComplementaria: FormacionComplementaria[];
+  formacionComplementaria: FormacionComplementaria[] | null;
   loading: boolean;
   error: string | null;
 }
-
-export interface FormacionComplementariaAction {
-  type: string;
-  payload: any;
-}
-
-export type FormacionComplementariaDispatch = (
-  action: FormacionComplementariaAction,
-) => void;

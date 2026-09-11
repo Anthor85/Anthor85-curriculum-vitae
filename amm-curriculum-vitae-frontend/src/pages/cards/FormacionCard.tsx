@@ -1,4 +1,4 @@
-﻿import { dateConverter } from '../../helpers/dateConverter';
+import { dateConverter } from '../../helpers/dateConverter';
 import { Formacion } from '../../interfaces/formacion.interface';
 
 import styles from './Cards.module.scss';
@@ -20,7 +20,6 @@ export const FormacionCard = ({
   return (
     <div
       className={`${styles.Card} ${enEdicion ? styles.enEdicion : ''}`}
-      key={id}
     >
       <div className={styles.data}>
         <div className={styles.title}>{titulo}</div>

@@ -1,16 +1,15 @@
-﻿import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/api';
-import { setPerfil } from '../store';
+import { RootState, setPerfil } from '../store';
 import type { PerfilPayload } from '../interfaces/perfil.interface';
 
 export const usePerfilStore = () => {
   const dispatch = useDispatch();
-  const { perfil, loading, error } = useSelector((state: any) => state.perfil);
+  const { perfil, loading, error } = useSelector((state: RootState) => state.perfil);
 
   const getPerfil = async () => {
     try {
       const { data } = await api.get('/perfil');
-      console.log('Perfil data:', data);
 
       dispatch(setPerfil(data));
     } catch (error) {

@@ -1,5 +1,9 @@
+@use 'sass:color';
+
 .Button {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   padding: 10px 20px;
   background-color: #3d3db8 /* var(--primary-color) */;
   color: white;
@@ -9,8 +13,17 @@
   font-size: 16px;
 
   &:hover {
-    background-color: darken(#3d3db8, 10%);
+    background-color: color.adjust(#3d3db8, $lightness: -10%);
   }
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  background-color: currentColor;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
 }
 
 .Button:disabled {

@@ -20,7 +20,7 @@ export const FormacionComplementariaCard = ({
   return (
     <div
       className={`${styles.Card} ${enEdicion ? styles.enEdicion : ''}`}
-      key={id}
+
     >
       <div className={styles.data}>
         <div className={styles.title}>{titulo}</div>

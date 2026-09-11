@@ -1,5 +1,8 @@
-﻿import { dateConverter } from '../../helpers/dateConverter';
+import { dateConverter } from '../../helpers/dateConverter';
+import { rangoFechas } from '../../helpers/rangoFechas';
+import { tecnologiasFilter } from '../../helpers/tecnologiasFilter';
 import { useConocimientoStore } from '../../hooks';
+import { Conocimiento } from '../../interfaces/conocimiento.interface';
 import { Experiencia } from '../../interfaces/experiencia.interface';
 
 import styles from './Cards.module.scss';
@@ -27,23 +30,15 @@ export const ExperienciaCard = ({
       <div className={styles.data}>
         <h2>{experiencia.empresa}</h2>
         <p>{experiencia.descripcion}</p>
-        <p>
-          {dateConverter(new Date(experiencia.fechaInicio))} -{' '}
-          {experiencia.fechaFin
-            ? dateConverter(new Date(experiencia.fechaFin))
-            : 'En la actualidad'}
-        </p>
+        <p>{rangoFechas(experiencia.fechaInicio, experiencia.fechaFin)}</p>
         {experiencia.tecnologias.length > 0 && (
           <div className={styles.coleccion}>
             <p>Tecnologías:</p>
             <ul className={styles.colecciones}>
-              {conocimiento
-                .filter((tech: any) =>
-                  experiencia.tecnologias.includes(tech.id),
-                )
-                .map((tech: any) => (
-                  <li key={tech.id}>{tech.titulo}</li>
-                ))}
+              {conocimiento &&
+                tecnologiasFilter(experiencia.tecnologias, conocimiento).map(
+                  (tech: Conocimiento) => <li key={tech.id}>{tech.titulo}</li>,
+                )}
             </ul>
           </div>
         )}

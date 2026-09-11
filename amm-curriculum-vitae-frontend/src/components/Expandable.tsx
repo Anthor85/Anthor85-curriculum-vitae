@@ -4,15 +4,27 @@ import styles from './Expandable.module.scss';
 interface ExpandableProps {
   cabecera: ReactNode;
   inicialAbierto?: boolean;
+  // Pinta cabecera y children tal cual, sin plegado (p. ej. para el PDF)
+  desactivado?: boolean;
   children: ReactNode;
 }
 
 export const Expandable = ({
   cabecera,
   inicialAbierto = false,
+  desactivado = false,
   children,
 }: ExpandableProps) => {
   const [abierto, setAbierto] = useState(inicialAbierto);
+
+  if (desactivado) {
+    return (
+      <>
+        {cabecera}
+        {children}
+      </>
+    );
+  }
 
   return (
     <div className={styles.Expandable}>

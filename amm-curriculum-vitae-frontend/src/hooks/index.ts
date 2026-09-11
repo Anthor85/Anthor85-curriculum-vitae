@@ -1,4 +1,4 @@
-﻿export * from './useConocimientoStore';
+export * from './useConocimientoStore';
 export * from './useCurriculumStore';
 export * from './useExperienciaStore';
 export * from './useFormacionStore';

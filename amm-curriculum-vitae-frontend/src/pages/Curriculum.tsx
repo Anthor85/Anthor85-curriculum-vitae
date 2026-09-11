@@ -1,22 +1,21 @@
-﻿import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { exportToPDF } from '../helpers/exportToPDF';
 import { getIcons } from '../helpers/getIcons';
 import { ordenarCurriculum } from '../helpers/ordenarCurriculum';
 import { Button } from '../components/Button';
 import { Tabs } from '../components/Tabs';
-import { useCurriculumStore } from '../hooks/useCurriculumStore';
+import { useCurriculumStore } from '../hooks';
 import {
   ConocimientoItem,
   CurriculumPDF,
   ExperienciaItem,
   FormacionComplementariaItem,
   FormacionItem,
-} from './curriculum';
+} from './components/curriculum/items';
 
-import styles from './MainPage.module.scss';
+import styles from './Curriculum.module.scss';
 
-export const MainPage = () => {
-  const exportableHTML = useRef<HTMLDivElement>(null);
+export const Curriculum = () => {
   const pdfRef = useRef<HTMLDivElement>(null);
   const { curriculum, getCurriculum } = useCurriculumStore();
 
@@ -91,7 +90,7 @@ export const MainPage = () => {
 
   return (
     <>
-      <div id="mainPage" className={styles.MainPage} ref={exportableHTML}>
+      <div id="mainPage" className={styles.MainPage}>
         <div className={styles.header}>
           {perfil && (
             <div className={styles.name}>
@@ -132,7 +131,7 @@ export const MainPage = () => {
                 pdfRef.current && exportToPDF(pdfRef.current, nombrePDF)
               }
               name="Export to PDF"
-              icon="download"
+              icon="descarga"
             />
           </div>
           <div className={styles.information}>

@@ -1,4 +1,4 @@
-﻿export interface Perfil {
+export interface Perfil {
   id: string;
   nombre: string;
   apellidos: string;
@@ -19,10 +19,3 @@ export interface PerfilState {
   loading: boolean;
   error: string | null;
 }
-
-export interface PerfilAction {
-  type: string;
-  payload: any;
-}
-
-export type PerfilDispatch = (action: PerfilAction) => void;

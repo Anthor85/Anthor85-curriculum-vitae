@@ -1,12 +1,11 @@
-﻿import { useDispatch, useSelector } from 'react-redux';
-import { CurriculumState } from '../interfaces/curriculum.interface';
+import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/api';
-import { setCurriculum } from '../store';
+import { RootState, setCurriculum } from '../store';
 
 export const useCurriculumStore = () => {
   const dispatch = useDispatch();
   const { curriculum, loading, error } = useSelector(
-    (state: { curriculum: CurriculumState }) => state.curriculum,
+    (state: RootState) => state.curriculum,
   );
 
   const getCurriculum = async () => {

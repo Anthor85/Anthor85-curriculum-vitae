@@ -10,20 +10,24 @@ describe('<Button />', () => {
     expect(screen.getByRole('button', { name: 'Guardar' })).toBeInTheDocument();
   });
 
-  it('pinta el icono con la clase icon-{icon} cuando recibe icon', () => {
+  it('pinta el icono indicado en icon, oculto a lectores de pantalla', () => {
     const { container } = render(
-      <Button onClick={vi.fn()} name="Borrar" icon="trash" />,
+      <Button onClick={vi.fn()} name="Descargar" icon="descarga" />,
     );
 
-    const icono = container.querySelector('i');
+    const icono = container.querySelector('[data-icon]');
     expect(icono).toBeInTheDocument();
-    expect(icono).toHaveClass('icon-trash');
+    expect(icono).toHaveAttribute('data-icon', 'descarga');
+    expect(icono).toHaveAttribute('aria-hidden', 'true');
+    expect(
+      screen.getByRole('button', { name: 'Descargar' }),
+    ).toBeInTheDocument();
   });
 
   it('no pinta ningun icono cuando no recibe icon', () => {
     const { container } = render(<Button onClick={vi.fn()} name="Guardar" />);
 
-    expect(container.querySelector('i')).toBeNull();
+    expect(container.querySelector('[data-icon]')).toBeNull();
   });
 
   it('llama a onClick una vez al pulsar el boton', async () => {

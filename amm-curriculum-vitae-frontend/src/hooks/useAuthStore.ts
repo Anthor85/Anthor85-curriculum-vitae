@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/api';
-import { onChecking, onLogin, onLogout } from '../store';
+import { onChecking, onLogin, onLogout, RootState } from '../store';
 import type {
   AuthState,
   LoginPayload,
@@ -17,7 +17,7 @@ const guardarSesion = ({ token }: LoginResponse) => {
 export const useAuthStore = () => {
   const dispatch = useDispatch();
   const { status, user, errorMessage } = useSelector(
-    (state: any) => state.auth as AuthState,
+    (state: RootState) => state.auth as AuthState,
   );
 
   const startLogin = async ({ email, password }: LoginPayload) => {

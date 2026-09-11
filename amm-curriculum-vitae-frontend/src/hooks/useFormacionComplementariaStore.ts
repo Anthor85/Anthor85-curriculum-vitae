@@ -1,4 +1,4 @@
-﻿import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/api';
 import { setFormacionComplementaria } from '../store';
 import type {

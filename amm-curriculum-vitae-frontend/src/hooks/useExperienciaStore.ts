@@ -1,4 +1,4 @@
-﻿import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import type { ExperienciaPayload } from '../interfaces/experiencia.interface';
 import api from '../api/api';
 import { setExperiencia } from '../store';

@@ -1,4 +1,4 @@
-﻿export * from './store';
+export * from './store';
 export * from './auth/authSlice';
 export * from './conocimiento/conocimientoSlice';
 export * from './curriculum/slice';

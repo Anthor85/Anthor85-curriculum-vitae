@@ -1,4 +1,4 @@
-﻿export * from './Conocimiento';
+export * from './Conocimiento';
 export * from './Experiencia';
 export * from './Formacion';
 export * from './FormacionComplementaria';

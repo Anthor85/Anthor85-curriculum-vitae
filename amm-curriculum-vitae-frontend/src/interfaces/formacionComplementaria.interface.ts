@@ -1,4 +1,4 @@
-﻿export interface FormacionComplementaria {
+export interface FormacionComplementaria {
   id: string;
   titulo: string;
   institucion: string;

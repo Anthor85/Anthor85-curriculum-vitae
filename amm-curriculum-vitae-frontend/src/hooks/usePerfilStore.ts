@@ -1,4 +1,4 @@
-﻿import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/api';
 import { setPerfil } from '../store';
 import type { PerfilPayload } from '../interfaces/perfil.interface';

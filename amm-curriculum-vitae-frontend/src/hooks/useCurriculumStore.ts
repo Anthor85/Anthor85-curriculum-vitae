@@ -1,4 +1,4 @@
-﻿import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { CurriculumState } from '../interfaces/curriculum.interface';
 import api from '../api/api';
 import { setCurriculum } from '../store';

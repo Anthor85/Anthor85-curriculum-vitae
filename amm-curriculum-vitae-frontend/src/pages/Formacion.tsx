@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFormacionStore, useMensajeAccion } from '../hooks';
 import { FormacionForm } from './forms/FormacionForm';
 import { FormacionCard } from './cards';

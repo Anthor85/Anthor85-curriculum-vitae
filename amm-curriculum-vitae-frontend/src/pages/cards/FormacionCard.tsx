@@ -1,4 +1,4 @@
-﻿import { dateConverter } from '../../helpers/dateConverter';
+import { dateConverter } from '../../helpers/dateConverter';
 import { Formacion } from '../../interfaces/formacion.interface';
 
 import styles from './Cards.module.scss';

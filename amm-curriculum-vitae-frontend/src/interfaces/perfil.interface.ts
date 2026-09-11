@@ -1,4 +1,4 @@
-﻿export interface Perfil {
+export interface Perfil {
   id: string;
   nombre: string;
   apellidos: string;

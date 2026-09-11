@@ -1,4 +1,4 @@
-﻿import { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useMensajeAccion, usePerfilStore } from '../hooks';
 import { PerfilForm } from './forms/PerfilForm';
 import type { PerfilPayload } from '../interfaces/perfil.interface';

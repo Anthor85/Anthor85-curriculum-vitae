@@ -1,4 +1,4 @@
-﻿import { dateConverter } from '../../helpers/dateConverter';
+import { dateConverter } from '../../helpers/dateConverter';
 import { useConocimientoStore } from '../../hooks';
 import { Experiencia } from '../../interfaces/experiencia.interface';
 

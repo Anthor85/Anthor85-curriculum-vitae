@@ -1,4 +1,4 @@
-﻿import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { CurriculumState } from '../../interfaces/curriculum.interface';
 
 export const curriculumSlice = createSlice({

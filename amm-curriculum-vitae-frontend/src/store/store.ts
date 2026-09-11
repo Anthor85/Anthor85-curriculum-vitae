@@ -1,4 +1,4 @@
-﻿import { configureStore } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import { curriculumSlice } from './curriculum/slice';
 import { authSlice } from './auth/authSlice';
 import { experienciaSlice } from './experiencia/experienciaSlice';

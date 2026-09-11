@@ -11,9 +11,3 @@ export interface Curriculum {
   formacionesComplementarias: FormacionComplementaria[];
   perfil: Perfil | null;
 }
-
-export interface CurriculumState {
-  curriculum: Curriculum | null;
-  loading: boolean;
-  error: string | null;
-}

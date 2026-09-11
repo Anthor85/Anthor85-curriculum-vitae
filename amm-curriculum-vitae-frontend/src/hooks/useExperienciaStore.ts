@@ -1,12 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux';
 import type { ExperienciaPayload } from '../interfaces/experiencia.interface';
 import api from '../api/api';
-import { setExperiencia } from '../store';
+import { RootState, setExperiencia } from '../store';
 
 export const useExperienciaStore = () => {
   const dispatch = useDispatch();
   const { experiencia, loading, error } = useSelector(
-    (state: any) => state.experiencia,
+    (state: RootState) => state.experiencia,
   );
 
   const getExperiencia = async () => {
@@ -21,10 +21,9 @@ export const useExperienciaStore = () => {
 
   const createExperiencia = async (payload: ExperienciaPayload) => {
     try {
-
       const { data } = await api.post('/experiencia', payload);
 
-      dispatch(setExperiencia([...experiencia, data]));
+      experiencia && dispatch(setExperiencia([...experiencia, data]));
       return true;
     } catch (error) {
       console.error('Error creating experiencia:', error);
@@ -36,11 +35,12 @@ export const useExperienciaStore = () => {
     try {
       const { data } = await api.put(`/experiencia/${id}`, payload);
 
-      dispatch(
-        setExperiencia(
-          experiencia.map((exp: any) => (exp.id === data.id ? data : exp)),
-        ),
-      );
+      experiencia &&
+        dispatch(
+          setExperiencia(
+            experiencia.map((exp: any) => (exp.id === data.id ? data : exp)),
+          ),
+        );
       return true;
     } catch (error) {
       console.error('Error updating experiencia:', error);
@@ -52,11 +52,12 @@ export const useExperienciaStore = () => {
     try {
       const { data } = await api.delete(`/experiencia/${id}`);
 
-      dispatch(
-        setExperiencia(
-          experiencia.filter((exp: any) => exp.id !== data.experiencia.id),
-        ),
-      );
+      experiencia &&
+        dispatch(
+          setExperiencia(
+            experiencia.filter((exp: any) => exp.id !== data.experiencia.id),
+          ),
+        );
       return true;
     } catch (error) {
       console.error('Error deleting experiencia:', error);

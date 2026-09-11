@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/api';
-import { setFormacion } from '../store';
+import { RootState, setFormacion } from '../store';
 import type {
   Formacion,
   FormacionPayload,
@@ -9,7 +9,7 @@ import type {
 export const useFormacionStore = () => {
   const dispatch = useDispatch();
   const { formacion, loading, error } = useSelector(
-    (state: any) => state.formacion,
+    (state: RootState) => state.formacion,
   );
 
   const getFormacion = async () => {
@@ -26,7 +26,7 @@ export const useFormacionStore = () => {
     try {
       const { data } = await api.post('/formacion', payload);
 
-      dispatch(setFormacion([...formacion, data]));
+      formacion && dispatch(setFormacion([...formacion, data]));
       return true;
     } catch (error) {
       console.error('Error creando formación:', error);
@@ -37,13 +37,14 @@ export const useFormacionStore = () => {
   const updateFormacion = async (id: string, payload: FormacionPayload) => {
     try {
       const { data } = await api.put(`/formacion/${id}`, payload);
-      dispatch(
-        setFormacion(
-          formacion.map((form: Formacion) =>
-            form.id === data.id ? data : form,
+      formacion &&
+        dispatch(
+          setFormacion(
+            formacion.map((form: Formacion) =>
+              form.id === data.id ? data : form,
+            ),
           ),
-        ),
-      );
+        );
       return true;
     } catch (error) {
       console.error('Error actualizando formación:', error);
@@ -55,11 +56,12 @@ export const useFormacionStore = () => {
     try {
       const { data } = await api.delete(`/formacion/${id}`);
 
-      dispatch(
-        setFormacion(
-          formacion.filter((form: any) => form.id !== data.formacion.id),
-        ),
-      );
+      formacion &&
+        dispatch(
+          setFormacion(
+            formacion.filter((form: any) => form.id !== data.formacion.id),
+          ),
+        );
       return true;
     } catch (error) {
       console.error('Error eliminando formación:', error);

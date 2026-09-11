@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/api';
-import { setFormacionComplementaria } from '../store';
+import { RootState, setFormacionComplementaria } from '../store';
 import type {
   FormacionComplementaria,
   FormacionComplementariaPayload,
@@ -9,7 +9,7 @@ import type {
 export const useFormacionComplementariaStore = () => {
   const dispatch = useDispatch();
   const { formacionComplementaria, loading, error } = useSelector(
-    (state: any) => state.formacionComplementaria,
+    (state: RootState) => state.formacionComplementaria,
   );
 
   const getFormacionComplementaria = async () => {
@@ -28,7 +28,10 @@ export const useFormacionComplementariaStore = () => {
     try {
       const { data } = await api.post('/formacionComplementaria', payload);
 
-      dispatch(setFormacionComplementaria([...formacionComplementaria, data]));
+      formacionComplementaria &&
+        dispatch(
+          setFormacionComplementaria([...formacionComplementaria, data]),
+        );
       return true;
     } catch (error) {
       console.error('Error creating formacionComplementaria:', error);
@@ -43,13 +46,14 @@ export const useFormacionComplementariaStore = () => {
     try {
       const { data } = await api.put(`/formacionComplementaria/${id}`, payload);
 
-      dispatch(
-        setFormacionComplementaria(
-          formacionComplementaria.map((form: FormacionComplementaria) =>
-            form.id === data.id ? data : form,
+      formacionComplementaria &&
+        dispatch(
+          setFormacionComplementaria(
+            formacionComplementaria.map((form: FormacionComplementaria) =>
+              form.id === data.id ? data : form,
+            ),
           ),
-        ),
-      );
+        );
       return true;
     } catch (error) {
       console.error('Error updating formacionComplementaria:', error);
@@ -61,13 +65,14 @@ export const useFormacionComplementariaStore = () => {
     try {
       const { data } = await api.delete(`/formacionComplementaria/${id}`);
 
-      dispatch(
-        setFormacionComplementaria(
-          formacionComplementaria.filter(
-            (form: any) => form.id !== data.formacionComplementaria.id,
+      formacionComplementaria &&
+        dispatch(
+          setFormacionComplementaria(
+            formacionComplementaria.filter(
+              (form: any) => form.id !== data.formacionComplementaria.id,
+            ),
           ),
-        ),
-      );
+        );
       return true;
     } catch (error) {
       console.error('Error deleting formacionComplementaria:', error);

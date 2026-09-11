@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { curriculumSlice } from './curriculum/slice';
+import { curriculumSlice } from './curriculum/curriculumSlice';
 import { authSlice } from './auth/authSlice';
 import { experienciaSlice } from './experiencia/experienciaSlice';
 import { conocimientoSlice } from './conocimiento/conocimientoSlice';
 import { formacionSlice } from './formacion/formacionSlice';
 import { formacionComplementariaSlice } from './formacionComplementaria/formacionComplementariaSlice';
 import { perfilSlice } from './perfil/perfilSlice';
+
+export type RootState = ReturnType<typeof store.getState>;
 
 export const store = configureStore({
   reducer: {

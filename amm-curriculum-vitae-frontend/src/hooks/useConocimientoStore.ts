@@ -1,15 +1,15 @@
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/api';
-import { setConocimiento } from '../store/conocimiento/conocimientoSlice';
 import type {
   Conocimiento,
   ConocimientoPayload,
 } from '../interfaces/conocimiento.interface';
+import { RootState, setConocimiento } from '../store';
 
 export const useConocimientoStore = () => {
   const dispatch = useDispatch();
   const { conocimiento, loading, error } = useSelector(
-    (state: any) => state.conocimiento,
+    (state: RootState) => state.conocimiento,
   );
 
   const getConocimiento = async () => {
@@ -24,7 +24,7 @@ export const useConocimientoStore = () => {
   const createConocimiento = async (payload: ConocimientoPayload) => {
     try {
       const { data } = await api.post('/conocimiento', payload);
-      dispatch(setConocimiento([...conocimiento, data]));
+      conocimiento && dispatch(setConocimiento([...conocimiento, data]));
       return true;
     } catch (error) {
       console.error('Error creating conocimiento:', error);
@@ -38,13 +38,14 @@ export const useConocimientoStore = () => {
   ) => {
     try {
       const { data } = await api.put(`/conocimiento/${id}`, payload);
-      dispatch(
-        setConocimiento(
-          conocimiento.map((con: Conocimiento) =>
-            con.id === data.id ? data : con,
+      conocimiento &&
+        dispatch(
+          setConocimiento(
+            conocimiento.map((con: Conocimiento) =>
+              con.id === data.id ? data : con,
+            ),
           ),
-        ),
-      );
+        );
       return true;
     } catch (error) {
       console.error('Error updating conocimiento:', error);
@@ -55,9 +56,12 @@ export const useConocimientoStore = () => {
   const deleteConocimiento = async (id: string) => {
     try {
       const { data } = await api.delete(`/conocimiento/${id}`);
-      dispatch(
-        setConocimiento(conocimiento.filter((con: any) => con.id !== data.id)),
-      );
+      conocimiento &&
+        dispatch(
+          setConocimiento(
+            conocimiento.filter((con: any) => con.id !== data.id),
+          ),
+        );
       return true;
     } catch (error) {
       console.error('Error deleting conocimiento:', error);

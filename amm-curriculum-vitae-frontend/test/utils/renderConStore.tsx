@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 
 import { authSlice } from '../../src/store/auth/authSlice';
-import { curriculumSlice } from '../../src/store/curriculum/slice';
+import { curriculumSlice } from '../../src/store/curriculum/curriculumSlice';
 import { conocimientoSlice } from '../../src/store/conocimiento/conocimientoSlice';
 import { experienciaSlice } from '../../src/store/experiencia/experienciaSlice';
 import { formacionSlice } from '../../src/store/formacion/formacionSlice';

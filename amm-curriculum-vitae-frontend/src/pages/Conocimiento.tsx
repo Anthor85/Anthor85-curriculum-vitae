@@ -46,7 +46,7 @@ export const Conocimiento = () => {
   };
 
   useEffect(() => {
-    if (conocimiento.length === 0) getConocimiento();
+    if (!conocimiento || conocimiento.length === 0) getConocimiento();
   }, []);
 
   if (loading) return <p>Loading...</p>;
@@ -55,7 +55,7 @@ export const Conocimiento = () => {
   return (
     <div className={styles.Page}>
       <div className={styles.data}>
-        {(conocimiento as IConocimiento[]).map((con) => (
+        {(conocimiento as IConocimiento[])?.map((con) => (
           <ConocimientoCard
             key={con.id}
             conocimiento={con}

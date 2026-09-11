@@ -37,13 +37,12 @@ export const ExperienciaCard = ({
           <div className={styles.coleccion}>
             <p>Tecnologías:</p>
             <ul className={styles.colecciones}>
-              {conocimiento
-                .filter((tech: any) =>
-                  experiencia.tecnologias.includes(tech.id),
-                )
-                .map((tech: any) => (
-                  <li key={tech.id}>{tech.titulo}</li>
-                ))}
+              {conocimiento &&
+                conocimiento
+                  .filter((tech: any) =>
+                    experiencia.tecnologias.includes(tech.id),
+                  )
+                  .map((tech: any) => <li key={tech.id}>{tech.titulo}</li>)}
             </ul>
           </div>
         )}

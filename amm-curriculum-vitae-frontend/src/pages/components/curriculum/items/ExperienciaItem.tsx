@@ -1,5 +1,7 @@
 import { Expandable } from '../../../../components/Expandable';
 import { dateConverter } from '../../../../helpers/dateConverter';
+import { rangoFechas } from '../../../../helpers/rangoFechas';
+import { tecnologiasFilter } from '../../../../helpers/tecnologiasFilter';
 import { Conocimiento } from '../../../../interfaces/conocimiento.interface';
 import { Experiencia } from '../../../../interfaces/experiencia.interface';
 
@@ -18,9 +20,7 @@ export const ExperienciaItem = ({
   expandible = true,
   enPDF = false,
 }: Props) => {
-  const tecnologias = conocimiento.filter((tech) =>
-    experiencia.tecnologias.includes(tech.id),
-  );
+  const tecnologias = tecnologiasFilter(experiencia.tecnologias, conocimiento);
 
   const clases = [
     styles.Item,
@@ -38,10 +38,7 @@ export const ExperienciaItem = ({
       >
         <div className={styles.items}>
           <span className={styles.fechas}>
-            {dateConverter(new Date(experiencia.fechaInicio))} -{' '}
-            {experiencia.fechaFin
-              ? dateConverter(new Date(experiencia.fechaFin))
-              : 'En la actualidad'}
+            {rangoFechas(experiencia.fechaInicio, experiencia.fechaFin)}
           </span>
           <p className={styles.descripcion}>{experiencia.descripcion}</p>
           {tecnologias.length > 0 && (

@@ -62,6 +62,19 @@ describe('<Expandable />', () => {
     );
   });
 
+  it('con desactivado pinta cabecera y children sin botón ni triángulo', () => {
+    const { container } = render(
+      <Expandable cabecera="Cabecera" desactivado={true}>
+        <p>Contenido</p>
+      </Expandable>,
+    );
+
+    expect(screen.getByText('Cabecera')).toBeInTheDocument();
+    expect(screen.getByText('Contenido')).toBeInTheDocument();
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    expect(container.querySelector('span')).toBeNull();
+  });
+
   it('el triangulo refleja el estado abierto/cerrado con una clase', async () => {
     const user = userEvent.setup();
     const { container } = render(

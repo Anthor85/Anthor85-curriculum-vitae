@@ -7,7 +7,6 @@ import { Formacion } from '../../../../interfaces/formacion.interface';
 import { FormacionComplementaria } from '../../../../interfaces/formacionComplementaria.interface';
 import { Perfil } from '../../../../interfaces/perfil.interface';
 import { ExperienciaItem } from '../items/ExperienciaItem';
-import { FormacionItem } from '../items/FormacionItem';
 
 import styles from './CurriculumPDF.module.scss';
 
@@ -41,10 +40,10 @@ const Seccion = ({ titulo, vacia, plana, children }: SeccionProps) => {
   );
 };
 
-const detalleComplementaria = ({
+const detalleFormacion = ({
   institucion,
   fechaFin,
-}: FormacionComplementaria) => {
+}: Formacion | FormacionComplementaria) => {
   const partes = [
     institucion,
     fechaFin ? dateConverter(new Date(fechaFin)) : '',
@@ -85,14 +84,13 @@ export const CurriculumPDF = ({
           </div>
         )}
         <Seccion titulo="Conocimientos" vacia={!conocimiento.length}>
-          <div className={`${styles.lineas} ${styles['lineas--sangrada']}`}>
+          <ul className={`${styles.lineas} ${styles['lineas--sangrada']}`}>
             {conocimiento.map((item) => (
-              <p key={item.id} className={styles.linea}>
+              <li key={item.id} className={styles.linea}>
                 <strong>{item.titulo}</strong>
-                {item.nivel ? ` (${item.nivel})` : ''}
-              </p>
+              </li>
             ))}
-          </div>
+          </ul>
         </Seccion>
       </div>
 
@@ -111,13 +109,20 @@ export const CurriculumPDF = ({
               key={item.id}
               experiencia={item}
               conocimiento={conocimiento}
+              expandible={false}
+              enPDF
             />
           ))}
         </Seccion>
-        <Seccion titulo="Formación Académica" vacia={!formaciones.length} plana>
-          {formaciones.map((item) => (
-            <FormacionItem key={item.id} formacion={item} />
-          ))}
+        <Seccion titulo="Formación Académica" vacia={!formaciones.length}>
+          <div className={styles.lineas}>
+            {formaciones.map((item) => (
+              <p key={item.id} className={styles.linea}>
+                <strong>{item.titulo}</strong>
+                {detalleFormacion(item)}
+              </p>
+            ))}
+          </div>
         </Seccion>
         <Seccion
           titulo="Formación Complementaria"
@@ -127,7 +132,7 @@ export const CurriculumPDF = ({
             {formacionesComplementarias.map((item) => (
               <p key={item.id} className={styles.linea}>
                 <strong>{item.titulo}</strong>
-                {detalleComplementaria(item)}
+                {detalleFormacion(item)}
               </p>
             ))}
           </div>

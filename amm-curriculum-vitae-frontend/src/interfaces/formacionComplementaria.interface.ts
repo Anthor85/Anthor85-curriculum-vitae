@@ -11,7 +11,7 @@ export interface FormacionComplementariaPayload extends Omit<
 > {}
 
 export interface FormacionComplementariaState {
-  formacionComplementaria: FormacionComplementaria[];
+  formacionComplementaria: FormacionComplementaria[] | null;
   loading: boolean;
   error: string | null;
 }

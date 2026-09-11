@@ -9,7 +9,7 @@ export interface Formacion {
 export interface FormacionPayload extends Omit<Formacion, 'id'> {}
 
 export interface FormacionState {
-  formacion: Formacion[];
+  formacion: Formacion[] | null;
   loading: boolean;
   error: string | null;
 }

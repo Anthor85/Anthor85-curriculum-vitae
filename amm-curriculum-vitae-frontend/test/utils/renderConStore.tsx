@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 
@@ -13,20 +13,22 @@ import { perfilSlice } from '../../src/store/perfil/perfilSlice';
 
 // Store nuevo por test: el `store` de src/store/store.ts es un singleton y
 // filtraria estado entre tests, haciendolos dependientes del orden.
-type EstadoPrecargado = Record<string, unknown>;
+const rootReducer = combineReducers({
+  auth: authSlice.reducer,
+  curriculum: curriculumSlice.reducer,
+  conocimiento: conocimientoSlice.reducer,
+  experiencia: experienciaSlice.reducer,
+  formacion: formacionSlice.reducer,
+  formacionComplementaria: formacionComplementariaSlice.reducer,
+  perfil: perfilSlice.reducer,
+});
+
+type EstadoPrecargado = Partial<ReturnType<typeof rootReducer>>;
 
 export const crearStore = (preloadedState?: EstadoPrecargado) =>
   configureStore({
+    reducer: rootReducer,
     preloadedState,
-    reducer: {
-      auth: authSlice.reducer,
-      curriculum: curriculumSlice.reducer,
-      conocimiento: conocimientoSlice.reducer,
-      experiencia: experienciaSlice.reducer,
-      formacion: formacionSlice.reducer,
-      formacionComplementaria: formacionComplementariaSlice.reducer,
-      perfil: perfilSlice.reducer,
-    },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         serializableCheck: false,

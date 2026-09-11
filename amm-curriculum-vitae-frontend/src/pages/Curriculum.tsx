@@ -131,7 +131,7 @@ export const Curriculum = () => {
                 pdfRef.current && exportToPDF(pdfRef.current, nombrePDF)
               }
               name="Export to PDF"
-              icon="download"
+              icon="descarga"
             />
           </div>
           <div className={styles.information}>

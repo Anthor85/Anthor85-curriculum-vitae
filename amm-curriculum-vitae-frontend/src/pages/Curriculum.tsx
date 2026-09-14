@@ -130,7 +130,7 @@ export const Curriculum = () => {
               onClick={() =>
                 pdfRef.current && exportToPDF(pdfRef.current, nombrePDF)
               }
-              name="Export to PDF"
+              name="Exportar a PDF"
               icon="descarga"
             />
           </div>

@@ -1,3 +1,4 @@
+import { Button } from '../../components/Button';
 import { Conocimiento } from '../../interfaces/conocimiento.interface';
 
 import styles from './Cards.module.scss';
@@ -18,9 +19,7 @@ export const ConocimientoCard = ({
   const { titulo, nivel, id } = conocimiento;
 
   return (
-    <div
-      className={`${styles.Card} ${enEdicion ? styles.enEdicion : ''}`}
-    >
+    <div className={`${styles.Card} ${enEdicion ? styles.enEdicion : ''}`}>
       <div className={styles.data}>
         <div className={styles.title}>{titulo}</div>
         {nivel && (
@@ -30,8 +29,8 @@ export const ConocimientoCard = ({
         )}
       </div>
       <div className={`${styles.actions} ${styles.actionsFila}`}>
-        <button onClick={() => onEditar(conocimiento)}>Editar</button>
-        <button onClick={() => deleteConocimiento(id)}>Eliminar</button>
+        <Button onClick={() => onEditar(conocimiento)} name="Editar" />
+        <Button onClick={() => deleteConocimiento(id)} name="Eliminar" />
       </div>
     </div>
   );

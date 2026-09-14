@@ -22,7 +22,7 @@ export const Perfil = () => {
     if (perfil === null) getPerfil();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p>Cargando...</p>;
   if (error) return <p>Error: {error}</p>;
 
   return (

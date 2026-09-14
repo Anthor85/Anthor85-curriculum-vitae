@@ -1,3 +1,4 @@
+import { Button } from '../../components/Button';
 import { dateConverter } from '../../helpers/dateConverter';
 import { FormacionComplementaria } from '../../interfaces/formacionComplementaria.interface';
 
@@ -18,10 +19,7 @@ export const FormacionComplementariaCard = ({
   const { id, titulo, institucion, fechaFin } = formacionComplementaria;
 
   return (
-    <div
-      className={`${styles.Card} ${enEdicion ? styles.enEdicion : ''}`}
-
-    >
+    <div className={`${styles.Card} ${enEdicion ? styles.enEdicion : ''}`}>
       <div className={styles.data}>
         <div className={styles.title}>{titulo}</div>
         <div className={styles.subdata}>
@@ -34,12 +32,16 @@ export const FormacionComplementariaCard = ({
         )}
       </div>
       <div className={`${styles.actions} ${styles.actionsFila}`}>
-        <button onClick={() => onEditar(formacionComplementaria)}>
-          Editar
-        </button>
-        <button onClick={() => deleteFormacionComplementaria(id)}>
-          Eliminar
-        </button>
+        <Button
+          onClick={() => onEditar(formacionComplementaria)}
+          name="Editar"
+        />
+        <Button
+          onClick={() =>
+            deleteFormacionComplementaria(formacionComplementaria.id)
+          }
+          name="Eliminar"
+        />
       </div>
     </div>
   );

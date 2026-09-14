@@ -1,3 +1,4 @@
+import { Button } from '../../components/Button';
 import { dateConverter } from '../../helpers/dateConverter';
 import { Formacion } from '../../interfaces/formacion.interface';
 
@@ -18,9 +19,7 @@ export const FormacionCard = ({
   const { titulo, institucion, fechaFin, id, descripcion } = formacion;
 
   return (
-    <div
-      className={`${styles.Card} ${enEdicion ? styles.enEdicion : ''}`}
-    >
+    <div className={`${styles.Card} ${enEdicion ? styles.enEdicion : ''}`}>
       <div className={styles.data}>
         <div className={styles.title}>{titulo}</div>
         <div className={styles.subdata}>
@@ -36,8 +35,8 @@ export const FormacionCard = ({
         )}
       </div>
       <div className={`${styles.actions} ${styles.actionsFila}`}>
-        <button onClick={() => onEditar(formacion)}>Editar</button>
-        <button onClick={() => deleteFormacion(id)}>Eliminar</button>
+        <Button onClick={() => onEditar(formacion)} name="Editar" />
+        <Button onClick={() => deleteFormacion(formacion.id)} name="Eliminar" />
       </div>
     </div>
   );

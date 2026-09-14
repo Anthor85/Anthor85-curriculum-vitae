@@ -1,46 +1,83 @@
-# Getting Started with Create React App
+# amm-curriculum-vitae — frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+SPA de currículum vitae: muestra el CV público y permite editarlo desde un panel privado
+(experiencia, conocimientos, formación, formación complementaria y perfil), con exportación a PDF.
 
-## Available Scripts
+Es el frontend del monorepo; el API vive en `../amm-curriculum-vitae-backend`.
 
-In the project directory, you can run:
+## Stack
 
-### `npm start`
+- **React 19** + **TypeScript**
+- **Vite 7** (dev server y build)
+- **Redux Toolkit** + **react-redux** para el estado
+- **React Router 7** para el enrutado
+- **Sass** con CSS Modules (`*.module.scss`)
+- **axios** para las llamadas al API
+- **jsPDF** + **html2canvas** para el export a PDF
+- **Vitest** + **Testing Library** para los tests
+- **ESLint** + **Prettier**
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Requisitos
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- Node.js 20 o superior
+- El backend levantado (por defecto en `http://localhost:3001`)
 
-### `npm test`
+## Instalación
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+npm install
+```
 
-### `npm run build`
+## Variables de entorno
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Se leen con el prefijo `VITE_` desde `.env`:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+VITE_MODE=dev
+VITE_BASE_URL=http://localhost:3001/api
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Scripts
 
-### `npm run eject`
+| Script                                    | Qué hace                                                             |
+| ----------------------------------------- | -------------------------------------------------------------------- |
+| `npm run dev`                             | Servidor de desarrollo en `http://localhost:5173` con HMR.           |
+| `npm run build`                           | Build de producción en `dist/`.                                      |
+| `npm run preview`                         | Sirve el build de `dist/` para comprobarlo antes de desplegar.       |
+| `npm test`                                | Tests con Vitest, una pasada.                                        |
+| `npm run test:watch`                      | Tests en modo watch.                                                 |
+| `npm run test:coverage`                   | Tests con informe de cobertura en `coverage/`.                       |
+| `npm run typecheck`                       | Comprobación de tipos (`tsc --noEmit`). Vite no la hace en el build. |
+| `npm run lint` / `npm run lint:fix`       | ESLint.                                                              |
+| `npm run format` / `npm run format:check` | Prettier (escribe / solo comprueba).                                 |
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Estructura
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+src/
+  api/          cliente axios con el interceptor del token
+  components/   componentes reutilizables (Button, Tabs, MultiSelect, Expandable…)
+  helpers/      utilidades: fechas, export a PDF, fábricas de slices y stores CRUD
+  hooks/        un hook por dominio (useExperienciaStore, useAuthStore…)
+  interfaces/   tipos compartidos
+  pages/        páginas y sus cards/forms
+  router/       rutas y RutaPrivada
+  store/        slices de Redux Toolkit, uno por dominio
+  styles/       estilos globales y variables Sass
+test/           tests de páginas y componentes
+docs/specs/     especificaciones de cada funcionalidad
+references/     notas de refactor y deuda técnica
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Rutas
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- `/` — currículum público.
+- `/login` — acceso al panel.
+- `/experiencia`, `/conocimiento`, `/formacion`, `/formacion-complementaria`, `/perfil` — privadas, protegidas por `RutaPrivada`.
 
-## Learn More
+Al arrancar se revalida el token guardado; mientras el estado es `checking` no se redirige a `/login`.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Despliegue
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Preparado para Vercel. `vercel.json` reescribe todas las rutas a `index.html` para que
+el enrutado del lado del cliente funcione al recargar.

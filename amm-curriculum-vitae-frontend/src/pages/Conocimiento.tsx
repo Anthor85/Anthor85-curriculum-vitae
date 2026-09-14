@@ -49,7 +49,7 @@ export const Conocimiento = () => {
     if (!conocimiento || conocimiento.length === 0) getConocimiento();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p>Cargando...</p>;
   if (error) return <p>Error: {error}</p>;
 
   return (

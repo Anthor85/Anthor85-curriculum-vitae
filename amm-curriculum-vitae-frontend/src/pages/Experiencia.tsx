@@ -48,7 +48,7 @@ export const Experiencia = () => {
     if (experiencia === null) getExperiencia();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p>Cargando...</p>;
   if (error) return <p>Error: {error}</p>;
 
   return (

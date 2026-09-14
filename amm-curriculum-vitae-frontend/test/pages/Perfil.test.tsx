@@ -243,7 +243,7 @@ describe('<Perfil />', () => {
     consola.mockRestore();
   });
 
-  test('con loading en el store pinta «Loading...»', async () => {
+  test('con loading en el store pinta «Cargando...»', async () => {
     renderConStore(<Perfil />, {
       perfil: {
         perfil: null,
@@ -252,7 +252,7 @@ describe('<Perfil />', () => {
       },
     });
 
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    expect(screen.getByText('Cargando...')).toBeInTheDocument();
     expect(screen.queryByLabelText('Nombre:')).not.toBeInTheDocument();
 
     await flush();

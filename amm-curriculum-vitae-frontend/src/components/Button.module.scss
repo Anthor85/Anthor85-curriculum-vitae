@@ -5,15 +5,15 @@
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  background-color: #3d3db8 /* var(--primary-color) */;
-  color: white;
+  background-color: v.$color-primary-dark;
+  color: v.$color-white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
 
   &:hover {
-    background-color: color.adjust(#3d3db8, $lightness: -10%);
+    background-color: color.adjust(v.$color-primary-dark, $lightness: -10%);
   }
 }
 

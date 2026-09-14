@@ -1,3 +1,4 @@
+import { Button } from '../../components/Button';
 import { dateConverter } from '../../helpers/dateConverter';
 import { rangoFechas } from '../../helpers/rangoFechas';
 import { tecnologiasFilter } from '../../helpers/tecnologiasFilter';
@@ -54,10 +55,11 @@ export const ExperienciaCard = ({
         ) : null}
       </div>
       <div className={`${styles.actions} ${styles.actionsFila}`}>
-        <button onClick={() => onEditar(experiencia)}>Editar</button>
-        <button onClick={() => deleteExperiencia(experiencia.id)}>
-          Delete
-        </button>
+        <Button onClick={() => onEditar(experiencia)} name="Editar" />
+        <Button
+          onClick={() => deleteExperiencia(experiencia.id)}
+          name="Eliminar"
+        />
       </div>
     </div>
   );

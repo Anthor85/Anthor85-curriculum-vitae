@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useFormacionComplementariaStore, useMensajeAccion } from '../hooks';
+import {
+  MENSAJE_ERROR,
+  useFormacionComplementariaStore,
+  useMensajeAccion,
+} from '../hooks';
 import { FormacionComplementariaForm } from './forms/FormacionComplementariaForm';
 import { FormacionComplementariaCard } from './cards';
 import {
@@ -13,7 +17,6 @@ export const FormacionComplementaria = () => {
   const {
     formacionComplementaria,
     loading,
-    error,
 
     getFormacionComplementaria,
     createFormacionComplementaria,
@@ -21,7 +24,7 @@ export const FormacionComplementaria = () => {
     deleteFormacionComplementaria,
   } = useFormacionComplementariaStore();
 
-  const { mensaje, mostrarMensaje } = useMensajeAccion();
+  const { mensaje, mostrarMensaje, mostrarError } = useMensajeAccion();
 
   const [
     formacionComplementariaEnEdicion,
@@ -36,25 +39,31 @@ export const FormacionComplementaria = () => {
         formacionComplementariaEnEdicion.id,
         payload,
       );
-      if (actualizada) mostrarMensaje('Formación Complementaria actualizada');
+      mostrarMensaje(
+        actualizada ? 'Formación Complementaria actualizada' : MENSAJE_ERROR,
+      );
       return;
     }
 
     const creada = await createFormacionComplementaria(payload);
-    if (creada) mostrarMensaje('Formación Complementaria creada');
+    mostrarMensaje(creada ? 'Formación Complementaria creada' : MENSAJE_ERROR);
   };
 
   const eliminarFormacionComplementaria = async (id: string) => {
     const eliminada = await deleteFormacionComplementaria(id);
-    if (eliminada) mostrarMensaje('Formación Complementaria eliminada');
+    mostrarMensaje(
+      eliminada ? 'Formación Complementaria eliminada' : MENSAJE_ERROR,
+    );
   };
 
   useEffect(() => {
-    if (formacionComplementaria === null) getFormacionComplementaria();
+    if (formacionComplementaria === null)
+      getFormacionComplementaria().then((obtenida) => {
+        if (!obtenida) mostrarError();
+      });
   }, []);
 
   if (loading) return <p>Cargando...</p>;
-  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className={styles.Page}>

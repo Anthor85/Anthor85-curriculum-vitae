@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useFormacionStore, useMensajeAccion } from '../hooks';
+import { MENSAJE_ERROR, useFormacionStore, useMensajeAccion } from '../hooks';
 import { FormacionForm } from './forms/FormacionForm';
 import { FormacionCard } from './cards';
 import {
@@ -13,7 +13,6 @@ export const Formacion = () => {
   const {
     formacion,
     loading,
-    error,
 
     getFormacion,
     createFormacion,
@@ -21,7 +20,7 @@ export const Formacion = () => {
     deleteFormacion,
   } = useFormacionStore();
 
-  const { mensaje, mostrarMensaje } = useMensajeAccion();
+  const { mensaje, mostrarMensaje, mostrarError } = useMensajeAccion();
 
   const [formacionEnEdicion, setFormacionEnEdicion] =
     useState<IFormacion | null>(null);
@@ -29,25 +28,27 @@ export const Formacion = () => {
   const enviarFormacion = async (payload: FormacionPayload) => {
     if (formacionEnEdicion) {
       const actualizada = await updateFormacion(formacionEnEdicion.id, payload);
-      if (actualizada) mostrarMensaje('Formación actualizada');
+      mostrarMensaje(actualizada ? 'Formación actualizada' : MENSAJE_ERROR);
       return;
     }
 
     const creada = await createFormacion(payload);
-    if (creada) mostrarMensaje('Formación creada');
+    mostrarMensaje(creada ? 'Formación creada' : MENSAJE_ERROR);
   };
 
   const eliminarFormacion = async (id: string) => {
     const eliminada = await deleteFormacion(id);
-    if (eliminada) mostrarMensaje('Formación eliminada');
+    mostrarMensaje(eliminada ? 'Formación eliminada' : MENSAJE_ERROR);
   };
 
   useEffect(() => {
-    if (formacion === null) getFormacion();
+    if (formacion === null)
+      getFormacion().then((obtenida) => {
+        if (!obtenida) mostrarError();
+      });
   }, []);
 
   if (loading) return <p>Cargando...</p>;
-  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className={styles.Page}>

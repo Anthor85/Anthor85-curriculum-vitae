@@ -12,10 +12,13 @@ export const usePerfilStore = () => {
       const { data } = await api.get('/perfil');
 
       dispatch(setPerfil(data));
+      return true;
     } catch (error) {
-      if ((error as any)?.response?.status === 404) return;
+      // Un 404 significa que aún no hay perfil creado, no es un fallo.
+      if ((error as any)?.response?.status === 404) return true;
 
       console.error('Error recuperando perfil:', error);
+      return false;
     }
   };
 

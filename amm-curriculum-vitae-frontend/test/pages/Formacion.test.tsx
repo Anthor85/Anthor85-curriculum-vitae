@@ -1,12 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import {
-  avanzarMensaje,
-  flush,
-  renderConStore,
-  textoMensaje,
-} from '../utils';
+import { avanzarMensaje, flush, renderConStore, textoMensaje } from '../utils';
 import { Formacion as IFormacion } from '../../src/interfaces/formacion.interface';
 
 const apiMock = vi.hoisted(() => ({
@@ -238,7 +233,9 @@ describe('<Formacion />', () => {
       fechaFin: '2015-06-30',
     });
     expect(screen.getByText('Ingeniería del Software')).toBeInTheDocument();
-    expect(screen.queryByText('Ingeniería Informática')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Ingeniería Informática'),
+    ).not.toBeInTheDocument();
 
     await avanzarMensaje();
     expect(textoMensaje()).toBe('Formación actualizada');
@@ -253,13 +250,15 @@ describe('<Formacion />', () => {
     await flush();
 
     expect(apiMock.delete).toHaveBeenCalledWith('/formacion/1');
-    expect(screen.queryByText('Ingeniería Informática')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Ingeniería Informática'),
+    ).not.toBeInTheDocument();
     expect(screen.getByText('Grado Superior DAM')).toBeInTheDocument();
 
     await avanzarMensaje();
     expect(textoMensaje()).toBe('Formación eliminada');
   });
-  test('si api.post falla no se pinta Card nueva ni mensaje', async () => {
+  test('si api.post falla no se pinta Card nueva y avisa del error', async () => {
     const user = setupUser();
     apiMock.post.mockRejectedValue(new Error('boom'));
     await renderPagina();
@@ -276,10 +275,10 @@ describe('<Formacion />', () => {
     expect(screen.getAllByRole('button', { name: 'Editar' })).toHaveLength(2);
 
     await avanzarMensaje();
-    expect(textoMensaje()).toBe('');
+    expect(textoMensaje()).toBe('Ha ocurrido un error inesperado');
   });
 
-  test('si api.put falla la Card no cambia ni hay mensaje', async () => {
+  test('si api.put falla la Card no cambia y avisa del error', async () => {
     const user = setupUser();
     apiMock.put.mockRejectedValue(new Error('boom'));
     await renderPagina();
@@ -302,10 +301,10 @@ describe('<Formacion />', () => {
     ).not.toBeInTheDocument();
 
     await avanzarMensaje();
-    expect(textoMensaje()).toBe('');
+    expect(textoMensaje()).toBe('Ha ocurrido un error inesperado');
   });
 
-  test('si api.delete falla la Card sigue en el listado y no hay mensaje', async () => {
+  test('si api.delete falla la Card sigue en el listado y avisa del error', async () => {
     const user = setupUser();
     apiMock.delete.mockRejectedValue(new Error('boom'));
     await renderPagina();
@@ -319,7 +318,7 @@ describe('<Formacion />', () => {
     expect(screen.getAllByRole('button', { name: 'Editar' })).toHaveLength(2);
 
     await avanzarMensaje();
-    expect(textoMensaje()).toBe('');
+    expect(textoMensaje()).toBe('Ha ocurrido un error inesperado');
   });
 
   test('con loading en el store pinta «Cargando...»', async () => {
@@ -328,17 +327,6 @@ describe('<Formacion />', () => {
     });
 
     expect(screen.getByText('Cargando...')).toBeInTheDocument();
-    expect(screen.queryByLabelText('Título:')).not.toBeInTheDocument();
-
-    await flush();
-  });
-
-  test('con error en el store pinta el error', async () => {
-    renderConStore(<Formacion />, {
-      formacion: { formacion: null, loading: false, error: 'Vaya' },
-    });
-
-    expect(screen.getByText('Error: Vaya')).toBeInTheDocument();
     expect(screen.queryByLabelText('Título:')).not.toBeInTheDocument();
 
     await flush();

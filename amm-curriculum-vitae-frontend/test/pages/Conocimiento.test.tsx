@@ -1,12 +1,7 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import {
-  avanzarMensaje,
-  flush,
-  renderConStore,
-  textoMensaje,
-} from '../utils';
+import { avanzarMensaje, flush, renderConStore, textoMensaje } from '../utils';
 import {
   Conocimiento as IConocimiento,
   ConocimientoNivel,
@@ -231,7 +226,7 @@ describe('<Conocimiento />', () => {
     await avanzarMensaje();
     expect(textoMensaje()).toBe('Conocimiento eliminado');
   });
-  test('si api.post falla no se pinta Card nueva ni mensaje', async () => {
+  test('si api.post falla no se pinta Card nueva y avisa del error', async () => {
     const user = setupUser();
     apiMock.post.mockRejectedValue(new Error('boom'));
     await renderPagina();
@@ -248,10 +243,10 @@ describe('<Conocimiento />', () => {
     expect(screen.getAllByRole('button', { name: 'Editar' })).toHaveLength(2);
 
     await avanzarMensaje();
-    expect(textoMensaje()).toBe('');
+    expect(textoMensaje()).toBe('Ha ocurrido un error inesperado');
   });
 
-  test('si api.put falla la Card no cambia ni hay mensaje', async () => {
+  test('si api.put falla la Card no cambia y avisa del error', async () => {
     const user = setupUser();
     apiMock.put.mockRejectedValue(new Error('boom'));
     await renderPagina();
@@ -272,10 +267,10 @@ describe('<Conocimiento />', () => {
     expect(screen.queryByText('React 19')).not.toBeInTheDocument();
 
     await avanzarMensaje();
-    expect(textoMensaje()).toBe('');
+    expect(textoMensaje()).toBe('Ha ocurrido un error inesperado');
   });
 
-  test('si api.delete falla la Card sigue en el listado y no hay mensaje', async () => {
+  test('si api.delete falla la Card sigue en el listado y avisa del error', async () => {
     const user = setupUser();
     apiMock.delete.mockRejectedValue(new Error('boom'));
     await renderPagina();
@@ -289,7 +284,17 @@ describe('<Conocimiento />', () => {
     expect(screen.getAllByRole('button', { name: 'Editar' })).toHaveLength(2);
 
     await avanzarMensaje();
-    expect(textoMensaje()).toBe('');
+    expect(textoMensaje()).toBe('Ha ocurrido un error inesperado');
+  });
+
+  test('si api.get falla avisa del error', async () => {
+    apiMock.get.mockRejectedValue(new Error('boom'));
+    await renderPagina();
+
+    expect(screen.queryAllByRole('button', { name: 'Editar' })).toHaveLength(0);
+
+    await avanzarMensaje();
+    expect(textoMensaje()).toBe('Ha ocurrido un error inesperado');
   });
 
   test('con loading en el store pinta «Cargando...»', async () => {
@@ -298,17 +303,6 @@ describe('<Conocimiento />', () => {
     });
 
     expect(screen.getByText('Cargando...')).toBeInTheDocument();
-    expect(screen.queryByLabelText('Título:')).not.toBeInTheDocument();
-
-    await flush();
-  });
-
-  test('con error en el store pinta el error', async () => {
-    renderConStore(<Conocimiento />, {
-      conocimiento: { conocimiento: [], loading: false, error: 'Vaya' },
-    });
-
-    expect(screen.getByText('Error: Vaya')).toBeInTheDocument();
     expect(screen.queryByLabelText('Título:')).not.toBeInTheDocument();
 
     await flush();

@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useConocimientoStore, useMensajeAccion } from '../hooks';
+import {
+  MENSAJE_ERROR,
+  useConocimientoStore,
+  useMensajeAccion,
+} from '../hooks';
 import { ConocimientoForm } from './forms/ConocimientoForm';
 import {
   Conocimiento as IConocimiento,
@@ -13,7 +17,6 @@ export const Conocimiento = () => {
   const {
     conocimiento,
     loading,
-    error,
 
     getConocimiento,
     createConocimiento,
@@ -21,7 +24,7 @@ export const Conocimiento = () => {
     deleteConocimiento,
   } = useConocimientoStore();
 
-  const { mensaje, mostrarMensaje } = useMensajeAccion();
+  const { mensaje, mostrarMensaje, mostrarError } = useMensajeAccion();
 
   const [conocimientoEnEdicion, setConocimientoEnEdicion] =
     useState<IConocimiento | null>(null);
@@ -32,25 +35,27 @@ export const Conocimiento = () => {
         conocimientoEnEdicion.id,
         payload,
       );
-      if (actualizado) mostrarMensaje('Conocimiento actualizado');
+      mostrarMensaje(actualizado ? 'Conocimiento actualizado' : MENSAJE_ERROR);
       return;
     }
 
     const creado = await createConocimiento(payload);
-    if (creado) mostrarMensaje('Conocimiento creado');
+    mostrarMensaje(creado ? 'Conocimiento creado' : MENSAJE_ERROR);
   };
 
   const eliminarConocimiento = async (id: string) => {
     const eliminado = await deleteConocimiento(id);
-    if (eliminado) mostrarMensaje('Conocimiento eliminado');
+    mostrarMensaje(eliminado ? 'Conocimiento eliminado' : MENSAJE_ERROR);
   };
 
   useEffect(() => {
-    if (!conocimiento || conocimiento.length === 0) getConocimiento();
+    if (!conocimiento || conocimiento.length === 0)
+      getConocimiento().then((obtenido) => {
+        if (!obtenido) mostrarError();
+      });
   }, []);
 
   if (loading) return <p>Cargando...</p>;
-  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className={styles.Page}>

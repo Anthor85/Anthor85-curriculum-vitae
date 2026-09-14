@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useExperienciaStore, useMensajeAccion } from '../hooks';
+import { MENSAJE_ERROR, useExperienciaStore, useMensajeAccion } from '../hooks';
 import {
   Experiencia as IExperiencia,
   ExperienciaPayload,
@@ -13,14 +13,13 @@ export const Experiencia = () => {
   const {
     experiencia,
     loading,
-    error,
     getExperiencia,
     createExperiencia,
     updateExperiencia,
     deleteExperiencia,
   } = useExperienciaStore();
 
-  const { mensaje, mostrarMensaje } = useMensajeAccion();
+  const { mensaje, mostrarMensaje, mostrarError } = useMensajeAccion();
 
   const [experienciaEnEdicion, setExperienciaEnEdicion] =
     useState<IExperiencia | null>(null);
@@ -31,25 +30,27 @@ export const Experiencia = () => {
         experienciaEnEdicion.id,
         payload,
       );
-      if (actualizada) mostrarMensaje('Experiencia actualizada');
+      mostrarMensaje(actualizada ? 'Experiencia actualizada' : MENSAJE_ERROR);
       return;
     }
 
     const creada = await createExperiencia(payload);
-    if (creada) mostrarMensaje('Experiencia creada');
+    mostrarMensaje(creada ? 'Experiencia creada' : MENSAJE_ERROR);
   };
 
   const eliminarExperiencia = async (id: string) => {
     const eliminada = await deleteExperiencia(id);
-    if (eliminada) mostrarMensaje('Experiencia eliminada');
+    mostrarMensaje(eliminada ? 'Experiencia eliminada' : MENSAJE_ERROR);
   };
 
   useEffect(() => {
-    if (experiencia === null) getExperiencia();
+    if (experiencia === null)
+      getExperiencia().then((obtenida) => {
+        if (!obtenida) mostrarError();
+      });
   }, []);
 
   if (loading) return <p>Cargando...</p>;
-  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className={styles.Page}>

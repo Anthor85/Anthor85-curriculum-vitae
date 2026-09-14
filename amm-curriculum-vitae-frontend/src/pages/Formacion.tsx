@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MENSAJE_ERROR, useFormacionStore, useMensajeAccion } from '../hooks';
+import { useFormacionStore, useMensajeAccion } from '../hooks';
 import { FormacionForm } from './forms/FormacionForm';
 import { FormacionCard } from './cards';
 import {
@@ -28,17 +28,19 @@ export const Formacion = () => {
   const enviarFormacion = async (payload: FormacionPayload) => {
     if (formacionEnEdicion) {
       const actualizada = await updateFormacion(formacionEnEdicion.id, payload);
-      mostrarMensaje(actualizada ? 'Formación actualizada' : MENSAJE_ERROR);
-      return;
+      if (!actualizada) return mostrarError();
+      return mostrarMensaje('Formación actualizada');
     }
 
     const creada = await createFormacion(payload);
-    mostrarMensaje(creada ? 'Formación creada' : MENSAJE_ERROR);
+    if (!creada) return mostrarError();
+    mostrarMensaje('Formación creada');
   };
 
   const eliminarFormacion = async (id: string) => {
     const eliminada = await deleteFormacion(id);
-    mostrarMensaje(eliminada ? 'Formación eliminada' : MENSAJE_ERROR);
+    if (!eliminada) return mostrarError();
+    mostrarMensaje('Formación eliminada');
   };
 
   useEffect(() => {

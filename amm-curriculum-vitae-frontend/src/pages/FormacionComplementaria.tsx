@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  MENSAJE_ERROR,
-  useFormacionComplementariaStore,
-  useMensajeAccion,
-} from '../hooks';
+import { useFormacionComplementariaStore, useMensajeAccion } from '../hooks';
 import { FormacionComplementariaForm } from './forms/FormacionComplementariaForm';
 import { FormacionComplementariaCard } from './cards';
 import {
@@ -39,21 +35,19 @@ export const FormacionComplementaria = () => {
         formacionComplementariaEnEdicion.id,
         payload,
       );
-      mostrarMensaje(
-        actualizada ? 'Formación Complementaria actualizada' : MENSAJE_ERROR,
-      );
-      return;
+      if (!actualizada) return mostrarError();
+      return mostrarMensaje('Formación Complementaria actualizada');
     }
 
     const creada = await createFormacionComplementaria(payload);
-    mostrarMensaje(creada ? 'Formación Complementaria creada' : MENSAJE_ERROR);
+    if (!creada) return mostrarError();
+    mostrarMensaje('Formación Complementaria creada');
   };
 
   const eliminarFormacionComplementaria = async (id: string) => {
     const eliminada = await deleteFormacionComplementaria(id);
-    mostrarMensaje(
-      eliminada ? 'Formación Complementaria eliminada' : MENSAJE_ERROR,
-    );
+    if (!eliminada) return mostrarError();
+    mostrarMensaje('Formación Complementaria eliminada');
   };
 
   useEffect(() => {

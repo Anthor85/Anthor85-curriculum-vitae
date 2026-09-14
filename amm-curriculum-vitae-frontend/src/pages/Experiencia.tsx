@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MENSAJE_ERROR, useExperienciaStore, useMensajeAccion } from '../hooks';
+import { useExperienciaStore, useMensajeAccion } from '../hooks';
 import {
   Experiencia as IExperiencia,
   ExperienciaPayload,
@@ -30,17 +30,19 @@ export const Experiencia = () => {
         experienciaEnEdicion.id,
         payload,
       );
-      mostrarMensaje(actualizada ? 'Experiencia actualizada' : MENSAJE_ERROR);
-      return;
+      if (!actualizada) return mostrarError();
+      return mostrarMensaje('Experiencia actualizada');
     }
 
     const creada = await createExperiencia(payload);
-    mostrarMensaje(creada ? 'Experiencia creada' : MENSAJE_ERROR);
+    if (!creada) return mostrarError();
+    mostrarMensaje('Experiencia creada');
   };
 
   const eliminarExperiencia = async (id: string) => {
     const eliminada = await deleteExperiencia(id);
-    mostrarMensaje(eliminada ? 'Experiencia eliminada' : MENSAJE_ERROR);
+    if (!eliminada) return mostrarError();
+    mostrarMensaje('Experiencia eliminada');
   };
 
   useEffect(() => {

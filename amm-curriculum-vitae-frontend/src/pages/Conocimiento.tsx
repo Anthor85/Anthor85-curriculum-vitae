@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  MENSAJE_ERROR,
-  useConocimientoStore,
-  useMensajeAccion,
-} from '../hooks';
+import { useConocimientoStore, useMensajeAccion } from '../hooks';
 import { ConocimientoForm } from './forms/ConocimientoForm';
 import {
   Conocimiento as IConocimiento,
@@ -35,17 +31,19 @@ export const Conocimiento = () => {
         conocimientoEnEdicion.id,
         payload,
       );
-      mostrarMensaje(actualizado ? 'Conocimiento actualizado' : MENSAJE_ERROR);
-      return;
+      if (!actualizado) return mostrarError();
+      return mostrarMensaje('Conocimiento actualizado');
     }
 
     const creado = await createConocimiento(payload);
-    mostrarMensaje(creado ? 'Conocimiento creado' : MENSAJE_ERROR);
+    if (!creado) return mostrarError();
+    mostrarMensaje('Conocimiento creado');
   };
 
   const eliminarConocimiento = async (id: string) => {
     const eliminado = await deleteConocimiento(id);
-    mostrarMensaje(eliminado ? 'Conocimiento eliminado' : MENSAJE_ERROR);
+    if (!eliminado) return mostrarError();
+    mostrarMensaje('Conocimiento eliminado');
   };
 
   useEffect(() => {

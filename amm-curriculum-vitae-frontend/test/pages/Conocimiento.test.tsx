@@ -292,12 +292,12 @@ describe('<Conocimiento />', () => {
     expect(textoMensaje()).toBe('');
   });
 
-  test('con loading en el store pinta «Loading...»', async () => {
+  test('con loading en el store pinta «Cargando...»', async () => {
     renderConStore(<Conocimiento />, {
       conocimiento: { conocimiento: [], loading: true, error: null },
     });
 
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    expect(screen.getByText('Cargando...')).toBeInTheDocument();
     expect(screen.queryByLabelText('Título:')).not.toBeInTheDocument();
 
     await flush();

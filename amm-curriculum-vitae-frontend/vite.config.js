@@ -4,6 +4,13 @@ import react from '@vitejs/plugin-react';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@use '/src/styles/variables' as v;`,
+      },
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',
@@ -13,27 +20,12 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
-      include: [
-        'src/pages/Login.tsx',
-        'src/pages/Perfil.tsx',
-        'src/pages/Conocimiento.tsx',
-        'src/pages/Experiencia.tsx',
-        'src/pages/Formacion.tsx',
-        'src/pages/FormacionComplementaria.tsx',
-        'src/pages/forms/PerfilForm.tsx',
-        'src/pages/forms/ConocimientoForm.tsx',
-        'src/pages/forms/ExperienciaForm.tsx',
-        'src/pages/forms/FormacionForm.tsx',
-        'src/pages/forms/FormacionComplementariaForm.tsx',
-        'src/pages/cards/ConocimientoCard.tsx',
-        'src/pages/cards/ExperienciaCard.tsx',
-        'src/pages/cards/FormacionCard.tsx',
-        'src/pages/cards/FormacionComplementariaCard.tsx',
-        'src/components/Button.tsx',
-        'src/components/Expandable.tsx',
-        'src/components/MensajeAccion.tsx',
-        'src/components/MultiSelect.tsx',
-        'src/components/Tabs.tsx',
+      include: ['src/**/*.tsx'],
+      exclude: [
+        'src/index.tsx',
+        'src/router/**',
+        'src/pages/Curriculum.tsx',
+        'src/pages/components/**',
       ],
       thresholds: {
         lines: 80,

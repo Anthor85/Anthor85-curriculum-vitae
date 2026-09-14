@@ -3,7 +3,7 @@
   flex-direction: row;
   gap: 1rem;
   padding: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid v.$color-gray-250;
   max-width: 600px;
   place-content: space-between;
   margin-right: 0.5rem;
@@ -22,7 +22,7 @@
 
     .subdata {
       font-size: 0.9rem;
-      color: #666;
+      color: v.$color-gray-500;
     }
 
     .coleccion {
@@ -49,8 +49,8 @@
   }
 
   &.enEdicion {
-    border-color: #4a90d9;
-    background-color: #eef5fc;
+    border-color: v.$color-card-border;
+    background-color: v.$color-card-bg;
   }
 }
 

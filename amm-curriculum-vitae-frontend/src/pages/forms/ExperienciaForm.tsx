@@ -117,7 +117,7 @@ export const ExperienciaForm = ({
   return (
     <form onSubmit={enviar} className={styles.Form}>
       <div className={styles.field}>
-        <label htmlFor="empresa">Company:</label>
+        <label htmlFor="empresa">Empresa:</label>
         <input
           type="text"
           id="empresa"
@@ -209,9 +209,12 @@ export const ExperienciaForm = ({
               </button>
             </div>
           ))}
-        <button type="button" className={styles.hitoBoton} onClick={anadirHito}>
-          + Añadir hito
-        </button>
+        <Button
+          type="button"
+          // className={styles.hitoBoton}
+          onClick={anadirHito}
+          name="+ Añadir hito"
+        />
       </div>
       <div className={styles.actions}>
         <Button

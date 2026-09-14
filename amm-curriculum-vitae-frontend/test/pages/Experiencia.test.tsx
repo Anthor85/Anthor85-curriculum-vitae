@@ -127,13 +127,13 @@ describe('<Experiencia />', () => {
     expect(screen.getByText('Acme')).toBeInTheDocument();
     expect(screen.getByText('Globex')).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: 'Editar' })).toHaveLength(2);
-    expect(screen.getAllByRole('button', { name: 'Delete' })).toHaveLength(2);
+    expect(screen.getAllByRole('button', { name: 'Eliminar' })).toHaveLength(2);
   });
 
   test('pinta el formulario con sus campos y sus botones', async () => {
     await renderPagina();
 
-    expect(screen.getByLabelText('Company:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Empresa:')).toBeInTheDocument();
     expect(screen.getByLabelText('Posición:')).toBeInTheDocument();
     expect(screen.getByLabelText('Fecha inicio:')).toBeInTheDocument();
     expect(screen.getByLabelText('Fecha fin:')).toBeInTheDocument();
@@ -153,7 +153,7 @@ describe('<Experiencia />', () => {
     const user = setupUser();
     await renderPagina();
 
-    const empresa = screen.getByLabelText('Company:');
+    const empresa = screen.getByLabelText('Empresa:');
     const posicion = screen.getByLabelText('Posición:');
     const fechaInicio = screen.getByLabelText('Fecha inicio:');
 
@@ -174,7 +174,7 @@ describe('<Experiencia />', () => {
     const user = setupUser();
     await renderPagina();
 
-    await user.type(screen.getByLabelText('Company:'), 'Initech');
+    await user.type(screen.getByLabelText('Empresa:'), 'Initech');
     await user.type(screen.getByLabelText('Posición:'), 'Tech Lead');
     escribirFecha(screen.getByLabelText('Fecha inicio:'), '2023-02-01');
     await user.click(
@@ -202,7 +202,7 @@ describe('<Experiencia />', () => {
     const user = setupUser();
     await renderPagina();
 
-    const empresa = screen.getByLabelText('Company:');
+    const empresa = screen.getByLabelText('Empresa:');
 
     await user.type(screen.getByLabelText('Posición:'), 'Tech Lead');
     escribirFecha(screen.getByLabelText('Fecha inicio:'), '2023-02-01');
@@ -224,7 +224,7 @@ describe('<Experiencia />', () => {
 
     await user.click(screen.getAllByRole('button', { name: 'Editar' })[0]);
 
-    expect(screen.getByLabelText('Company:')).toHaveValue('Acme');
+    expect(screen.getByLabelText('Empresa:')).toHaveValue('Acme');
     expect(screen.getByLabelText('Posición:')).toHaveValue(
       'Frontend Developer',
     );
@@ -245,7 +245,7 @@ describe('<Experiencia />', () => {
     await user.click(screen.getAllByRole('button', { name: 'Editar' })[0]);
     await user.click(screen.getByRole('button', { name: 'Borrar formulario' }));
 
-    expect(screen.getByLabelText('Company:')).toHaveValue('');
+    expect(screen.getByLabelText('Empresa:')).toHaveValue('');
     expect(screen.getByLabelText('Posición:')).toHaveValue('');
     expect(screen.getByLabelText('Fecha inicio:')).toHaveValue('');
     expect(screen.getByLabelText('Fecha fin:')).toHaveValue('');
@@ -263,7 +263,7 @@ describe('<Experiencia />', () => {
 
     await user.click(screen.getAllByRole('button', { name: 'Editar' })[0]);
 
-    const empresa = screen.getByLabelText('Company:');
+    const empresa = screen.getByLabelText('Empresa:');
     await user.clear(empresa);
     await user.type(empresa, 'Acme Corp');
     await user.click(
@@ -288,11 +288,11 @@ describe('<Experiencia />', () => {
     expect(textoMensaje()).toBe('Experiencia actualizada');
   });
 
-  test('«Delete» llama a api.delete y quita la Card del listado', async () => {
+  test('«Eliminar» llama a api.delete y quita la Card del listado', async () => {
     const user = setupUser();
     await renderPagina();
 
-    await user.click(screen.getAllByRole('button', { name: 'Delete' })[0]);
+    await user.click(screen.getAllByRole('button', { name: 'Eliminar' })[0]);
 
     await flush();
 
@@ -308,7 +308,7 @@ describe('<Experiencia />', () => {
     apiMock.post.mockRejectedValue(new Error('boom'));
     await renderPagina();
 
-    await user.type(screen.getByLabelText('Company:'), 'Initech');
+    await user.type(screen.getByLabelText('Empresa:'), 'Initech');
     await user.type(screen.getByLabelText('Posición:'), 'Tech Lead');
     escribirFecha(screen.getByLabelText('Fecha inicio:'), '2023-02-01');
     await user.click(
@@ -332,7 +332,7 @@ describe('<Experiencia />', () => {
 
     await user.click(screen.getAllByRole('button', { name: 'Editar' })[0]);
 
-    const empresa = screen.getByLabelText('Company:');
+    const empresa = screen.getByLabelText('Empresa:');
     await user.clear(empresa);
     await user.type(empresa, 'Acme Corp');
     await user.click(
@@ -354,7 +354,7 @@ describe('<Experiencia />', () => {
     apiMock.delete.mockRejectedValue(new Error('boom'));
     await renderPagina();
 
-    await user.click(screen.getAllByRole('button', { name: 'Delete' })[0]);
+    await user.click(screen.getAllByRole('button', { name: 'Eliminar' })[0]);
 
     await flush();
 
@@ -366,13 +366,13 @@ describe('<Experiencia />', () => {
     expect(textoMensaje()).toBe('');
   });
 
-  test('con loading en el store pinta «Loading...»', async () => {
+  test('con loading en el store pinta «Cargando...»', async () => {
     renderConStore(<Experiencia />, {
       experiencia: { experiencia: null, loading: true, error: null },
     });
 
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
-    expect(screen.queryByLabelText('Company:')).not.toBeInTheDocument();
+    expect(screen.getByText('Cargando...')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Empresa:')).not.toBeInTheDocument();
 
     await flush();
   });
@@ -383,7 +383,7 @@ describe('<Experiencia />', () => {
     });
 
     expect(screen.getByText('Error: Vaya')).toBeInTheDocument();
-    expect(screen.queryByLabelText('Company:')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Empresa:')).not.toBeInTheDocument();
 
     await flush();
   });
@@ -439,7 +439,7 @@ describe('<Experiencia />', () => {
     const user = setupUser();
     await renderPaginaConTecnologias();
 
-    await user.type(screen.getByLabelText('Company:'), 'Initech');
+    await user.type(screen.getByLabelText('Empresa:'), 'Initech');
     await user.type(screen.getByLabelText('Posición:'), 'Tech Lead');
     escribirFecha(screen.getByLabelText('Fecha inicio:'), '2023-02-01');
     escribirFecha(screen.getByLabelText('Fecha fin:'), '2024-03-15');
@@ -472,7 +472,7 @@ describe('<Experiencia />', () => {
     await user.click(screen.getByRole('button', { name: '+ Añadir hito' }));
     await user.type(inputsHito()[1], 'Segundo hito');
 
-    await user.type(screen.getByLabelText('Company:'), 'Initech');
+    await user.type(screen.getByLabelText('Empresa:'), 'Initech');
     await user.type(screen.getByLabelText('Posición:'), 'Tech Lead');
     escribirFecha(screen.getByLabelText('Fecha inicio:'), '2023-02-01');
 
@@ -515,7 +515,7 @@ describe('<Experiencia />', () => {
     await user.click(screen.getByRole('button', { name: '+ Añadir hito' }));
     await user.type(inputsHito()[0], '   ');
 
-    await user.type(screen.getByLabelText('Company:'), 'Initech');
+    await user.type(screen.getByLabelText('Empresa:'), 'Initech');
     await user.type(screen.getByLabelText('Posición:'), 'Tech Lead');
     escribirFecha(screen.getByLabelText('Fecha inicio:'), '2023-02-01');
 
@@ -559,7 +559,7 @@ describe('<Experiencia />', () => {
     apiMock.post.mockReturnValue(promesa);
     await renderPagina();
 
-    await user.type(screen.getByLabelText('Company:'), 'Initech');
+    await user.type(screen.getByLabelText('Empresa:'), 'Initech');
     await user.type(screen.getByLabelText('Posición:'), 'Tech Lead');
     escribirFecha(screen.getByLabelText('Fecha inicio:'), '2023-02-01');
     await user.click(

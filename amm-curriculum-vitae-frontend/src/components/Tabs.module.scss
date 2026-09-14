@@ -6,7 +6,7 @@
   .lista {
     display: flex;
     gap: 0.5rem;
-    border-bottom: 2px solid #ddd;
+    border-bottom: 2px solid v.$color-gray-150;
     flex-shrink: 0;
   }
 
@@ -17,18 +17,18 @@
     padding: 0.75rem 1.25rem;
     margin-bottom: -2px;
     font-size: 1.1rem;
-    color: #555;
+    color: v.$color-gray-600;
     cursor: pointer;
 
     &:hover {
-      color: #0024ea;
+      color: v.$color-primary;
     }
   }
 
   .activa {
-    color: #0024ea;
+    color: v.$color-primary;
     font-weight: bold;
-    border-bottom-color: #0024ea;
+    border-bottom-color: v.$color-primary;
   }
 
   .panel {
@@ -48,7 +48,7 @@
     }
 
     &::-webkit-scrollbar-thumb {
-      background: #ccc;
+      background: v.$color-gray-250;
       border-radius: 4px;
     }
   }
@@ -71,7 +71,7 @@
       position: sticky;
       top: 0;
       z-index: 10;
-      background: #fff;
+      background: v.$color-white;
     }
 
     .barraMovil {
@@ -80,14 +80,14 @@
       align-items: center;
       justify-content: space-between;
       gap: 0.5rem;
-      border-bottom: 2px solid #ddd;
+      border-bottom: 2px solid v.$color-gray-150;
       padding: 0.75rem 0;
     }
 
     .tituloActiva {
       font-size: 1.1rem;
       font-weight: bold;
-      color: #0024ea;
+      color: v.$color-primary;
     }
 
     .hamburguesa {
@@ -95,7 +95,7 @@
       border: none;
       font-size: 1.5rem;
       line-height: 1;
-      color: #555;
+      color: v.$color-gray-600;
       cursor: pointer;
       padding: 0 0.25rem;
     }
@@ -103,18 +103,18 @@
     .desplegable {
       display: flex;
       flex-direction: column;
-      border: 1px solid #ddd;
+      border: 1px solid v.$color-gray-150;
       border-top: none;
-      background: #fff;
+      background: v.$color-white;
     }
 
     .opcion {
       background: none;
       border: none;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid v.$color-gray-100;
       padding: 0.75rem 1rem;
       font-size: 1.1rem;
-      color: #555;
+      color: v.$color-gray-600;
       text-align: left;
       cursor: pointer;
 

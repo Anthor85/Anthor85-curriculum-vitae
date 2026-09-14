@@ -9,9 +9,3 @@ export type FormacionComplementariaPayload = Omit<
   FormacionComplementaria,
   'id'
 >;
-
-export interface FormacionComplementariaState {
-  formacionComplementaria: FormacionComplementaria[] | null;
-  loading: boolean;
-  error: string | null;
-}

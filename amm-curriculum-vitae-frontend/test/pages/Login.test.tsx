@@ -2,7 +2,13 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
-import { avanzarMensaje, flush, renderConStore, textoMensaje } from '../utils';
+import {
+  avanzarMensaje,
+  errorAxios,
+  flush,
+  renderConStore,
+  textoMensaje,
+} from '../utils';
 import type { AuthState } from '../../src/interfaces/auth.interface';
 
 const apiMock = vi.hoisted(() => ({
@@ -33,9 +39,7 @@ const RESPUESTA_LOGIN = {
 };
 
 // El backend responde 400 con el motivo en `msg`.
-const CREDENCIALES_MALAS = {
-  response: { status: 400, data: { msg: 'Credenciales incorrectas' } },
-};
+const CREDENCIALES_MALAS = errorAxios(400, { msg: 'Credenciales incorrectas' });
 
 // Un rechazo sin `response` es un fallo de red: el servidor no contesto.
 const ERROR_DE_RED = new Error('Network Error');

@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import { render } from '@testing-library/react';
+import { render, renderHook } from '@testing-library/react';
 
 import { authSlice } from '../../src/store/auth/authSlice';
 import { curriculumSlice } from '../../src/store/curriculum/curriculumSlice';
@@ -44,5 +44,19 @@ export const renderConStore = (
   return {
     store,
     ...render(<Provider store={store}>{ui}</Provider>),
+  };
+};
+
+export const renderHookConStore = <T,>(
+  hook: () => T,
+  preloadedState?: EstadoPrecargado,
+) => {
+  const store = crearStore(preloadedState);
+
+  return {
+    store,
+    ...renderHook(hook, {
+      wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
+    }),
   };
 };

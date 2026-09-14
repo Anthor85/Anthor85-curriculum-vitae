@@ -1,7 +1,13 @@
 import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { avanzarMensaje, flush, renderConStore, textoMensaje } from '../utils';
+import {
+  avanzarMensaje,
+  errorAxios,
+  flush,
+  renderConStore,
+  textoMensaje,
+} from '../utils';
 import { Perfil as IPerfil } from '../../src/interfaces/perfil.interface';
 
 const apiMock = vi.hoisted(() => ({
@@ -31,7 +37,7 @@ const PERFIL: IPerfil = {
 
 // Sin perfil el back responde 404 y el hook lo ignora: la pagina se queda en
 // modo creacion.
-const SIN_PERFIL = { response: { status: 404 } };
+const SIN_PERFIL = errorAxios(404);
 
 const configurarApi = (perfil: IPerfil | null = null) => {
   apiMock.get.mockImplementation(() =>

@@ -7,9 +7,3 @@ export interface Formacion {
 }
 
 export type FormacionPayload = Omit<Formacion, 'id'>;
-
-export interface FormacionState {
-  formacion: Formacion[] | null;
-  loading: boolean;
-  error: string | null;
-}

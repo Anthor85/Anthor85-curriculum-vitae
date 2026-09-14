@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { exportToPDF } from '../helpers/exportToPDF';
 import { getIcons } from '../helpers/getIcons';
 import { ordenarCurriculum } from '../helpers/ordenarCurriculum';
@@ -17,6 +17,7 @@ import styles from './Curriculum.module.scss';
 
 export const Curriculum = () => {
   const pdfRef = useRef<HTMLDivElement>(null);
+  const [preparandoPDF, setPreparandoPDF] = useState(false);
   const { curriculum, getCurriculum } = useCurriculumStore();
 
   useEffect(() => {
@@ -88,6 +89,13 @@ export const Curriculum = () => {
     },
   ];
 
+  useEffect(() => {
+    if (!preparandoPDF || !pdfRef.current) return;
+    exportToPDF(pdfRef.current, nombrePDF).finally(() =>
+      setPreparandoPDF(false),
+    );
+  }, [preparandoPDF, nombrePDF]);
+
   return (
     <>
       <div id="mainPage" className={styles.MainPage}>
@@ -129,9 +137,7 @@ export const Curriculum = () => {
               )}
             </div>
             <Button
-              onClick={() =>
-                pdfRef.current && exportToPDF(pdfRef.current, nombrePDF)
-              }
+              onClick={() => setPreparandoPDF(true)}
               name="Exportar a PDF"
               icon="descarga"
             />
@@ -145,15 +151,17 @@ export const Curriculum = () => {
         </div>
       </div>
 
-      <div ref={pdfRef} className={styles.pdfOculto}>
-        <CurriculumPDF
-          perfil={perfil || null}
-          experiencia={experienciaOrdenada}
-          formaciones={formacionesOrdenadas}
-          formacionesComplementarias={complementariasOrdenadas}
-          conocimiento={conocimientosOrdenados}
-        />
-      </div>
+      {preparandoPDF && (
+        <div ref={pdfRef} className={styles.pdfOculto}>
+          <CurriculumPDF
+            perfil={perfil || null}
+            experiencia={experienciaOrdenada}
+            formaciones={formacionesOrdenadas}
+            formacionesComplementarias={complementariasOrdenadas}
+            conocimiento={conocimientosOrdenados}
+          />
+        </div>
+      )}
     </>
   );
 };

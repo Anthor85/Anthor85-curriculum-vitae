@@ -2,11 +2,7 @@ import { useEffect, useState } from 'react';
 import { useConocimientoStore } from '../../hooks';
 import { MultiSelect } from '../../components/MultiSelect';
 import type { Conocimiento } from '../../interfaces/conocimiento.interface';
-import type {
-  Experiencia,
-  ExperienciaPayload,
-  HitoPayload,
-} from '../../interfaces/experiencia.interface';
+import type { Experiencia, ExperienciaPayload } from '../../interfaces/experiencia.interface';
 
 import { Button } from '../../components/Button';
 import { MensajeAccion } from '../../components/MensajeAccion';

@@ -16,7 +16,7 @@ export const FormacionCard = ({
   onEditar,
   enEdicion,
 }: Props) => {
-  const { titulo, institucion, fechaFin, id, descripcion } = formacion;
+  const { titulo, institucion, fechaFin, descripcion } = formacion;
 
   return (
     <div className={`${styles.Card} ${enEdicion ? styles.enEdicion : ''}`}>

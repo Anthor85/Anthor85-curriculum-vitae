@@ -1,3 +1,4 @@
+import { isAxiosError } from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/api';
 import { RootState, setPerfil } from '../store';
@@ -15,7 +16,7 @@ export const usePerfilStore = () => {
       return true;
     } catch (error) {
       // Un 404 significa que aún no hay perfil creado, no es un fallo.
-      if ((error as any)?.response?.status === 404) return true;
+      if (isAxiosError(error) && error.response?.status === 404) return true;
 
       console.error('Error recuperando perfil:', error);
       return false;

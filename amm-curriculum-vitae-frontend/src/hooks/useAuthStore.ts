@@ -1,3 +1,4 @@
+import { isAxiosError } from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/api';
 import { onChecking, onLogin, onLogout, RootState } from '../store';
@@ -51,7 +52,9 @@ export const useAuthStore = () => {
       return { ok: true, errorMessage: null };
     } catch (error) {
       // Sin `response` no hubo respuesta del servidor: es un fallo de red.
-      const mensaje: string = (error as any)?.response?.data?.msg ?? ERROR_RED;
+      const mensaje: string = isAxiosError<{ msg?: string }>(error)
+        ? (error.response?.data?.msg ?? ERROR_RED)
+        : ERROR_RED;
 
       dispatch(onLogout(mensaje));
 

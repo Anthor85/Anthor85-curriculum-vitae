@@ -1,5 +1,4 @@
 import { Button } from '../../components/Button';
-import { dateConverter } from '../../helpers/dateConverter';
 import { rangoFechas } from '../../helpers/rangoFechas';
 import { tecnologiasFilter } from '../../helpers/tecnologiasFilter';
 import { useConocimientoStore } from '../../hooks';

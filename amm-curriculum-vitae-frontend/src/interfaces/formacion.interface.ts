@@ -6,7 +6,7 @@ export interface Formacion {
   fechaFin: string;
 }
 
-export interface FormacionPayload extends Omit<Formacion, 'id'> {}
+export type FormacionPayload = Omit<Formacion, 'id'>;
 
 export interface FormacionState {
   formacion: Formacion[] | null;

@@ -12,25 +12,18 @@ interface Props {
   mensaje: MensajeAccionType | null;
 }
 
-export const MensajeAccion = ({ mensaje }: Props) => {
-  const [textoVisible, setTextoVisible] = useState<string>('');
+const animarTexto = (
+  texto: string,
+  setTextoVisible: (texto: string) => void
+) => {
+  let esperaSalida: ReturnType<typeof setTimeout> | undefined;
+  let intervaloSalida: ReturnType<typeof setInterval> | undefined;
 
-  useEffect(() => {
-    const texto = mensaje?.texto ?? '';
+  let visibles = 0;
+  setTextoVisible('');
 
-    if (!texto) {
-      setTextoVisible('');
-      return;
-    }
-
-    let intervaloEntrada: ReturnType<typeof setInterval> | undefined;
-    let esperaSalida: ReturnType<typeof setTimeout> | undefined;
-    let intervaloSalida: ReturnType<typeof setInterval> | undefined;
-
-    let visibles = 0;
-    setTextoVisible('');
-
-    intervaloEntrada = setInterval(() => {
+  const intervaloEntrada: ReturnType<typeof setInterval> | undefined =
+    setInterval(() => {
       visibles += 1;
       setTextoVisible(texto.slice(0, visibles));
 
@@ -48,11 +41,25 @@ export const MensajeAccion = ({ mensaje }: Props) => {
       }, DURACION_ESPERA);
     }, DURACION_ENTRADA / texto.length);
 
-    return () => {
-      clearInterval(intervaloEntrada);
-      clearTimeout(esperaSalida);
-      clearInterval(intervaloSalida);
-    };
+  return () => {
+    clearInterval(intervaloEntrada);
+    clearTimeout(esperaSalida);
+    clearInterval(intervaloSalida);
+  };
+};
+
+export const MensajeAccion = ({ mensaje }: Props) => {
+  const [textoVisible, setTextoVisible] = useState<string>('');
+
+  useEffect(() => {
+    const texto = mensaje?.texto ?? '';
+
+    if (!texto) {
+      setTextoVisible('');
+      return;
+    }
+
+    return animarTexto(texto, setTextoVisible);
   }, [mensaje]);
 
   return (

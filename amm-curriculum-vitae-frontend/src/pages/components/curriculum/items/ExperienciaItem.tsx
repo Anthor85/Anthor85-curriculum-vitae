@@ -1,5 +1,4 @@
 import { Expandable } from '../../../../components/Expandable';
-import { dateConverter } from '../../../../helpers/dateConverter';
 import { rangoFechas } from '../../../../helpers/rangoFechas';
 import { tecnologiasFilter } from '../../../../helpers/tecnologiasFilter';
 import { Conocimiento } from '../../../../interfaces/conocimiento.interface';

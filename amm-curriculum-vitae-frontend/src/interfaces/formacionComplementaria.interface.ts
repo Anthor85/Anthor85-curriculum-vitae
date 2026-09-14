@@ -5,10 +5,10 @@ export interface FormacionComplementaria {
   fechaFin?: string;
 }
 
-export interface FormacionComplementariaPayload extends Omit<
+export type FormacionComplementariaPayload = Omit<
   FormacionComplementaria,
   'id'
-> {}
+>;
 
 export interface FormacionComplementariaState {
   formacionComplementaria: FormacionComplementaria[] | null;

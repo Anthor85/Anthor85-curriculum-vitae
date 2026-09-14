@@ -10,4 +10,4 @@ export interface Conocimiento {
   nivel: ConocimientoNivel;
 }
 
-export interface ConocimientoPayload extends Omit<Conocimiento, 'id'> {}
+export type ConocimientoPayload = Omit<Conocimiento, 'id'>;

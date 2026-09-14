@@ -62,11 +62,9 @@ export const CurriculumPDF = ({
   return (
     <div className={styles.CurriculumPDF}>
       <div className={styles.izquierda}>
-        <img
-          className={styles.photo}
-          src={perfil?.foto || '/references/foto.jpg'}
-          alt="Profile"
-        />
+        {perfil?.foto && (
+          <img className={styles.photo} src={perfil.foto} alt="Profile" />
+        )}
         {perfil && (
           <div className={styles.contacto}>
             <div className={styles.contacto__linea}>

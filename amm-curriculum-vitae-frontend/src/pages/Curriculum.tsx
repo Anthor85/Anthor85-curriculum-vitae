@@ -103,12 +103,14 @@ export const Curriculum = () => {
         <div className={styles.basicInformation}>
           <div className={styles.column}>
             <div className={styles.identidad}>
-              <img
-                className={styles.photo}
-                src={perfil?.foto || '/references/foto.jpg'}
-                alt="Profile"
-                width={150}
-              />
+              {perfil?.foto && (
+                <img
+                  className={styles.photo}
+                  src={perfil.foto}
+                  alt="Profile"
+                  width={150}
+                />
+              )}
               {perfil && (
                 <div className={styles.contacto}>
                   <div className={styles.contacto__linea}>

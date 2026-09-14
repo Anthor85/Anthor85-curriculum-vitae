@@ -33,7 +33,7 @@ export const crearCrudStore =
       const get = async () => {
         try {
           const { data } = await api.get<T[]>(endpoint);
-          dispatch(setAccion(data));
+          dispatch(setAccion([...(lista ?? []), ...data]));
           return true;
         } catch (error) {
           console.error(`Error obteniendo ${nombre}:`, error);

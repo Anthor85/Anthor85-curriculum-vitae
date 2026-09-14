@@ -14,7 +14,7 @@ interface Props {
 
 const animarTexto = (
   texto: string,
-  setTextoVisible: (texto: string) => void
+  setTextoVisible: (texto: string) => void,
 ) => {
   let esperaSalida: ReturnType<typeof setTimeout> | undefined;
   let intervaloSalida: ReturnType<typeof setInterval> | undefined;

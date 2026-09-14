@@ -66,10 +66,10 @@ export const exportToPDF = (
 
 Estructura del nodo exportable:
 
-| Zona                     | Contenido                                                                                                                            |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Zona                     | Contenido                                                                                                                                                                                 |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Columna izquierda (~35%) | Foto (al 75% del ancho de columna, centrada), bloque de contacto (dirección, teléfono, email con sus iconos) y, debajo, el título `Conocimientos` con sus líneas de texto plano sangradas |
-| Columna derecha (~65%)   | `nombre + apellidos`, `descripcion` y, en columna, las secciones `Experiencia`, `Formación Académica` y `Formación Complementaria`     |
+| Columna derecha (~65%)   | `nombre + apellidos`, `descripcion` y, en columna, las secciones `Experiencia`, `Formación Académica` y `Formación Complementaria`                                                        |
 
 Títulos de sección exactos: `Experiencia`, `Formación Académica`, `Formación Complementaria`, `Conocimientos`.
 
@@ -141,13 +141,13 @@ Es decir: una sola imagen reutilizada y desplazada en negativo por página, la t
 
 ## Riesgos identificados
 
-| Riesgo | Mitigación |
-| ------ | ---------- |
-| Una tarjeta se parte por la mitad entre dos páginas | Declarado fuera de alcance: el troceado es por altura fija y no respeta bloques. Se acepta a cambio de no perder contenido |
-| Con muchos registros, el canvas a `scale: 2` puede acercarse al límite de tamaño del navegador y salir en blanco | El paso 8 prueba explícitamente con contenido largo; si aparece, bajar `scale` a `1.5` es un cambio de una línea |
+| Riesgo                                                                                                                                   | Mitigación                                                                                                                                                                                                         |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Una tarjeta se parte por la mitad entre dos páginas                                                                                      | Declarado fuera de alcance: el troceado es por altura fija y no respeta bloques. Se acepta a cambio de no perder contenido                                                                                         |
+| Con muchos registros, el canvas a `scale: 2` puede acercarse al límite de tamaño del navegador y salir en blanco                         | El paso 8 prueba explícitamente con contenido largo; si aparece, bajar `scale` a `1.5` es un cambio de una línea                                                                                                   |
 | La foto viene de una URL externa (`perfil.foto`) y CORS puede ensuciar el canvas, dejando la imagen en blanco o abortando la exportación | Se mantiene `useCORS: true`; el criterio de aceptación exige comprobar que ninguna imagen sale rota. Si el servidor de la foto no manda cabeceras CORS, el respaldo local `/references/foto.jpg` sigue funcionando |
-| El PDF en PNG pesaba 40 MB, inservible para adjuntarlo a una candidatura | Resuelto durante la implementación pasando el volcado a JPEG calidad `0.92`: 632 KB con el currículum completo |
-| Los iconos SVG cargados con `<img src="/icons/...">` a veces no se pintan en html2canvas | Se comprueba en el paso 7 antes de dar la exportación por buena; si fallan, la alternativa es incrustarlos como SVG en línea |
-| El nodo oculto puede provocar scroll horizontal o alargar la página si el `position: absolute` no se aplica bien | Criterio de aceptación explícito: la página `/` no cambia de aspecto ni gana scroll |
-| El nodo oculto duplica el renderizado de todo el currículum en cada cambio de estado de `MainPage` | El contenido es estático y de tamaño pequeño; si se notara, la mitigación es memoizar `CurriculumPDF` |
-| Cambiar `exportToPDF` de un parámetro a dos rompe cualquier otra llamada existente | Hoy solo lo llama `MainPage`; el paso 1 y `npx tsc --noEmit` lo verifican |
+| El PDF en PNG pesaba 40 MB, inservible para adjuntarlo a una candidatura                                                                 | Resuelto durante la implementación pasando el volcado a JPEG calidad `0.92`: 632 KB con el currículum completo                                                                                                     |
+| Los iconos SVG cargados con `<img src="/icons/...">` a veces no se pintan en html2canvas                                                 | Se comprueba en el paso 7 antes de dar la exportación por buena; si fallan, la alternativa es incrustarlos como SVG en línea                                                                                       |
+| El nodo oculto puede provocar scroll horizontal o alargar la página si el `position: absolute` no se aplica bien                         | Criterio de aceptación explícito: la página `/` no cambia de aspecto ni gana scroll                                                                                                                                |
+| El nodo oculto duplica el renderizado de todo el currículum en cada cambio de estado de `MainPage`                                       | El contenido es estático y de tamaño pequeño; si se notara, la mitigación es memoizar `CurriculumPDF`                                                                                                              |
+| Cambiar `exportToPDF` de un parámetro a dos rompe cualquier otra llamada existente                                                       | Hoy solo lo llama `MainPage`; el paso 1 y `npx tsc --noEmit` lo verifican                                                                                                                                          |

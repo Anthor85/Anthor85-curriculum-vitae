@@ -10,7 +10,11 @@ const TABS = [
     titulo: 'Experiencia',
     contenido: <p>Contenido experiencia</p>,
   },
-  { id: 'formacion', titulo: 'Formacion', contenido: <p>Contenido formacion</p> },
+  {
+    id: 'formacion',
+    titulo: 'Formacion',
+    contenido: <p>Contenido formacion</p>,
+  },
 ];
 
 // Tabs pinta siempre la lista de escritorio y el menu movil: los titulos estan

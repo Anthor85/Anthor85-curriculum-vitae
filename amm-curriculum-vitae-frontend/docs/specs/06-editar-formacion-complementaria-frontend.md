@@ -98,10 +98,10 @@ interface Props {
 
 Mapeo de `FormacionComplementaria` (API) → estado del formulario, al entrar en modo edición:
 
-| Campo del form | Origen                                              |
-| -------------- | --------------------------------------------------- |
-| `titulo`       | `formacionComplementaria.titulo`                     |
-| `institucion`  | `formacionComplementaria.institucion`                |
+| Campo del form | Origen                                                 |
+| -------------- | ------------------------------------------------------ |
+| `titulo`       | `formacionComplementaria.titulo`                       |
+| `institucion`  | `formacionComplementaria.institucion`                  |
 | `fechaFin`     | `formacionComplementaria.fechaFin?.slice(0, 10) ?? ''` |
 
 El `slice(0, 10)` recorta el ISO a `"YYYY-MM-DD"`, que es lo único que acepta un `<input type="date">`; es el mismo mapeo que hace `FormacionForm`, salvo por el `?? ''` que cubre el caso de que no haya fecha.
@@ -177,9 +177,9 @@ Al salir de edición (`formacionComplementariaEnEdicion === null`): los tres cam
 | Corregir las mayúsculas de los imports rompe la resolución en algún build                        | El fichero real es `formacionComplementaria.interface.ts` y `curriculum.interface.ts` ya lo importa así; el paso 2 se valida con `npx tsc --noEmit` y con la build. |
 | Guardar en modo edición dispara un `POST` y duplica el registro                                  | La página decide entre `create` y `update` según el estado de edición, con criterio de aceptación explícito de que se lanza `PUT`.                                  |
 | Limpiar el formulario sin desvincular el id provoca un `PUT` que sobrescribe el registro editado | `limpiarFormulario` llama siempre a `onLimpiar()`. Criterio de aceptación específico.                                                                               |
-| `new Date(fechaFin)` sobre un registro sin fecha pinta `Invalid Date` en la card                 | La línea va dentro de `{fechaFin && ...}`, con criterio de aceptación propio para el registro sin fecha.                                                             |
+| `new Date(fechaFin)` sobre un registro sin fecha pinta `Invalid Date` en la card                 | La línea va dentro de `{fechaFin && ...}`, con criterio de aceptación propio para el registro sin fecha.                                                            |
 | El `<input type="date">` no acepta el ISO completo que devuelve la API y aparece vacío           | El mapeo aplica `fechaFin?.slice(0, 10)`, igual que `FormacionForm`, con criterio de aceptación de que la fecha se ve preseleccionada al editar.                    |
-| Vaciar la fecha manda `""` y el backend responde 500 al castear a `Date`                         | El backend normaliza `""` a `undefined` (SPEC 05 del backend); hay criterio de aceptación de que vaciarla borra el campo.                                            |
+| Vaciar la fecha manda `""` y el backend responde 500 al castear a `Date`                         | El backend normaliza `""` a `undefined` (SPEC 05 del backend); hay criterio de aceptación de que vaciarla borra el campo.                                           |
 | El backend aún no tiene el `PUT` desplegado y la edición falla con 404 de ruta                   | Esta spec depende de la SPEC 05 del backend; se implementa después. El error se ve en el `console.error` del hook.                                                  |
 | Quitar `useActionState` pierde el `isPending` que deshabilita el submit                          | Se sustituye por un `useState<boolean>` propio, puesto a `true` antes del `await` y a `false` en el `finally`.                                                      |
 | El botón `Borrar formulario` envía el formulario al no llevar `type`                             | `type="button"` explícito, con criterio de aceptación propio.                                                                                                       |

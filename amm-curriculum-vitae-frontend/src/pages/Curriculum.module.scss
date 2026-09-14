@@ -12,7 +12,11 @@
     left: 0;
     width: 100%;
     border-bottom: 5px solid aquamarine;
-    border-image: linear-gradient(to right, v.$color-primary-light, v.$color-primary);
+    border-image: linear-gradient(
+      to right,
+      v.$color-primary-light,
+      v.$color-primary
+    );
     border-image-slice: 1;
     height: calc(3rem + 45px);
     box-sizing: border-box;

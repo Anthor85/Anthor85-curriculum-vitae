@@ -23,6 +23,8 @@
     &:hover {
       color: v.$color-primary;
     }
+
+    @include v.foco-visible(-2px);
   }
 
   .activa {
@@ -98,6 +100,8 @@
       color: v.$color-gray-600;
       cursor: pointer;
       padding: 0 0.25rem;
+
+      @include v.foco-visible;
     }
 
     .desplegable {
@@ -121,6 +125,8 @@
       &:last-child {
         border-bottom: none;
       }
+
+      @include v.foco-visible(-2px);
     }
 
     .panel {

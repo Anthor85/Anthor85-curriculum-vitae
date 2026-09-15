@@ -168,9 +168,10 @@ export const ExperienciaForm = ({
       </div>
       {conocimiento && conocimiento.length > 0 ? (
         <div className={styles.tecnologias}>
-          <label>Tecnologías:</label>
+          <span id="tecnologias-titulo">Tecnologías:</span>
           <MultiSelect
             name="tecnologias"
+            ariaLabelledBy="tecnologias-titulo"
             options={conocimiento.map((tecnologia: Conocimiento) => ({
               id: tecnologia.id,
               label: tecnologia.titulo,
@@ -187,8 +188,8 @@ export const ExperienciaForm = ({
       ) : (
         <p>No hay tecnologías disponibles</p>
       )}
-      <div className={styles.hitos}>
-        <label>Hitos:</label>
+      <div className={styles.hitos} role="group" aria-labelledby="hitos-titulo">
+        <span id="hitos-titulo">Hitos:</span>
         {experiencia.hitos &&
           experiencia.hitos.length > 0 &&
           experiencia.hitos.map((hito, indice) => (
@@ -196,12 +197,14 @@ export const ExperienciaForm = ({
               <input
                 type="text"
                 name="hitos"
+                aria-label={`Hito ${indice + 1}`}
                 value={hito.descripcion}
                 onChange={(e) => cambiarHito(indice, e.target.value)}
               />
               <button
                 type="button"
                 className={styles.hitoBoton}
+                aria-label={`Borrar hito ${indice + 1}`}
                 onClick={() => borrarHito(indice)}
               >
                 X

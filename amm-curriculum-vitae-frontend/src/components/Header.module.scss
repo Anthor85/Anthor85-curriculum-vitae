@@ -30,6 +30,8 @@
   &:hover {
     background-color: v.$color-white;
   }
+
+  @include v.foco-visible;
 }
 
 .activo {

@@ -393,7 +393,7 @@ describe('<Experiencia />', () => {
   test('la Card pinta los hitos de la experiencia y nada si no tiene', async () => {
     await renderPagina();
 
-    // «Hitos:» es un <label> en el form siempre y un <p> en la Card: solo Acme
+    // «Hitos:» es un <span> en el form siempre y un <p> en la Card: solo Acme
     // tiene hitos, así que solo hay un <p>.
     const titulosEnCards = screen
       .getAllByText('Hitos:')

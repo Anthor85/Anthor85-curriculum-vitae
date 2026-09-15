@@ -25,10 +25,9 @@ const hamburguesa = () =>
 
 const menuMovil = () => hamburguesa().parentElement!.parentElement!;
 
+// La lista de escritorio usa role="tab"; el desplegable movil, botones planos.
 const tabEscritorio = (titulo: string) =>
-  screen
-    .getAllByRole('button', { name: titulo })
-    .find((boton) => !menuMovil().contains(boton))!;
+  screen.getByRole('tab', { name: titulo });
 
 const tabMovil = (titulo: string) =>
   within(menuMovil()).getByRole('button', { name: titulo });
@@ -40,6 +39,72 @@ describe('<Tabs />', () => {
     TABS.forEach((tab) => {
       expect(tabEscritorio(tab.titulo)).toBeInstanceOf(HTMLButtonElement);
     });
+  });
+
+  it('expone la semantica ARIA de tablist, tab y tabpanel', () => {
+    render(<Tabs tabs={TABS} />);
+
+    const lista = screen.getByRole('tablist');
+    expect(within(lista).getAllByRole('tab')).toHaveLength(3);
+
+    const perfil = tabEscritorio('Perfil');
+    const experiencia = tabEscritorio('Experiencia');
+    expect(perfil).toHaveAttribute('aria-selected', 'true');
+    expect(perfil).toHaveAttribute('tabindex', '0');
+    expect(experiencia).toHaveAttribute('aria-selected', 'false');
+    expect(experiencia).toHaveAttribute('tabindex', '-1');
+
+    const panel = screen.getByRole('tabpanel', { name: 'Perfil' });
+    expect(perfil).toHaveAttribute('aria-controls', panel.id);
+    expect(panel).toHaveTextContent('Contenido perfil');
+  });
+
+  it('navega entre tabs con flechas, Home y End moviendo el foco', async () => {
+    const user = userEvent.setup();
+    render(<Tabs tabs={TABS} />);
+
+    await user.click(tabEscritorio('Perfil'));
+
+    await user.keyboard('{ArrowRight}');
+    expect(tabEscritorio('Experiencia')).toHaveFocus();
+    expect(tabEscritorio('Experiencia')).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    expect(screen.getByText('Contenido experiencia')).toBeInTheDocument();
+
+    await user.keyboard('{End}');
+    expect(tabEscritorio('Formacion')).toHaveFocus();
+
+    await user.keyboard('{ArrowRight}');
+    expect(tabEscritorio('Perfil')).toHaveFocus();
+
+    await user.keyboard('{ArrowLeft}');
+    expect(tabEscritorio('Formacion')).toHaveFocus();
+
+    await user.keyboard('{Home}');
+    expect(tabEscritorio('Perfil')).toHaveFocus();
+    expect(screen.getByText('Contenido perfil')).toBeInTheDocument();
+  });
+
+  it('ignora teclas que no son de navegacion', async () => {
+    const user = userEvent.setup();
+    render(<Tabs tabs={TABS} />);
+
+    await user.click(tabEscritorio('Perfil'));
+    await user.keyboard('a');
+
+    expect(tabEscritorio('Perfil')).toHaveAttribute('aria-selected', 'true');
+  });
+
+  it('marca con aria-current la opcion activa del desplegable movil', async () => {
+    const user = userEvent.setup();
+    render(<Tabs tabs={TABS} />);
+
+    await user.click(hamburguesa());
+
+    expect(tabMovil('Perfil')).toHaveAttribute('aria-current', 'true');
+    expect(tabMovil('Experiencia')).not.toHaveAttribute('aria-current');
   });
 
   it('pinta el contenido de la primera tab al montar y no el de las demas', () => {

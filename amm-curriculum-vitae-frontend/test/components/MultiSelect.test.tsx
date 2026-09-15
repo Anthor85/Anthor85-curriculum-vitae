@@ -46,6 +46,10 @@ const cabecera = () => screen.getByRole('combobox');
 
 const opcion = (label: string) => screen.getByRole('option', { name: label });
 
+// El foco se queda en la cabecera; la opcion activa se expone por id.
+const esActiva = (label: string) =>
+  expect(cabecera()).toHaveAttribute('aria-activedescendant', opcion(label).id);
+
 const checkboxDe = (label: string) =>
   opcion(label).querySelector('input[type="checkbox"]') as HTMLInputElement;
 
@@ -146,8 +150,6 @@ describe('<MultiSelect />', () => {
   });
 
   describe('teclado', () => {
-    // El foco se aplica en un useEffect: los asserts van despues del await de
-    // la interaccion de userEvent, que ya envuelve el render en act().
     const abrirConTeclado = async (
       user: ReturnType<typeof userEvent.setup>,
       tecla: string,
@@ -156,24 +158,24 @@ describe('<MultiSelect />', () => {
       await user.keyboard(tecla);
     };
 
-    it('abre el desplegable y enfoca la primera opcion con ArrowDown en la cabecera', async () => {
+    it('abre el desplegable y activa la primera opcion con ArrowDown en la cabecera', async () => {
       const user = userEvent.setup();
       render(<MultiSelectConEstado />);
 
       await abrirConTeclado(user, '{ArrowDown}');
 
       expect(screen.getByRole('listbox')).toBeInTheDocument();
-      expect(opcion('React')).toHaveFocus();
+      esActiva('React');
     });
 
-    it('abre el desplegable y enfoca la ultima opcion con ArrowUp en la cabecera', async () => {
+    it('abre el desplegable y activa la ultima opcion con ArrowUp en la cabecera', async () => {
       const user = userEvent.setup();
       render(<MultiSelectConEstado />);
 
       await abrirConTeclado(user, '{ArrowUp}');
 
       expect(screen.getByRole('listbox')).toBeInTheDocument();
-      expect(opcion('Node')).toHaveFocus();
+      esActiva('Node');
     });
 
     it('alterna con Enter y cierra con Escape desde la cabecera', async () => {
@@ -193,26 +195,26 @@ describe('<MultiSelect />', () => {
       expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
     });
 
-    it('mueve el foco de forma circular con ArrowDown y ArrowUp sobre las opciones', async () => {
+    it('mueve la opcion activa de forma circular con ArrowDown y ArrowUp sobre las opciones', async () => {
       const user = userEvent.setup();
       render(<MultiSelectConEstado />);
 
       await abrirConTeclado(user, '{ArrowDown}');
-      expect(opcion('React')).toHaveFocus();
+      esActiva('React');
 
       await user.keyboard('{ArrowDown}');
-      expect(opcion('TypeScript')).toHaveFocus();
+      esActiva('TypeScript');
 
       await user.keyboard('{ArrowDown}');
-      expect(opcion('Node')).toHaveFocus();
+      esActiva('Node');
 
       // De la ultima a la primera.
       await user.keyboard('{ArrowDown}');
-      expect(opcion('React')).toHaveFocus();
+      esActiva('React');
 
       // Y de la primera a la ultima.
       await user.keyboard('{ArrowUp}');
-      expect(opcion('Node')).toHaveFocus();
+      esActiva('Node');
     });
 
     it('selecciona con Enter o espacio y cierra con Escape devolviendo el foco a la cabecera', async () => {
@@ -234,6 +236,50 @@ describe('<MultiSelect />', () => {
 
       expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
       expect(cabecera()).toHaveFocus();
+      expect(cabecera()).not.toHaveAttribute('aria-activedescendant');
+    });
+
+    it('mantiene el foco en la cabecera al navegar', async () => {
+      const user = userEvent.setup();
+      render(<MultiSelectConEstado />);
+
+      await abrirConTeclado(user, '{ArrowDown}{ArrowDown}');
+
+      expect(cabecera()).toHaveFocus();
+      esActiva('TypeScript');
+    });
+  });
+
+  describe('aria', () => {
+    it('enlaza la cabecera con el listbox mediante aria-controls', async () => {
+      const user = userEvent.setup();
+      render(<MultiSelectConEstado />);
+
+      await user.click(cabecera());
+
+      expect(cabecera()).toHaveAttribute(
+        'aria-controls',
+        screen.getByRole('listbox').id,
+      );
+    });
+
+    it('toma el nombre accesible de ariaLabelledBy', () => {
+      render(
+        <>
+          <span id="titulo">Tecnologias</span>
+          <MultiSelect
+            name="tecnologias"
+            options={OPCIONES}
+            selected={[]}
+            onChange={onChange}
+            ariaLabelledBy="titulo"
+          />
+        </>,
+      );
+
+      expect(
+        screen.getByRole('combobox', { name: 'Tecnologias' }),
+      ).toBeInTheDocument();
     });
   });
 });

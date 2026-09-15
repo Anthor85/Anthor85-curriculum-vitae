@@ -42,3 +42,13 @@ $shadow-overlay: rgba(0, 0, 0, 0.2);
 
 // Layout
 $altura-header: 4rem;
+
+// Accesibilidad
+$color-foco: $color-primary;
+
+@mixin foco-visible($offset: 2px) {
+  &:focus-visible {
+    outline: 2px solid $color-foco;
+    outline-offset: $offset;
+  }
+}

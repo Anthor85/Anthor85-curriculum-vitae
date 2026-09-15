@@ -115,7 +115,7 @@ export const Curriculum = () => {
                 <img
                   className={styles.photo}
                   src={perfil.foto}
-                  alt="Profile"
+                  alt={`${perfil.nombre} ${perfil.apellidos}`}
                   width={150}
                 />
               )}

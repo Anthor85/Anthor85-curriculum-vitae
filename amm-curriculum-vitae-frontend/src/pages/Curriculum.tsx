@@ -37,7 +37,25 @@ export const Curriculum = () => {
     .join(' ');
   const nombrePDF = nombreFichero ? `CV ${nombreFichero}` : 'CV';
 
-  const vacio = (mensaje: string) => <p className={styles.vacio}>{mensaje}</p>;
+  useEffect(() => {
+    document.title = nombreFichero
+      ? `${nombreFichero} | Curriculum Vitae`
+      : 'Curriculum Vitae';
+  }, [nombreFichero]);
+
+  useEffect(() => {
+    const favicon = document.querySelector<HTMLLinkElement>('#favicon');
+    if (!favicon) return;
+    if (perfil?.foto) {
+      favicon.removeAttribute('type');
+      favicon.href = perfil.foto;
+    } else {
+      favicon.type = 'image/svg+xml';
+      favicon.href = '/favicon.svg';
+    }
+  }, [perfil?.foto]);
+
+  const vacio =(mensaje: string) => <p className={styles.vacio}>{mensaje}</p>;
 
   const tabs = [
     {

@@ -1,94 +1,25 @@
-import { useEffect, useState } from 'react';
-import { useFormacionComplementariaStore, useMensajeAccion } from '../hooks';
+import { useFormacionComplementariaStore } from '../hooks';
+import { crearPaginaCrud } from '../helpers/crearPaginaCrud';
 import { FormacionComplementariaForm } from './forms/FormacionComplementariaForm';
 import { FormacionComplementariaCard } from './cards';
-import {
-  FormacionComplementaria as IFormacionComplementaria,
-  FormacionComplementariaPayload,
-} from '../interfaces/formacionComplementaria.interface';
 
-import styles from './Layout.module.scss';
-
-export const FormacionComplementaria = () => {
-  const {
-    formacionComplementaria,
-    loading,
-
-    getFormacionComplementaria,
-    createFormacionComplementaria,
-    updateFormacionComplementaria,
-    deleteFormacionComplementaria,
-  } = useFormacionComplementariaStore();
-
-  const { mensaje, mostrarMensaje, mostrarError } = useMensajeAccion();
-
-  const [
-    formacionComplementariaEnEdicion,
-    setFormacionComplementariaEnEdicion,
-  ] = useState<IFormacionComplementaria | null>(null);
-
-  const enviarFormacionComplementaria = async (
-    payload: FormacionComplementariaPayload,
-  ) => {
-    if (formacionComplementariaEnEdicion) {
-      const actualizada = await updateFormacionComplementaria(
-        formacionComplementariaEnEdicion.id,
-        payload,
-      );
-      if (!actualizada) return mostrarError();
-      return mostrarMensaje('Formación Complementaria actualizada');
-    }
-
-    const creada = await createFormacionComplementaria(payload);
-    if (!creada) return mostrarError();
-    mostrarMensaje('Formación Complementaria creada');
-  };
-
-  const eliminarFormacionComplementaria = async (id: string) => {
-    const eliminada = await deleteFormacionComplementaria(id);
-    if (!eliminada) return mostrarError();
-    mostrarMensaje('Formación Complementaria eliminada');
-  };
-
-  useEffect(() => {
-    if (formacionComplementaria === null)
-      getFormacionComplementaria().then((obtenida) => {
-        if (!obtenida) mostrarError();
-      });
-  }, []);
-
-  if (loading) return <p>Cargando...</p>;
-
-  return (
-    <div className={styles.Page}>
-      {formacionComplementaria && formacionComplementaria.length > 0 && (
-        <div className={styles.data}>
-          {formacionComplementaria.map((f: IFormacionComplementaria) => (
-            <FormacionComplementariaCard
-              key={f.id}
-              formacionComplementaria={f}
-              deleteFormacionComplementaria={() =>
-                eliminarFormacionComplementaria(f.id)
-              }
-              onEditar={setFormacionComplementariaEnEdicion}
-              enEdicion={f.id === formacionComplementariaEnEdicion?.id}
-            />
-          ))}
-        </div>
-      )}
-      <div className={styles.form}>
-        <h1>
-          {formacionComplementariaEnEdicion
-            ? 'Editar Formación Complementaria'
-            : 'Crear Formación Complementaria'}
-        </h1>
-        <FormacionComplementariaForm
-          formacionComplementariaEnEdicion={formacionComplementariaEnEdicion}
-          onSubmitFormacionComplementaria={enviarFormacionComplementaria}
-          onLimpiar={() => setFormacionComplementariaEnEdicion(null)}
-          mensaje={mensaje}
-        />
-      </div>
-    </div>
-  );
-};
+export const FormacionComplementaria = crearPaginaCrud({
+  nombre: 'formacionComplementaria',
+  titulo: 'Formación Complementaria',
+  femenino: true,
+  useStore: useFormacionComplementariaStore,
+  renderCard: ({ item, onEliminar, ...resto }) => (
+    <FormacionComplementariaCard
+      formacionComplementaria={item}
+      deleteFormacionComplementaria={onEliminar}
+      {...resto}
+    />
+  ),
+  renderForm: ({ enEdicion, onSubmit, ...resto }) => (
+    <FormacionComplementariaForm
+      formacionComplementariaEnEdicion={enEdicion}
+      onSubmitFormacionComplementaria={onSubmit}
+      {...resto}
+    />
+  ),
+});

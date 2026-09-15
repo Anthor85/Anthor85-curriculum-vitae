@@ -21,7 +21,7 @@ export const Curriculum = () => {
   const { curriculum, getCurriculum } = useCurriculumStore();
 
   useEffect(() => {
-    getCurriculum();
+    if (!curriculum) getCurriculum();
   }, []);
 
   const { perfil } = curriculum || {};

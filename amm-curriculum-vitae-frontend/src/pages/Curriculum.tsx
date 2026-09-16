@@ -22,7 +22,7 @@ export const Curriculum = () => {
 
   useEffect(() => {
     if (!curriculum) getCurriculum();
-  }, []);
+  }, [curriculum, getCurriculum]);
 
   const { perfil } = curriculum || {};
   const {

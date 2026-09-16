@@ -24,7 +24,7 @@ export const Perfil = () => {
       getPerfil().then((obtenido) => {
         if (!obtenido) mostrarError();
       });
-  }, []);
+  }, [perfil, getPerfil, mostrarError]);
 
   if (loading) return <p>Cargando...</p>;
 

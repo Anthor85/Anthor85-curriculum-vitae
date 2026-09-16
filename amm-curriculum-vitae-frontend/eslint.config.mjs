@@ -36,9 +36,7 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
-      // Codigo heredado usa 'any' y setState en efectos: avisar, no romper el build.
-      '@typescript-eslint/no-explicit-any': 'warn',
-      'react-hooks/set-state-in-effect': 'warn',
+      'react-hooks/exhaustive-deps': 'error',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },

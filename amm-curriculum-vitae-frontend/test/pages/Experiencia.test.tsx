@@ -495,7 +495,9 @@ describe('<Experiencia />', () => {
     await user.type(inputsHito()[1], 'Segundo hito');
 
     const primeraFila = inputsHito()[0].parentElement as HTMLElement;
-    await user.click(within(primeraFila).getByRole('button', { name: 'Borrar hito 1' }));
+    await user.click(
+      within(primeraFila).getByRole('button', { name: 'Borrar hito 1' }),
+    );
 
     expect(inputsHito()).toHaveLength(1);
     expect(inputsHito()[0]).toHaveValue('Segundo hito');

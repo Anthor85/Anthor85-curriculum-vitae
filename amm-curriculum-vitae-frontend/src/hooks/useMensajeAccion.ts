@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import type { MensajeAccion } from '../interfaces/mensajeAccion.interface';
 
 const MENSAJE_ERROR = 'Ha ocurrido un error inesperado';
@@ -6,10 +6,16 @@ const MENSAJE_ERROR = 'Ha ocurrido un error inesperado';
 export const useMensajeAccion = () => {
   const [mensaje, setMensaje] = useState<MensajeAccion | null>(null);
 
-  const mostrarMensaje = (texto: string) =>
-    setMensaje((anterior) => ({ texto, id: (anterior?.id ?? 0) + 1 }));
+  const mostrarMensaje = useCallback(
+    (texto: string) =>
+      setMensaje((anterior) => ({ texto, id: (anterior?.id ?? 0) + 1 })),
+    [],
+  );
 
-  const mostrarError = () => mostrarMensaje(MENSAJE_ERROR);
+  const mostrarError = useCallback(
+    () => mostrarMensaje(MENSAJE_ERROR),
+    [mostrarMensaje],
+  );
 
   return { mensaje, mostrarMensaje, mostrarError };
 };

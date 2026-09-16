@@ -20,7 +20,6 @@ const animarTexto = (
   let intervaloSalida: ReturnType<typeof setInterval> | undefined;
 
   let visibles = 0;
-  setTextoVisible('');
 
   const intervaloEntrada: ReturnType<typeof setInterval> | undefined =
     setInterval(() => {
@@ -48,23 +47,17 @@ const animarTexto = (
   };
 };
 
-export const MensajeAccion = ({ mensaje }: Props) => {
-  const [textoVisible, setTextoVisible] = useState<string>('');
+// Remontado por key={mensaje.id}: cada mensaje empieza con el texto vacío.
+const TextoAnimado = ({ texto }: { texto: string }) => {
+  const [textoVisible, setTextoVisible] = useState('');
 
-  useEffect(() => {
-    const texto = mensaje?.texto ?? '';
+  useEffect(() => animarTexto(texto, setTextoVisible), [texto]);
 
-    if (!texto) {
-      setTextoVisible('');
-      return;
-    }
-
-    return animarTexto(texto, setTextoVisible);
-  }, [mensaje]);
-
-  return (
-    <span className={styles.MensajeAccion} aria-live="polite">
-      {textoVisible}
-    </span>
-  );
+  return textoVisible;
 };
+
+export const MensajeAccion = ({ mensaje }: Props) => (
+  <span className={styles.MensajeAccion} aria-live="polite">
+    {mensaje?.texto && <TextoAnimado key={mensaje.id} texto={mensaje.texto} />}
+  </span>
+);

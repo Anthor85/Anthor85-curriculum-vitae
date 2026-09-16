@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { isAxiosError } from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/api';
@@ -10,7 +11,7 @@ export const usePerfilStore = () => {
     (state: RootState) => state.perfil,
   );
 
-  const getPerfil = async () => {
+  const getPerfil = useCallback(async () => {
     try {
       const { data } = await api.get('/perfil');
 
@@ -23,7 +24,7 @@ export const usePerfilStore = () => {
       console.error('Error recuperando perfil:', error);
       return false;
     }
-  };
+  }, [dispatch]);
 
   const createPerfil = async (payload: PerfilPayload) => {
     try {

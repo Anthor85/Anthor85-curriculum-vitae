@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useConocimientoStore } from '../../hooks';
+import { useConocimientoStore, useEnvioFormulario } from '../../hooks';
 import { MultiSelect } from '../../components/MultiSelect';
 import type { Conocimiento } from '../../interfaces/conocimiento.interface';
 import type {
@@ -56,8 +56,6 @@ export const ExperienciaForm = ({
         }
       : EXPERIENCIA_VACIA,
   );
-  const [isPending, setIsPending] = useState<boolean>(false);
-
   useEffect(() => {
     if (!conocimiento || conocimiento.length === 0) {
       getConocimiento();
@@ -90,23 +88,16 @@ export const ExperienciaForm = ({
     onLimpiar();
   };
 
-  const enviar = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const { isPending, enviar } = useEnvioFormulario(async () => {
     const payload: ExperienciaPayload = {
       ...experiencia,
       fechaFin: experiencia.fechaFin ?? '',
       hitos: experiencia.hitos.filter((hito) => hito.descripcion.trim() !== ''),
     };
 
-    setIsPending(true);
-    try {
-      await onAddExperiencia(payload);
-      limpiarFormulario();
-    } finally {
-      setIsPending(false);
-    }
-  };
+    await onAddExperiencia(payload);
+    limpiarFormulario();
+  });
 
   return (
     <form onSubmit={enviar} className={styles.Form}>

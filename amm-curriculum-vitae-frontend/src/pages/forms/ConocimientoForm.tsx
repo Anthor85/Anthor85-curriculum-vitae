@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useEnvioFormulario } from '../../hooks';
 import {
   ConocimientoNivel,
   type Conocimiento,
@@ -38,29 +39,20 @@ export const ConocimientoForm = ({
         }
       : CONOCIMIENTO_VACIO,
   );
-  const [isPending, setIsPending] = useState<boolean>(false);
-
   const limpiarFormulario = () => {
     setConocimiento(CONOCIMIENTO_VACIO);
     onLimpiar();
   };
 
-  const enviar = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const { isPending, enviar } = useEnvioFormulario(async () => {
     const payload: ConocimientoPayload = {
       ...conocimiento,
       titulo: conocimiento.titulo.trim(),
     };
 
-    setIsPending(true);
-    try {
-      await onAddConocimiento(payload);
-      limpiarFormulario();
-    } finally {
-      setIsPending(false);
-    }
-  };
+    await onAddConocimiento(payload);
+    limpiarFormulario();
+  });
 
   return (
     <form onSubmit={enviar} className={styles.Form}>

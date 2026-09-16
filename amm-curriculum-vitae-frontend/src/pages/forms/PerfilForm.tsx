@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useEnvioFormulario } from '../../hooks';
 import type { Perfil, PerfilPayload } from '../../interfaces/perfil.interface';
 
 import { Button } from '../../components/Button';
@@ -35,11 +36,7 @@ export const PerfilForm = ({ perfil, onSubmitPerfil, mensaje }: Props) => {
         }
       : PERFIL_VACIO,
   );
-  const [isPending, setIsPending] = useState<boolean>(false);
-
-  const enviar = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const { isPending, enviar } = useEnvioFormulario(async () => {
     const payload: PerfilPayload = {
       ...datosPerfil,
       nombre: datosPerfil.nombre.trim(),
@@ -51,13 +48,8 @@ export const PerfilForm = ({ perfil, onSubmitPerfil, mensaje }: Props) => {
       foto: datosPerfil.foto.trim(),
     };
 
-    setIsPending(true);
-    try {
-      await onSubmitPerfil(payload);
-    } finally {
-      setIsPending(false);
-    }
-  };
+    await onSubmitPerfil(payload);
+  });
 
   return (
     <form onSubmit={enviar} className={styles.Form}>

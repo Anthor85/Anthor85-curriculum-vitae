@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useEnvioFormulario } from '../../hooks';
 import type {
   FormacionComplementaria,
   FormacionComplementariaPayload,
@@ -43,30 +44,21 @@ export const FormacionComplementariaForm = ({
           }
         : FORMACION_COMPLEMENTARIA_VACIA,
     );
-  const [isPending, setIsPending] = useState<boolean>(false);
-
   const limpiarFormulario = () => {
     setFormacionComplementaria(FORMACION_COMPLEMENTARIA_VACIA);
     onLimpiar();
   };
 
-  const enviar = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const { isPending, enviar } = useEnvioFormulario(async () => {
     const payload: FormacionComplementariaPayload = {
       ...formacionComplementaria,
       titulo: formacionComplementaria.titulo.trim(),
       institucion: formacionComplementaria.institucion.trim(),
     };
 
-    setIsPending(true);
-    try {
-      await onSubmitFormacionComplementaria(payload);
-      limpiarFormulario();
-    } finally {
-      setIsPending(false);
-    }
-  };
+    await onSubmitFormacionComplementaria(payload);
+    limpiarFormulario();
+  });
 
   return (
     <form onSubmit={enviar} className={styles.Form}>

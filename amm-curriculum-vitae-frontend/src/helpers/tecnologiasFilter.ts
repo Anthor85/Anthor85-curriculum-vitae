@@ -4,7 +4,9 @@ export const tecnologiasFilter = (
   tecnologias: string[],
   conocimientos: Conocimiento[],
 ) => {
+  const tecnologiasSet = new Set(tecnologias);
+
   return conocimientos.filter((tech: Conocimiento) =>
-    tecnologias.includes(tech.id),
+    tecnologiasSet.has(tech.id),
   );
 };

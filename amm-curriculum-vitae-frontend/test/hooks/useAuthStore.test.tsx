@@ -25,6 +25,9 @@ const RESPUESTA = { data: { ...USUARIO, token: 'un-token' } };
 
 const DIA = 24 * 60 * 60 * 1000;
 
+// Clave que no es de sesion: cerrar sesion no debe tocarla.
+const CLAVE_AJENA = 'preferencias';
+
 const renderAuth = () => renderHookConStore(useAuthStore);
 
 const auth = (store: { getState: () => unknown }) =>
@@ -131,6 +134,7 @@ describe('useAuthStore', () => {
     test('con la sesion caducada (mas de 30 dias) limpia y no renueva', async () => {
       localStorage.setItem('token', 'viejo');
       localStorage.setItem('token-init-date', String(Date.now() - 31 * DIA));
+      localStorage.setItem(CLAVE_AJENA, 'se-queda');
       const { result, store } = renderAuth();
 
       await act(async () => {
@@ -139,6 +143,8 @@ describe('useAuthStore', () => {
 
       expect(apiMock.get).not.toHaveBeenCalled();
       expect(localStorage.getItem('token')).toBeNull();
+      expect(localStorage.getItem('token-init-date')).toBeNull();
+      expect(localStorage.getItem(CLAVE_AJENA)).toBe('se-queda');
       expect(auth(store).status).toBe('not-authenticated');
     });
 
@@ -163,6 +169,7 @@ describe('useAuthStore', () => {
     test('si la renovacion falla limpia el almacenamiento y cierra sesion', async () => {
       localStorage.setItem('token', 'vigente');
       localStorage.setItem('token-init-date', String(Date.now() - DIA));
+      localStorage.setItem(CLAVE_AJENA, 'se-queda');
       apiMock.get.mockRejectedValue(
         errorAxios(401, { msg: 'Token no valido' }),
       );
@@ -174,14 +181,16 @@ describe('useAuthStore', () => {
 
       expect(localStorage.getItem('token')).toBeNull();
       expect(localStorage.getItem('token-init-date')).toBeNull();
+      expect(localStorage.getItem(CLAVE_AJENA)).toBe('se-queda');
       expect(auth(store).status).toBe('not-authenticated');
       expect(auth(store).errorMessage).toBeNull();
     });
   });
 
   describe('logout', () => {
-    test('borra el almacenamiento y deja la sesion cerrada sin error', async () => {
+    test('borra la sesion del almacenamiento y la deja cerrada sin error', async () => {
       apiMock.post.mockResolvedValue(RESPUESTA);
+      localStorage.setItem(CLAVE_AJENA, 'se-queda');
       const { result, store } = renderAuth();
 
       await act(async () => {
@@ -194,6 +203,7 @@ describe('useAuthStore', () => {
 
       expect(localStorage.getItem('token')).toBeNull();
       expect(localStorage.getItem('token-init-date')).toBeNull();
+      expect(localStorage.getItem(CLAVE_AJENA)).toBe('se-queda');
       expect(auth(store).status).toBe('not-authenticated');
       expect(auth(store).user).toBeNull();
       expect(auth(store).errorMessage).toBeNull();

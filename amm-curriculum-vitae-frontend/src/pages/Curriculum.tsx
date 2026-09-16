@@ -1,20 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { exportToPDF } from '../helpers/exportToPDF';
-import { getIcons } from '../helpers/getIcons';
 import { ordenarCurriculum } from '../helpers/ordenarCurriculum';
 import { Button } from '../components/Button';
 import { Tabs } from '../components/Tabs';
 import { useCurriculumStore } from '../hooks';
 import {
   ConocimientoItem,
-  CurriculumPDF,
+  Contacto,
   ExperienciaItem,
   FormacionComplementariaItem,
   FormacionItem,
 } from './components/curriculum/items';
+import { CurriculumPDF } from './components/curriculum/pdf';
 
 import styles from './Curriculum.module.scss';
-import { Contacto } from './components/curriculum/items/Contacto';
 
 export const Curriculum = () => {
   const pdfRef = useRef<HTMLDivElement>(null);

@@ -9,6 +9,7 @@ import { Perfil } from '../../../../interfaces/perfil.interface';
 import { ExperienciaItem } from '../items/ExperienciaItem';
 
 import styles from './CurriculumPDF.module.scss';
+import { Contacto } from '../items/Contacto';
 
 interface Props {
   perfil: Perfil | null;
@@ -62,25 +63,7 @@ export const CurriculumPDF = ({
   return (
     <div className={styles.CurriculumPDF}>
       <div className={styles.izquierda}>
-        {perfil?.foto && (
-          <img className={styles.photo} src={perfil.foto} alt="Profile" />
-        )}
-        {perfil && (
-          <div className={styles.contacto}>
-            <div className={styles.contacto__linea}>
-              <img src={getIcons('chincheta')} alt="" width={16} />
-              <span>{perfil.direccion}</span>
-            </div>
-            <div className={styles.contacto__linea}>
-              <img src={getIcons('telefono')} alt="" width={16} />
-              <span>{perfil.telefono}</span>
-            </div>
-            <div className={styles.contacto__linea}>
-              <img src={getIcons('sobre')} alt="" width={16} />
-              <span>{perfil.email}</span>
-            </div>
-          </div>
-        )}
+        <Contacto perfil={perfil || null} styles={styles} />
         <Seccion titulo="Conocimientos" vacia={!conocimiento.length}>
           <ul className={`${styles.lineas} ${styles['lineas--sangrada']}`}>
             {conocimiento.map((item) => (

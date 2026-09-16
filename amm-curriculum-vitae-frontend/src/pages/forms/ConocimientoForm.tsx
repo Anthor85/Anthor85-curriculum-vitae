@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   ConocimientoNivel,
   type Conocimiento,
@@ -29,21 +29,16 @@ export const ConocimientoForm = ({
   onLimpiar,
   mensaje,
 }: Props) => {
-  const [conocimiento, setConocimiento] =
-    useState<ConocimientoPayload>(CONOCIMIENTO_VACIO);
+  // El padre remonta el form con `key` al cambiar la entidad en edición.
+  const [conocimiento, setConocimiento] = useState<ConocimientoPayload>(() =>
+    conocimientoEnEdicion
+      ? {
+          titulo: conocimientoEnEdicion.titulo,
+          nivel: conocimientoEnEdicion.nivel,
+        }
+      : CONOCIMIENTO_VACIO,
+  );
   const [isPending, setIsPending] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (!conocimientoEnEdicion) {
-      setConocimiento(CONOCIMIENTO_VACIO);
-      return;
-    }
-
-    setConocimiento({
-      titulo: conocimientoEnEdicion.titulo,
-      nivel: conocimientoEnEdicion.nivel,
-    });
-  }, [conocimientoEnEdicion]);
 
   const limpiarFormulario = () => {
     setConocimiento(CONOCIMIENTO_VACIO);

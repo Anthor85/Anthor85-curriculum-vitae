@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type {
   Formacion,
   FormacionPayload,
@@ -30,22 +30,18 @@ export const FormacionForm = ({
   onLimpiar,
   mensaje,
 }: Props) => {
-  const [formacion, setFormacion] = useState<FormacionPayload>(FORMACION_VACIA);
+  // El padre remonta el form con `key` al cambiar la entidad en edición.
+  const [formacion, setFormacion] = useState<FormacionPayload>(() =>
+    formacionEnEdicion
+      ? {
+          titulo: formacionEnEdicion.titulo,
+          institucion: formacionEnEdicion.institucion,
+          descripcion: formacionEnEdicion.descripcion ?? '',
+          fechaFin: formacionEnEdicion.fechaFin.slice(0, 10),
+        }
+      : FORMACION_VACIA,
+  );
   const [isPending, setIsPending] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (!formacionEnEdicion) {
-      setFormacion(FORMACION_VACIA);
-      return;
-    }
-
-    setFormacion({
-      titulo: formacionEnEdicion.titulo,
-      institucion: formacionEnEdicion.institucion,
-      descripcion: formacionEnEdicion.descripcion ?? '',
-      fechaFin: formacionEnEdicion.fechaFin.slice(0, 10),
-    });
-  }, [formacionEnEdicion]);
 
   const limpiarFormulario = () => {
     setFormacion(FORMACION_VACIA);

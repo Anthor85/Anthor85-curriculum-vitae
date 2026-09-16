@@ -33,6 +33,7 @@ export const Perfil = () => {
       <div className={styles.form}>
         <h1>Editar Perfil</h1>
         <PerfilForm
+          key={perfil?.id ?? 'nuevo'}
           perfil={perfil}
           onSubmitPerfil={enviarPerfil}
           mensaje={mensaje}

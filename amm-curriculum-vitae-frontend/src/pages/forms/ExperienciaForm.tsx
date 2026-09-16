@@ -37,8 +37,25 @@ export const ExperienciaForm = ({
 }: Props) => {
   const { conocimiento, getConocimiento } = useConocimientoStore();
 
-  const [experiencia, setExperiencia] =
-    useState<ExperienciaPayload>(EXPERIENCIA_VACIA);
+  // El padre remonta el form con `key` al cambiar la entidad en edición.
+  const [experiencia, setExperiencia] = useState<ExperienciaPayload>(() =>
+    experienciaEnEdicion
+      ? {
+          ...experienciaEnEdicion,
+          fechaInicio: experienciaEnEdicion.fechaInicio.slice(0, 10),
+          fechaFin: experienciaEnEdicion.fechaFin
+            ? experienciaEnEdicion.fechaFin.slice(0, 10)
+            : '',
+          hitos:
+            experienciaEnEdicion.hitos.length > 0
+              ? experienciaEnEdicion.hitos.map(({ id, descripcion }) => ({
+                  id,
+                  descripcion,
+                }))
+              : [{ descripcion: '' }],
+        }
+      : EXPERIENCIA_VACIA,
+  );
   const [isPending, setIsPending] = useState<boolean>(false);
 
   useEffect(() => {
@@ -46,28 +63,6 @@ export const ExperienciaForm = ({
       getConocimiento();
     }
   }, []);
-
-  useEffect(() => {
-    if (!experienciaEnEdicion) {
-      setExperiencia(EXPERIENCIA_VACIA);
-      return;
-    }
-
-    setExperiencia({
-      ...experienciaEnEdicion,
-      fechaInicio: experienciaEnEdicion.fechaInicio.slice(0, 10),
-      fechaFin: experienciaEnEdicion.fechaFin
-        ? experienciaEnEdicion.fechaFin.slice(0, 10)
-        : '',
-      hitos:
-        experienciaEnEdicion.hitos.length > 0
-          ? experienciaEnEdicion.hitos.map(({ id, descripcion }) => ({
-              id,
-              descripcion,
-            }))
-          : [{ descripcion: '' }],
-    });
-  }, [experienciaEnEdicion]);
 
   const anadirHito = () =>
     setExperiencia((prev) => ({

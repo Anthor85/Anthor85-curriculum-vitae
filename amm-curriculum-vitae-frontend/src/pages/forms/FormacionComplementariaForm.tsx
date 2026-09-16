@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type {
   FormacionComplementaria,
   FormacionComplementariaPayload,
@@ -31,22 +31,19 @@ export const FormacionComplementariaForm = ({
   onLimpiar,
   mensaje,
 }: Props) => {
+  // El padre remonta el form con `key` al cambiar la entidad en edición.
   const [formacionComplementaria, setFormacionComplementaria] =
-    useState<FormacionComplementariaPayload>(FORMACION_COMPLEMENTARIA_VACIA);
+    useState<FormacionComplementariaPayload>(() =>
+      formacionComplementariaEnEdicion
+        ? {
+            titulo: formacionComplementariaEnEdicion.titulo,
+            institucion: formacionComplementariaEnEdicion.institucion,
+            fechaFin:
+              formacionComplementariaEnEdicion.fechaFin?.slice(0, 10) ?? '',
+          }
+        : FORMACION_COMPLEMENTARIA_VACIA,
+    );
   const [isPending, setIsPending] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (!formacionComplementariaEnEdicion) {
-      setFormacionComplementaria(FORMACION_COMPLEMENTARIA_VACIA);
-      return;
-    }
-
-    setFormacionComplementaria({
-      titulo: formacionComplementariaEnEdicion.titulo,
-      institucion: formacionComplementariaEnEdicion.institucion,
-      fechaFin: formacionComplementariaEnEdicion.fechaFin?.slice(0, 10) ?? '',
-    });
-  }, [formacionComplementariaEnEdicion]);
 
   const limpiarFormulario = () => {
     setFormacionComplementaria(FORMACION_COMPLEMENTARIA_VACIA);

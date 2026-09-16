@@ -102,12 +102,15 @@ export const crearPaginaCrud = <N extends string, T extends { id: string }, P>({
         )}
         <div className={styles.form}>
           <h1>{enEdicion ? `Editar ${titulo}` : `Crear ${titulo}`}</h1>
-          {renderForm({
-            enEdicion,
-            onSubmit: enviar,
-            onLimpiar: () => setEnEdicion(null),
-            mensaje,
-          })}
+          {/* `key` remonta el form al cambiar la entidad en edición: su estado inicial se deriva de ella. */}
+          <Fragment key={enEdicion?.id ?? 'nuevo'}>
+            {renderForm({
+              enEdicion,
+              onSubmit: enviar,
+              onLimpiar: () => setEnEdicion(null),
+              mensaje,
+            })}
+          </Fragment>
         </div>
       </div>
     );

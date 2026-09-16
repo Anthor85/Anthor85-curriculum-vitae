@@ -1,17 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { exportToPDF } from '../helpers/exportToPDF';
-import { getIcons } from '../helpers/getIcons';
 import { ordenarCurriculum } from '../helpers/ordenarCurriculum';
 import { Button } from '../components/Button';
 import { Tabs } from '../components/Tabs';
 import { useCurriculumStore } from '../hooks';
 import {
   ConocimientoItem,
-  CurriculumPDF,
+  Contacto,
   ExperienciaItem,
   FormacionComplementariaItem,
   FormacionItem,
 } from './components/curriculum/items';
+import { CurriculumPDF } from './components/curriculum/pdf';
 
 import styles from './Curriculum.module.scss';
 
@@ -55,7 +55,7 @@ export const Curriculum = () => {
     }
   }, [perfil?.foto]);
 
-  const vacio =(mensaje: string) => <p className={styles.vacio}>{mensaje}</p>;
+  const vacio = (mensaje: string) => <p className={styles.vacio}>{mensaje}</p>;
 
   const tabs = [
     {
@@ -129,30 +129,7 @@ export const Curriculum = () => {
         <div className={styles.basicInformation}>
           <div className={styles.column}>
             <div className={styles.identidad}>
-              {perfil?.foto && (
-                <img
-                  className={styles.photo}
-                  src={perfil.foto}
-                  alt={`${perfil.nombre} ${perfil.apellidos}`}
-                  width={150}
-                />
-              )}
-              {perfil && (
-                <div className={styles.contacto}>
-                  <div className={styles.contacto__linea}>
-                    <img src={getIcons('chincheta')} alt="" width={18} />
-                    <span>{perfil.direccion}</span>
-                  </div>
-                  <div className={styles.contacto__linea}>
-                    <img src={getIcons('telefono')} alt="" width={18} />
-                    <span>{perfil.telefono}</span>
-                  </div>
-                  <div className={styles.contacto__linea}>
-                    <img src={getIcons('sobre')} alt="" width={18} />
-                    <span>{perfil.email}</span>
-                  </div>
-                </div>
-              )}
+              <Contacto perfil={perfil || null} styles={styles} />
             </div>
             <Button
               onClick={() => setPreparandoPDF(true)}

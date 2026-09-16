@@ -38,12 +38,14 @@ describe('api', () => {
 
   test('ante un 401 limpia la sesion y despacha onLogout', async () => {
     autenticar();
+    localStorage.setItem('preferencias', 'se-queda');
     responderCon(401);
 
     await expect(api.get('/perfil')).rejects.toBeTruthy();
 
     expect(localStorage.getItem('token')).toBeNull();
     expect(localStorage.getItem('token-init-date')).toBeNull();
+    expect(localStorage.getItem('preferencias')).toBe('se-queda');
     expect(store.getState().auth.status).toBe('not-authenticated');
   });
 

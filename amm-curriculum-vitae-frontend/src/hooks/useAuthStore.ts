@@ -19,6 +19,13 @@ const guardarSesion = ({ token }: LoginResponse) => {
   localStorage.setItem('token-init-date', String(new Date().getTime()));
 };
 
+// Solo se borran las claves de sesion: `clear()` arrastraria cualquier otra
+// clave del origen.
+const borrarSesion = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('token-init-date');
+};
+
 // Sin fecha de inicio no se puede saber la antiguedad del token: se trata como
 // caducado para no arrastrar sesiones de versiones anteriores.
 const sesionCaducada = () => {
@@ -68,7 +75,7 @@ export const useAuthStore = () => {
     if (!token) return dispatch(onLogout(null));
 
     if (sesionCaducada()) {
-      localStorage.clear();
+      borrarSesion();
 
       return dispatch(onLogout(null));
     }
@@ -81,13 +88,13 @@ export const useAuthStore = () => {
         onLogin({ uid: data.uid, nombre: data.nombre, email: data.email }),
       );
     } catch {
-      localStorage.clear();
+      borrarSesion();
       dispatch(onLogout(null));
     }
   };
 
   const logout = () => {
-    localStorage.clear();
+    borrarSesion();
     dispatch(onLogout(null));
   };
 

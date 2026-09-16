@@ -57,10 +57,10 @@ export const ExperienciaForm = ({
       : EXPERIENCIA_VACIA,
   );
   useEffect(() => {
-    if (!conocimiento || conocimiento.length === 0) {
+    if (conocimiento === null) {
       getConocimiento();
     }
-  }, []);
+  }, [conocimiento, getConocimiento]);
 
   const anadirHito = () =>
     setExperiencia((prev) => ({

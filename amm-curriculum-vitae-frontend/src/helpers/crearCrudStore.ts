@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { ActionCreatorWithPayload } from '@reduxjs/toolkit';
 import api from '../api/api';
@@ -30,16 +31,16 @@ export const crearCrudStore =
       const estado = useSelector(selector);
       const lista = estado[nombre] as T[] | null;
 
-      const get = async () => {
+      const get = useCallback(async () => {
         try {
           const { data } = await api.get<T[]>(endpoint);
-          dispatch(setAccion([...(lista ?? []), ...data]));
+          dispatch(setAccion(data));
           return true;
         } catch (error) {
           console.error(`Error obteniendo ${nombre}:`, error);
           return false;
         }
-      };
+      }, [dispatch]);
 
       const create = async (payload: P) => {
         try {

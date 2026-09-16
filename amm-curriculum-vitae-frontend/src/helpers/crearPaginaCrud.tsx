@@ -80,7 +80,7 @@ export const crearPaginaCrud = <N extends string, T extends { id: string }, P>({
         get().then((obtenido) => {
           if (!obtenido) mostrarError();
         });
-    }, []);
+    }, [lista, get, mostrarError]);
 
     if (store.loading) return <p>Cargando...</p>;
 

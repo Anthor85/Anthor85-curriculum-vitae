@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/api';
 import { RootState, setCurriculum } from '../store';
@@ -8,7 +9,7 @@ export const useCurriculumStore = () => {
     (state: RootState) => state.curriculum,
   );
 
-  const getCurriculum = async () => {
+  const getCurriculum = useCallback(async () => {
     try {
       const { data } = await api.get('/curriculum');
 
@@ -16,7 +17,7 @@ export const useCurriculumStore = () => {
     } catch (error) {
       console.error('Error fetching curriculum:', error);
     }
-  };
+  }, [dispatch]);
 
   return {
     curriculum,

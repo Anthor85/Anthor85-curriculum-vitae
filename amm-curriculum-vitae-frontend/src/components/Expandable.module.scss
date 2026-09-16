@@ -17,6 +17,8 @@
   text-align: left;
   gap: 0.5rem;
   padding: 1.1rem 1.25rem;
+
+  @include v.foco-visible(-2px);
 }
 
 .triangulo {

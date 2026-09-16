@@ -4,5 +4,6 @@ export * from './useExperienciaStore';
 export * from './useFormacionStore';
 export * from './useFormacionComplementariaStore';
 export * from './useAuthStore';
+export * from './useEnvioFormulario';
 export * from './useMensajeAccion';
 export * from './usePerfilStore';

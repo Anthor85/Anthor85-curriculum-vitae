@@ -39,6 +39,14 @@ const obtenerBloques = (contenedor: HTMLElement): Bloque[] => {
   return bloques;
 };
 
+// html2canvas pinta las imagenes tal cual estan: hay que esperar a que carguen
+const esperarImagenes = (contenedor: HTMLElement) =>
+  Promise.all(
+    [...contenedor.querySelectorAll('img')].map((img) =>
+      img.complete ? Promise.resolve() : img.decode().catch(() => {}),
+    ),
+  );
+
 // html2canvas y jspdf solo se cargan al exportar, no en el bundle inicial
 export const exportToPDF = async (
   exportableHTML: HTMLDivElement,
@@ -48,6 +56,8 @@ export const exportToPDF = async (
     import('html2canvas'),
     import('jspdf'),
   ]);
+
+  await esperarImagenes(exportableHTML);
 
   const bloques = obtenerBloques(exportableHTML);
   const altoHTML = exportableHTML.getBoundingClientRect().height;

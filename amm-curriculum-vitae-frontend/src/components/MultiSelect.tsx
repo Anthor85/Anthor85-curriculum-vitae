@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import type { KeyboardEvent } from 'react';
 
 import styles from './MultiSelect.module.scss';
@@ -14,20 +14,27 @@ interface MultiSelectProps {
   selected: string[];
   onChange: (selected: string[]) => void;
   placeholder?: string;
+  ariaLabelledBy?: string;
 }
 
+// Patron combobox de WAI-ARIA con aria-activedescendant: el foco se queda en
+// la cabecera y la opcion activa se anuncia por id, sin mover el foco del DOM.
 export const MultiSelect = ({
   name,
   options,
   selected,
   onChange,
   placeholder = 'Seleccionar...',
+  ariaLabelledBy,
 }: MultiSelectProps) => {
   const [abierto, setAbierto] = useState(false);
   const [indiceActivo, setIndiceActivo] = useState(-1);
 
+  const idBase = useId();
+  const idLista = `${idBase}-lista`;
+  const idOpcion = (indice: number) => `${idBase}-opcion-${indice}`;
+
   const contenedorRef = useRef<HTMLDivElement>(null);
-  const cabeceraRef = useRef<HTMLDivElement>(null);
   const opcionesRef = useRef<(HTMLDivElement | null)[]>([]);
 
   const alternar = (id: string) =>
@@ -36,6 +43,11 @@ export const MultiSelect = ({
         ? selected.filter((item) => item !== id)
         : [...selected, id],
     );
+
+  const abrir = (indice: number) => {
+    setAbierto(true);
+    setIndiceActivo(indice);
+  };
 
   const cerrar = () => {
     setAbierto(false);
@@ -55,56 +67,56 @@ export const MultiSelect = ({
     return () => document.removeEventListener('mousedown', alClicarFuera);
   }, [abierto]);
 
+  // jsdom no implementa scrollIntoView.
   useEffect(() => {
     if (abierto && indiceActivo >= 0) {
-      opcionesRef.current[indiceActivo]?.focus();
+      opcionesRef.current[indiceActivo]?.scrollIntoView?.({ block: 'nearest' });
     }
   }, [abierto, indiceActivo]);
 
   const teclasCabecera = (e: KeyboardEvent<HTMLDivElement>) => {
+    const total = options.length;
+
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setAbierto(true);
-      setIndiceActivo(0);
+      if (total === 0) return abrir(-1);
+      abrir(abierto ? (indiceActivo + 1) % total : 0);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      setAbierto(true);
-      setIndiceActivo(options.length - 1);
+      if (total === 0) return abrir(-1);
+      abrir(abierto ? (indiceActivo - 1 + total) % total : total - 1);
     } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      setAbierto((prev) => !prev);
+      if (abierto && indiceActivo >= 0) {
+        alternar(options[indiceActivo].id);
+      } else if (abierto) {
+        cerrar();
+      } else {
+        setAbierto(true);
+      }
     } else if (e.key === 'Escape') {
+      if (abierto) e.preventDefault();
+      cerrar();
+    } else if (e.key === 'Tab') {
       cerrar();
     }
   };
 
-  const teclasOpcion = (e: KeyboardEvent<HTMLDivElement>, indice: number) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setIndiceActivo((indice + 1) % options.length);
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setIndiceActivo((indice - 1 + options.length) % options.length);
-    } else if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      alternar(options[indice].id);
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      cerrar();
-      cabeceraRef.current?.focus();
-    }
-  };
+  const idActivo =
+    abierto && indiceActivo >= 0 ? idOpcion(indiceActivo) : undefined;
 
   return (
     <div className={styles.MultiSelect} ref={contenedorRef}>
       <div
-        ref={cabeceraRef}
         className={styles.cabecera}
         role="combobox"
         aria-expanded={abierto}
         aria-haspopup="listbox"
+        aria-controls={idLista}
+        aria-activedescendant={idActivo}
+        aria-labelledby={ariaLabelledBy}
         tabIndex={0}
-        onClick={() => setAbierto((prev) => !prev)}
+        onClick={() => (abierto ? cerrar() : setAbierto(true))}
         onKeyDown={teclasCabecera}
       >
         <div className={styles.chips}>
@@ -131,27 +143,39 @@ export const MultiSelect = ({
               ))
           )}
         </div>
-        <span className={styles.mas}>+</span>
+        <span className={styles.mas} aria-hidden="true">
+          +
+        </span>
       </div>
 
       {abierto && (
         <div
+          id={idLista}
           className={styles.lista}
           role="listbox"
           aria-multiselectable="true"
+          aria-labelledby={ariaLabelledBy}
+          // Evita que el clic en una opcion quite el foco a la cabecera.
+          onMouseDown={(e) => e.preventDefault()}
         >
           {options.map((opcion, indice) => (
             <div
               key={opcion.id}
+              id={idOpcion(indice)}
               ref={(el) => {
                 opcionesRef.current[indice] = el;
               }}
-              className={styles.opcion}
+              className={
+                indice === indiceActivo
+                  ? `${styles.opcion} ${styles.activa}`
+                  : styles.opcion
+              }
               role="option"
               aria-selected={selected.includes(opcion.id)}
-              tabIndex={-1}
-              onClick={() => alternar(opcion.id)}
-              onKeyDown={(e) => teclasOpcion(e, indice)}
+              onClick={() => {
+                setIndiceActivo(indice);
+                alternar(opcion.id);
+              }}
             >
               <input
                 type="checkbox"

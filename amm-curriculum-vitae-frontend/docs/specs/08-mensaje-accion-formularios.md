@@ -83,13 +83,13 @@ mensaje: MensajeAccion | null;
 
 Textos por página y acción:
 
-| Página                    | Crear                                | Actualizar                                | Eliminar                                |
-| ------------------------- | ------------------------------------ | ----------------------------------------- | --------------------------------------- |
-| `Formacion`               | `Formación creada`                   | `Formación actualizada`                   | `Formación eliminada`                   |
-| `FormacionComplementaria` | `Formación Complementaria creada`    | `Formación Complementaria actualizada`    | `Formación Complementaria eliminada`    |
-| `Experiencia`             | `Experiencia creada`                 | `Experiencia actualizada`                 | `Experiencia eliminada`                 |
-| `Conocimiento`            | `Conocimiento creado`                | `Conocimiento actualizado`                | `Conocimiento eliminado`                |
-| `Perfil`                  | `Perfil creado`                      | `Perfil actualizado`                      | — (no existe borrado de perfil)         |
+| Página                    | Crear                             | Actualizar                             | Eliminar                             |
+| ------------------------- | --------------------------------- | -------------------------------------- | ------------------------------------ |
+| `Formacion`               | `Formación creada`                | `Formación actualizada`                | `Formación eliminada`                |
+| `FormacionComplementaria` | `Formación Complementaria creada` | `Formación Complementaria actualizada` | `Formación Complementaria eliminada` |
+| `Experiencia`             | `Experiencia creada`              | `Experiencia actualizada`              | `Experiencia eliminada`              |
+| `Conocimiento`            | `Conocimiento creado`             | `Conocimiento actualizado`             | `Conocimiento eliminado`             |
+| `Perfil`                  | `Perfil creado`                   | `Perfil actualizado`                   | — (no existe borrado de perfil)      |
 
 Línea de tiempo de la animación para `Formación creada` (16 caracteres, paso de 62,5 ms):
 

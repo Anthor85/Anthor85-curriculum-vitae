@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useEnvioFormulario } from '../../hooks';
 import type {
   FormacionComplementaria,
   FormacionComplementariaPayload,
@@ -31,45 +32,33 @@ export const FormacionComplementariaForm = ({
   onLimpiar,
   mensaje,
 }: Props) => {
+  // El padre remonta el form con `key` al cambiar la entidad en edición.
   const [formacionComplementaria, setFormacionComplementaria] =
-    useState<FormacionComplementariaPayload>(FORMACION_COMPLEMENTARIA_VACIA);
-  const [isPending, setIsPending] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (!formacionComplementariaEnEdicion) {
-      setFormacionComplementaria(FORMACION_COMPLEMENTARIA_VACIA);
-      return;
-    }
-
-    setFormacionComplementaria({
-      titulo: formacionComplementariaEnEdicion.titulo,
-      institucion: formacionComplementariaEnEdicion.institucion,
-      fechaFin: formacionComplementariaEnEdicion.fechaFin?.slice(0, 10) ?? '',
-    });
-  }, [formacionComplementariaEnEdicion]);
-
+    useState<FormacionComplementariaPayload>(() =>
+      formacionComplementariaEnEdicion
+        ? {
+            titulo: formacionComplementariaEnEdicion.titulo,
+            institucion: formacionComplementariaEnEdicion.institucion,
+            fechaFin:
+              formacionComplementariaEnEdicion.fechaFin?.slice(0, 10) ?? '',
+          }
+        : FORMACION_COMPLEMENTARIA_VACIA,
+    );
   const limpiarFormulario = () => {
     setFormacionComplementaria(FORMACION_COMPLEMENTARIA_VACIA);
     onLimpiar();
   };
 
-  const enviar = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const { isPending, enviar } = useEnvioFormulario(async () => {
     const payload: FormacionComplementariaPayload = {
       ...formacionComplementaria,
       titulo: formacionComplementaria.titulo.trim(),
       institucion: formacionComplementaria.institucion.trim(),
     };
 
-    setIsPending(true);
-    try {
-      await onSubmitFormacionComplementaria(payload);
-      limpiarFormulario();
-    } finally {
-      setIsPending(false);
-    }
-  };
+    await onSubmitFormacionComplementaria(payload);
+    limpiarFormulario();
+  });
 
   return (
     <form onSubmit={enviar} className={styles.Form}>

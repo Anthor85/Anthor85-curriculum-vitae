@@ -27,7 +27,10 @@ export const Button = ({
         // Máscara en vez de <img> para que el icono herede el color del texto
         <span
           className={styles.icon}
-          style={{ maskImage: `url(${getIcons(icon)})` }}
+          style={{
+            maskImage: `url(${getIcons(icon)})`,
+            WebkitMaskImage: `url(${getIcons(icon)})`,
+          }}
           data-icon={icon}
           aria-hidden="true"
         />

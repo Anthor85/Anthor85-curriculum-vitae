@@ -1,7 +1,13 @@
 import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { avanzarMensaje, flush, renderConStore, textoMensaje } from '../utils';
+import {
+  avanzarMensaje,
+  errorAxios,
+  flush,
+  renderConStore,
+  textoMensaje,
+} from '../utils';
 import { Perfil as IPerfil } from '../../src/interfaces/perfil.interface';
 
 const apiMock = vi.hoisted(() => ({
@@ -31,7 +37,7 @@ const PERFIL: IPerfil = {
 
 // Sin perfil el back responde 404 y el hook lo ignora: la pagina se queda en
 // modo creacion.
-const SIN_PERFIL = { response: { status: 404 } };
+const SIN_PERFIL = errorAxios(404);
 
 const configurarApi = (perfil: IPerfil | null = null) => {
   apiMock.get.mockImplementation(() =>
@@ -227,7 +233,7 @@ describe('<Perfil />', () => {
     );
   });
 
-  test('si api.put falla no se muestra el mensaje', async () => {
+  test('si api.put falla se avisa del error', async () => {
     const user = setupUser();
     const consola = vi.spyOn(console, 'error').mockImplementation(() => {});
     await renderPagina(PERFIL);
@@ -238,9 +244,18 @@ describe('<Perfil />', () => {
     await flush();
 
     await avanzarMensaje();
-    expect(textoMensaje()).toBe('');
+    expect(textoMensaje()).toBe('Ha ocurrido un error inesperado');
 
     consola.mockRestore();
+  });
+
+  test('si api.get falla avisa del error', async () => {
+    apiMock.get.mockRejectedValue(new Error('boom'));
+    renderConStore(<Perfil />);
+    await flush();
+
+    await avanzarMensaje();
+    expect(textoMensaje()).toBe('Ha ocurrido un error inesperado');
   });
 
   test('con loading en el store pinta «Cargando...»', async () => {
@@ -253,21 +268,6 @@ describe('<Perfil />', () => {
     });
 
     expect(screen.getByText('Cargando...')).toBeInTheDocument();
-    expect(screen.queryByLabelText('Nombre:')).not.toBeInTheDocument();
-
-    await flush();
-  });
-
-  test('con error en el store pinta el error', async () => {
-    renderConStore(<Perfil />, {
-      perfil: {
-        perfil: null,
-        loading: false,
-        error: 'Vaya',
-      },
-    });
-
-    expect(screen.getByText('Error: Vaya')).toBeInTheDocument();
     expect(screen.queryByLabelText('Nombre:')).not.toBeInTheDocument();
 
     await flush();

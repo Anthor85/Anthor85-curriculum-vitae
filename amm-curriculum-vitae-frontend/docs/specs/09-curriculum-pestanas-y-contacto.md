@@ -82,12 +82,12 @@ interface Props {
 
 Pestañas de `MainPage`:
 
-| `id`                        | Título                    | Origen                                    | Orden                  | Vacío                                   |
-| --------------------------- | ------------------------- | ----------------------------------------- | ---------------------- | --------------------------------------- |
-| `experiencia`               | Experiencia               | `curriculum.experiencia`                  | `fechaInicio` desc     | `Sin experiencia registrada`            |
-| `formacion`                 | Formación Académica       | `curriculum.formaciones`                  | `fechaFin` desc        | `Sin formación académica registrada`    |
-| `formacion-complementaria`  | Formación Complementaria  | `curriculum.formacionesComplementarias`   | `fechaFin` desc        | `Sin formación complementaria registrada` |
-| `conocimientos`             | Conocimientos             | `curriculum.conocimiento`                 | el del backend         | `Sin conocimientos registrados`         |
+| `id`                       | Título                   | Origen                                  | Orden              | Vacío                                     |
+| -------------------------- | ------------------------ | --------------------------------------- | ------------------ | ----------------------------------------- |
+| `experiencia`              | Experiencia              | `curriculum.experiencia`                | `fechaInicio` desc | `Sin experiencia registrada`              |
+| `formacion`                | Formación Académica      | `curriculum.formaciones`                | `fechaFin` desc    | `Sin formación académica registrada`      |
+| `formacion-complementaria` | Formación Complementaria | `curriculum.formacionesComplementarias` | `fechaFin` desc    | `Sin formación complementaria registrada` |
+| `conocimientos`            | Conocimientos            | `curriculum.conocimiento`               | el del backend     | `Sin conocimientos registrados`           |
 
 Props de las tarjetas de solo lectura:
 
@@ -192,12 +192,12 @@ Cada fila es `<div className={styles.contacto__linea}>` con `<img src={getIcons(
 
 ## Riesgos identificados
 
-| Riesgo | Mitigación |
-| ------ | ---------- |
-| Cambiar `CurriculumState` rompe la compilación de `slice.ts`, `useCurriculumStore.ts` y `MainPage.tsx` a la vez | Los pasos 3 a 5 van seguidos y el plan indica que los errores intermedios de `tsc` son esperados hasta cerrar el paso 5 |
-| Los datos guardados antes de esta spec pueden traer `fechaInicio` o `fechaFin` vacías o mal formadas, y `new Date(undefined)` da `Invalid Date` | El `sort` trata las fechas ausentes como el valor más antiguo y `fechaFin` solo se pinta cuando existe, igual que hacen hoy las cards |
-| `sort` sobre el array que viene de Redux lanzaría un error de mutación en modo estricto | Ordenar siempre sobre una copia con `[...lista].sort(...)`, indicado en el paso 9 |
-| El PDF sale incompleto y se percibe como un fallo, no como una limitación | Declarado fuera de alcance y anotado en el TODO como tarea pendiente independiente |
-| Los iconos SVG no se ven si se colocan en `src/assets` o si la ruta conserva el `/public/` actual | Criterio de aceptación explícito sobre ausencia de 404 y sobre que `getIcons` no devuelva rutas con `/public/` |
-| El bloque de contacto puede desbordar la columna de la foto con direcciones o emails largos | La columna ya tiene un ancho fijo por la foto (300px); las filas de contacto ajustan el texto y se comprueba visualmente con el dato más largo |
-| Reutilizar el nombre `Curriculum` colisiona con `src/Curriculum.tsx`, que es la raíz de la aplicación | Los componentes nuevos viven en `src/pages/curriculum/` y ninguno se llama `Curriculum`; solo el módulo de estilos lleva ese nombre |
+| Riesgo                                                                                                                                          | Mitigación                                                                                                                                     |
+| ----------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cambiar `CurriculumState` rompe la compilación de `slice.ts`, `useCurriculumStore.ts` y `MainPage.tsx` a la vez                                 | Los pasos 3 a 5 van seguidos y el plan indica que los errores intermedios de `tsc` son esperados hasta cerrar el paso 5                        |
+| Los datos guardados antes de esta spec pueden traer `fechaInicio` o `fechaFin` vacías o mal formadas, y `new Date(undefined)` da `Invalid Date` | El `sort` trata las fechas ausentes como el valor más antiguo y `fechaFin` solo se pinta cuando existe, igual que hacen hoy las cards          |
+| `sort` sobre el array que viene de Redux lanzaría un error de mutación en modo estricto                                                         | Ordenar siempre sobre una copia con `[...lista].sort(...)`, indicado en el paso 9                                                              |
+| El PDF sale incompleto y se percibe como un fallo, no como una limitación                                                                       | Declarado fuera de alcance y anotado en el TODO como tarea pendiente independiente                                                             |
+| Los iconos SVG no se ven si se colocan en `src/assets` o si la ruta conserva el `/public/` actual                                               | Criterio de aceptación explícito sobre ausencia de 404 y sobre que `getIcons` no devuelva rutas con `/public/`                                 |
+| El bloque de contacto puede desbordar la columna de la foto con direcciones o emails largos                                                     | La columna ya tiene un ancho fijo por la foto (300px); las filas de contacto ajustan el texto y se comprueba visualmente con el dato más largo |
+| Reutilizar el nombre `Curriculum` colisiona con `src/Curriculum.tsx`, que es la raíz de la aplicación                                           | Los componentes nuevos viven en `src/pages/curriculum/` y ninguno se llama `Curriculum`; solo el módulo de estilos lleva ese nombre            |

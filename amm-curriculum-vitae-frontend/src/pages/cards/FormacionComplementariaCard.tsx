@@ -16,7 +16,7 @@ export const FormacionComplementariaCard = ({
   onEditar,
   enEdicion,
 }: Props) => {
-  const { id, titulo, institucion, fechaFin } = formacionComplementaria;
+  const { titulo, institucion, fechaFin } = formacionComplementaria;
 
   return (
     <div className={`${styles.Card} ${enEdicion ? styles.enEdicion : ''}`}>

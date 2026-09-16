@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useEnvioFormulario } from '../../hooks';
 import {
   ConocimientoNivel,
   type Conocimiento,
@@ -29,43 +30,29 @@ export const ConocimientoForm = ({
   onLimpiar,
   mensaje,
 }: Props) => {
-  const [conocimiento, setConocimiento] =
-    useState<ConocimientoPayload>(CONOCIMIENTO_VACIO);
-  const [isPending, setIsPending] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (!conocimientoEnEdicion) {
-      setConocimiento(CONOCIMIENTO_VACIO);
-      return;
-    }
-
-    setConocimiento({
-      titulo: conocimientoEnEdicion.titulo,
-      nivel: conocimientoEnEdicion.nivel,
-    });
-  }, [conocimientoEnEdicion]);
-
+  // El padre remonta el form con `key` al cambiar la entidad en edición.
+  const [conocimiento, setConocimiento] = useState<ConocimientoPayload>(() =>
+    conocimientoEnEdicion
+      ? {
+          titulo: conocimientoEnEdicion.titulo,
+          nivel: conocimientoEnEdicion.nivel,
+        }
+      : CONOCIMIENTO_VACIO,
+  );
   const limpiarFormulario = () => {
     setConocimiento(CONOCIMIENTO_VACIO);
     onLimpiar();
   };
 
-  const enviar = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const { isPending, enviar } = useEnvioFormulario(async () => {
     const payload: ConocimientoPayload = {
       ...conocimiento,
       titulo: conocimiento.titulo.trim(),
     };
 
-    setIsPending(true);
-    try {
-      await onAddConocimiento(payload);
-      limpiarFormulario();
-    } finally {
-      setIsPending(false);
-    }
-  };
+    await onAddConocimiento(payload);
+    limpiarFormulario();
+  });
 
   return (
     <form onSubmit={enviar} className={styles.Form}>

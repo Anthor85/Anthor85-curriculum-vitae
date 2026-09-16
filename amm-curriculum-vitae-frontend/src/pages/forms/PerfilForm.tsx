@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useEnvioFormulario } from '../../hooks';
 import type { Perfil, PerfilPayload } from '../../interfaces/perfil.interface';
 
 import { Button } from '../../components/Button';
@@ -25,25 +26,17 @@ interface Props {
 }
 
 export const PerfilForm = ({ perfil, onSubmitPerfil, mensaje }: Props) => {
-  const [datosPerfil, setDatosPerfil] = useState<PerfilPayload>(PERFIL_VACIO);
-  const [isPending, setIsPending] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (!perfil) {
-      setDatosPerfil(PERFIL_VACIO);
-      return;
-    }
-
-    setDatosPerfil({
-      ...perfil,
-      fechaNacimiento: perfil.fechaNacimiento?.slice(0, 10) ?? '',
-      foto: perfil.foto ?? '',
-    });
-  }, [perfil]);
-
-  const enviar = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  // El padre remonta el form con `key` al cambiar el perfil.
+  const [datosPerfil, setDatosPerfil] = useState<PerfilPayload>(() =>
+    perfil
+      ? {
+          ...perfil,
+          fechaNacimiento: perfil.fechaNacimiento?.slice(0, 10) ?? '',
+          foto: perfil.foto ?? '',
+        }
+      : PERFIL_VACIO,
+  );
+  const { isPending, enviar } = useEnvioFormulario(async () => {
     const payload: PerfilPayload = {
       ...datosPerfil,
       nombre: datosPerfil.nombre.trim(),
@@ -55,13 +48,8 @@ export const PerfilForm = ({ perfil, onSubmitPerfil, mensaje }: Props) => {
       foto: datosPerfil.foto.trim(),
     };
 
-    setIsPending(true);
-    try {
-      await onSubmitPerfil(payload);
-    } finally {
-      setIsPending(false);
-    }
-  };
+    await onSubmitPerfil(payload);
+  });
 
   return (
     <form onSubmit={enviar} className={styles.Form}>

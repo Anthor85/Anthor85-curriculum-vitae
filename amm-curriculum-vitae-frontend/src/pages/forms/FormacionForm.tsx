@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useEnvioFormulario } from '../../hooks';
 import type {
   Formacion,
   FormacionPayload,
@@ -30,45 +31,32 @@ export const FormacionForm = ({
   onLimpiar,
   mensaje,
 }: Props) => {
-  const [formacion, setFormacion] = useState<FormacionPayload>(FORMACION_VACIA);
-  const [isPending, setIsPending] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (!formacionEnEdicion) {
-      setFormacion(FORMACION_VACIA);
-      return;
-    }
-
-    setFormacion({
-      titulo: formacionEnEdicion.titulo,
-      institucion: formacionEnEdicion.institucion,
-      descripcion: formacionEnEdicion.descripcion ?? '',
-      fechaFin: formacionEnEdicion.fechaFin.slice(0, 10),
-    });
-  }, [formacionEnEdicion]);
-
+  // El padre remonta el form con `key` al cambiar la entidad en edición.
+  const [formacion, setFormacion] = useState<FormacionPayload>(() =>
+    formacionEnEdicion
+      ? {
+          titulo: formacionEnEdicion.titulo,
+          institucion: formacionEnEdicion.institucion,
+          descripcion: formacionEnEdicion.descripcion ?? '',
+          fechaFin: formacionEnEdicion.fechaFin.slice(0, 10),
+        }
+      : FORMACION_VACIA,
+  );
   const limpiarFormulario = () => {
     setFormacion(FORMACION_VACIA);
     onLimpiar();
   };
 
-  const enviar = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const { isPending, enviar } = useEnvioFormulario(async () => {
     const payload: FormacionPayload = {
       ...formacion,
       titulo: formacion.titulo.trim(),
       institucion: formacion.institucion.trim(),
     };
 
-    setIsPending(true);
-    try {
-      await onSubmitFormacion(payload);
-      limpiarFormulario();
-    } finally {
-      setIsPending(false);
-    }
-  };
+    await onSubmitFormacion(payload);
+    limpiarFormulario();
+  });
 
   return (
     <form onSubmit={enviar} className={styles.Form}>

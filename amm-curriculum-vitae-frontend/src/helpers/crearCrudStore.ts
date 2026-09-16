@@ -5,7 +5,7 @@ import type { RootState } from '../store';
 import type { EstadoCrud } from './crearSliceCrud';
 
 export type HookCrud<N extends string, T, P> = EstadoCrud<N, T[]> &
-  Record<`get${Capitalize<N>}`, () => Promise<void>> &
+  Record<`get${Capitalize<N>}`, () => Promise<boolean>> &
   Record<`create${Capitalize<N>}`, (payload: P) => Promise<boolean>> &
   Record<
     `update${Capitalize<N>}`,
@@ -33,9 +33,11 @@ export const crearCrudStore =
       const get = async () => {
         try {
           const { data } = await api.get<T[]>(endpoint);
-          dispatch(setAccion(data));
+          dispatch(setAccion([...(lista ?? []), ...data]));
+          return true;
         } catch (error) {
           console.error(`Error obteniendo ${nombre}:`, error);
+          return false;
         }
       };
 

@@ -26,7 +26,9 @@ const EXPERIENCIAS: IExperiencia[] = [
     fechaInicio: '2020-01-15',
     fechaFin: '2022-06-30',
     tecnologias: ['t1'],
-    hitos: [{ id: 'h1', descripcion: 'Migración a React 19', experiencia: '1' }],
+    hitos: [
+      { id: 'h1', descripcion: 'Migración a React 19', experiencia: '1' },
+    ],
   },
   {
     id: '2',
@@ -137,7 +139,9 @@ describe('<Experiencia />', () => {
     expect(screen.getByLabelText('Posición:')).toBeInTheDocument();
     expect(screen.getByLabelText('Fecha inicio:')).toBeInTheDocument();
     expect(screen.getByLabelText('Fecha fin:')).toBeInTheDocument();
-    expect(screen.getByText('No hay tecnologías disponibles')).toBeInTheDocument();
+    expect(
+      screen.getByText('No hay tecnologías disponibles'),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: 'Agregar Experiencia' }),
     ).toBeInTheDocument();
@@ -303,7 +307,7 @@ describe('<Experiencia />', () => {
     await avanzarMensaje();
     expect(textoMensaje()).toBe('Experiencia eliminada');
   });
-  test('si api.post falla no se pinta Card nueva ni mensaje', async () => {
+  test('si api.post falla no se pinta Card nueva y avisa del error', async () => {
     const user = setupUser();
     apiMock.post.mockRejectedValue(new Error('boom'));
     await renderPagina();
@@ -322,10 +326,10 @@ describe('<Experiencia />', () => {
     expect(screen.getAllByRole('button', { name: 'Editar' })).toHaveLength(2);
 
     await avanzarMensaje();
-    expect(textoMensaje()).toBe('');
+    expect(textoMensaje()).toBe('Ha ocurrido un error inesperado');
   });
 
-  test('si api.put falla la Card no cambia ni hay mensaje', async () => {
+  test('si api.put falla la Card no cambia y avisa del error', async () => {
     const user = setupUser();
     apiMock.put.mockRejectedValue(new Error('boom'));
     await renderPagina();
@@ -346,10 +350,10 @@ describe('<Experiencia />', () => {
     expect(screen.queryByText('Acme Corp')).not.toBeInTheDocument();
 
     await avanzarMensaje();
-    expect(textoMensaje()).toBe('');
+    expect(textoMensaje()).toBe('Ha ocurrido un error inesperado');
   });
 
-  test('si api.delete falla la Card sigue en el listado y no hay mensaje', async () => {
+  test('si api.delete falla la Card sigue en el listado y avisa del error', async () => {
     const user = setupUser();
     apiMock.delete.mockRejectedValue(new Error('boom'));
     await renderPagina();
@@ -363,7 +367,7 @@ describe('<Experiencia />', () => {
     expect(screen.getAllByRole('button', { name: 'Editar' })).toHaveLength(2);
 
     await avanzarMensaje();
-    expect(textoMensaje()).toBe('');
+    expect(textoMensaje()).toBe('Ha ocurrido un error inesperado');
   });
 
   test('con loading en el store pinta «Cargando...»', async () => {
@@ -372,17 +376,6 @@ describe('<Experiencia />', () => {
     });
 
     expect(screen.getByText('Cargando...')).toBeInTheDocument();
-    expect(screen.queryByLabelText('Empresa:')).not.toBeInTheDocument();
-
-    await flush();
-  });
-
-  test('con error en el store pinta el error', async () => {
-    renderConStore(<Experiencia />, {
-      experiencia: { experiencia: null, loading: false, error: 'Vaya' },
-    });
-
-    expect(screen.getByText('Error: Vaya')).toBeInTheDocument();
     expect(screen.queryByLabelText('Empresa:')).not.toBeInTheDocument();
 
     await flush();
@@ -400,7 +393,7 @@ describe('<Experiencia />', () => {
   test('la Card pinta los hitos de la experiencia y nada si no tiene', async () => {
     await renderPagina();
 
-    // «Hitos:» es un <label> en el form siempre y un <p> en la Card: solo Acme
+    // «Hitos:» es un <span> en el form siempre y un <p> en la Card: solo Acme
     // tiene hitos, así que solo hay un <p>.
     const titulosEnCards = screen
       .getAllByText('Hitos:')

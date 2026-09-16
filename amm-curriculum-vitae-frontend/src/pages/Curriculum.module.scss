@@ -12,7 +12,11 @@
     left: 0;
     width: 100%;
     border-bottom: 5px solid aquamarine;
-    border-image: linear-gradient(to right, v.$color-primary-light, v.$color-primary);
+    border-image: linear-gradient(
+      to right,
+      v.$color-primary-light,
+      v.$color-primary
+    );
     border-image-slice: 1;
     height: calc(3rem + 45px);
     box-sizing: border-box;
@@ -101,7 +105,7 @@
           display: flex;
           align-items: center;
           gap: 0.75rem;
-          font-size: 1rem;
+          font-size: 0.9rem;
           line-height: 1.4;
           color: v.$color-gray-800;
           overflow-wrap: anywhere;

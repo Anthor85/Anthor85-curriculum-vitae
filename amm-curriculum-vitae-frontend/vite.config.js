@@ -20,8 +20,12 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
-      include: ['src/**/*.tsx'],
+      all: true,
+      include: ['src/**/*.{ts,tsx}'],
       exclude: [
+        'vite-env.d.ts',
+        'src/interfaces/**',
+        'src/**/index.ts',
         'src/index.tsx',
         'src/router/**',
         'src/pages/Curriculum.tsx',

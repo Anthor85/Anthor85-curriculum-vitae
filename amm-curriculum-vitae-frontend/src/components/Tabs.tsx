@@ -1,4 +1,11 @@
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import {
+  KeyboardEvent,
+  ReactNode,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from 'react';
 
 import styles from './Tabs.module.scss';
 
@@ -17,6 +24,12 @@ export const Tabs = ({ tabs }: Props) => {
   const [menuAbierto, setMenuAbierto] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
+  const botonesRef = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  const prefijo = useId();
+  const idTab = (id: string) => `${prefijo}-tab-${id}`;
+  const idPanel = `${prefijo}-panel`;
+  const idDesplegable = `${prefijo}-desplegable`;
 
   const tabActiva = tabs.find((tab) => tab.id === activa);
 
@@ -38,18 +51,54 @@ export const Tabs = ({ tabs }: Props) => {
     setMenuAbierto(false);
   };
 
+  const alPulsarTecla = (evento: KeyboardEvent<HTMLDivElement>) => {
+    const indiceActual = tabs.findIndex((tab) => tab.id === activa);
+    const ultimo = tabs.length - 1;
+
+    const destinos: Record<string, number> = {
+      ArrowRight: indiceActual === ultimo ? 0 : indiceActual + 1,
+      ArrowLeft: indiceActual <= 0 ? ultimo : indiceActual - 1,
+      Home: 0,
+      End: ultimo,
+    };
+
+    if (!(evento.key in destinos)) return;
+
+    evento.preventDefault();
+    const destino = tabs[destinos[evento.key]];
+    setActiva(destino.id);
+    botonesRef.current[destino.id]?.focus();
+  };
+
   return (
     <div className={styles.Tabs}>
-      <div className={styles.lista}>
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            className={`${styles.boton} ${tab.id === activa ? styles.activa : ''}`}
-            onClick={() => setActiva(tab.id)}
-          >
-            {tab.titulo}
-          </button>
-        ))}
+      <div
+        className={styles.lista}
+        role="tablist"
+        aria-orientation="horizontal"
+        onKeyDown={alPulsarTecla}
+      >
+        {tabs.map((tab) => {
+          const seleccionada = tab.id === activa;
+          return (
+            <button
+              key={tab.id}
+              ref={(boton) => {
+                botonesRef.current[tab.id] = boton;
+              }}
+              type="button"
+              role="tab"
+              id={idTab(tab.id)}
+              aria-selected={seleccionada}
+              aria-controls={idPanel}
+              tabIndex={seleccionada ? 0 : -1}
+              className={`${styles.boton} ${seleccionada ? styles.activa : ''}`}
+              onClick={() => setActiva(tab.id)}
+            >
+              {tab.titulo}
+            </button>
+          );
+        })}
       </div>
       <div className={styles.menuMovil} ref={menuRef}>
         <div className={styles.barraMovil}>
@@ -58,6 +107,7 @@ export const Tabs = ({ tabs }: Props) => {
             type="button"
             className={styles.hamburguesa}
             aria-expanded={menuAbierto}
+            aria-controls={idDesplegable}
             aria-label="Abrir menú de pestañas"
             onClick={() => setMenuAbierto((abierto) => !abierto)}
           >
@@ -65,10 +115,12 @@ export const Tabs = ({ tabs }: Props) => {
           </button>
         </div>
         {menuAbierto && (
-          <div className={styles.desplegable}>
+          <div id={idDesplegable} className={styles.desplegable}>
             {tabs.map((tab) => (
               <button
                 key={tab.id}
+                type="button"
+                aria-current={tab.id === activa ? 'true' : undefined}
                 className={`${styles.opcion} ${tab.id === activa ? styles.activa : ''}`}
                 onClick={() => seleccionar(tab.id)}
               >
@@ -78,7 +130,17 @@ export const Tabs = ({ tabs }: Props) => {
           </div>
         )}
       </div>
-      <div className={styles.panel}>{tabActiva?.contenido}</div>
+      {tabActiva && (
+        <div
+          className={styles.panel}
+          role="tabpanel"
+          id={idPanel}
+          aria-labelledby={idTab(tabActiva.id)}
+          tabIndex={0}
+        >
+          {tabActiva.contenido}
+        </div>
+      )}
     </div>
   );
 };

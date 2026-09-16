@@ -22,9 +22,3 @@ export interface Experiencia {
 export interface ExperienciaPayload extends Omit<Experiencia, 'id' | 'hitos'> {
   hitos: HitoPayload[];
 }
-
-export interface ExperienciaState {
-  experiencia: Experiencia[] | null;
-  loading: boolean;
-  error: string | null;
-}

@@ -1,0 +1,69 @@
+.Header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  height: v.$altura-header;
+  box-sizing: border-box;
+  padding: 0 2rem;
+  background-color: v.$color-primary-soft;
+  border-bottom: 1px solid v.$color-gray-150;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.link {
+  padding: 0.5rem 0.75rem;
+  border-radius: 5px;
+  color: v.$color-gray-800;
+  text-decoration: none;
+  font-size: 15px;
+
+  &:hover {
+    background-color: v.$color-white;
+  }
+
+  @include v.foco-visible;
+}
+
+.activo {
+  background-color: v.$color-primary-dark;
+  color: v.$color-white;
+
+  &:hover {
+    background-color: v.$color-primary-dark;
+  }
+}
+
+.sesion {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.usuario {
+  color: v.$color-gray-600;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .Header {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .sesion {
+    justify-content: space-between;
+  }
+}

@@ -1,3 +1,4 @@
+import { isAxiosError } from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/api';
 import { RootState, setPerfil } from '../store';
@@ -5,17 +6,22 @@ import type { PerfilPayload } from '../interfaces/perfil.interface';
 
 export const usePerfilStore = () => {
   const dispatch = useDispatch();
-  const { perfil, loading, error } = useSelector((state: RootState) => state.perfil);
+  const { perfil, loading, error } = useSelector(
+    (state: RootState) => state.perfil,
+  );
 
   const getPerfil = async () => {
     try {
       const { data } = await api.get('/perfil');
 
       dispatch(setPerfil(data));
+      return true;
     } catch (error) {
-      if ((error as any)?.response?.status === 404) return;
+      // Un 404 significa que aún no hay perfil creado, no es un fallo.
+      if (isAxiosError(error) && error.response?.status === 404) return true;
 
       console.error('Error recuperando perfil:', error);
+      return false;
     }
   };
 

@@ -42,12 +42,12 @@ Esta funcionalidad no introduce estructuras de datos de producción ni toca el b
 
 Los cuatro archivos comparten la misma matriz de casos y solo cambian el recurso, los campos y los textos:
 
-| Archivo | Ruta API | Campos obligatorios rellenados | Botón crear / editar | Mensajes esperados |
-| --- | --- | --- | --- | --- |
-| `Experiencia.test.tsx` | `/experiencia` (+ `/conocimiento` → `[]`) | Company, Posición, Fecha inicio | `Agregar Experiencia` / `Actualizar Experiencia` | `Experiencia creada` / `actualizada` / `eliminada` |
-| `Formacion.test.tsx` | `/formacion` | Título, Institución, Fecha de Fin | `Agregar Formación` / `Actualizar Formación` | `Formación creada` / `actualizada` / `eliminada` |
-| `FormacionComplementaria.test.tsx` | `/formacion-complementaria` | Título, Institución | `Agregar Formación Complementaria` / `Actualizar Formación Complementaria` | `Formación Complementaria creada` / `actualizada` / `eliminada` |
-| `Conocimiento.test.tsx` | `/conocimiento` | Título (Nivel ya trae valor por defecto) | `Agregar Conocimiento` / `Actualizar Conocimiento` | `Conocimiento creado` / `actualizado` / `eliminado` |
+| Archivo                            | Ruta API                                  | Campos obligatorios rellenados           | Botón crear / editar                                                       | Mensajes esperados                                              |
+| ---------------------------------- | ----------------------------------------- | ---------------------------------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `Experiencia.test.tsx`             | `/experiencia` (+ `/conocimiento` → `[]`) | Company, Posición, Fecha inicio          | `Agregar Experiencia` / `Actualizar Experiencia`                           | `Experiencia creada` / `actualizada` / `eliminada`              |
+| `Formacion.test.tsx`               | `/formacion`                              | Título, Institución, Fecha de Fin        | `Agregar Formación` / `Actualizar Formación`                               | `Formación creada` / `actualizada` / `eliminada`                |
+| `FormacionComplementaria.test.tsx` | `/formacion-complementaria`               | Título, Institución                      | `Agregar Formación Complementaria` / `Actualizar Formación Complementaria` | `Formación Complementaria creada` / `actualizada` / `eliminada` |
+| `Conocimiento.test.tsx`            | `/conocimiento`                           | Título (Nivel ya trae valor por defecto) | `Agregar Conocimiento` / `Actualizar Conocimiento`                         | `Conocimiento creado` / `actualizado` / `eliminado`             |
 
 Los catorce tests de cada archivo:
 
@@ -113,15 +113,15 @@ El mock de `api` responde con la forma que espera cada hook: `post` devuelve `{ 
 
 ## Riesgos identificados
 
-| Riesgo | Mitigación |
-| --- | --- |
+| Riesgo                                                                                                           | Mitigación                                                                                                                                                                                                                               |
+| ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | jsdom puede no bloquear el envío del formulario ante un `required` vacío, y entonces sí se llamaría a `api.post` | Se comprueba primero con el test piloto de `Conocimiento`. Si jsdom no bloquea, el test asserta `expect(campo).toBeInvalid()` y `expect(formulario).toBeInvalid()` en vez de "`api.post` no llamado", y se anota el cambio en esta spec. |
-| Mezclar fake timers con `userEvent` cuelga los tests si no se conecta el reloj | `userEvent.setup({ advanceTimers: vi.advanceTimersByTime })` en cada test, siempre después de `vi.useFakeTimers()`. |
-| Los `input type="date"` se comportan de forma distinta en jsdom | Se rellenan con `fireEvent.change` y valor `YYYY-MM-DD` si `userEvent.type` da problemas. |
-| `vi.mock` con ruta relativa podría no interceptar el módulo que importan los hooks | La ruta se escribe relativa al archivo de test (`../../src/api/api`), que Vitest resuelve al mismo id de módulo. Se verifica en el paso 4 antes de replicar el patrón. |
-| Los `console.log` de los hooks ensucian la salida de los tests | El módulo `api` está mockeado (no se ejecuta su `console.log`); los de los hooks se silencian en `test/setup.ts` si molestan. |
-| El umbral del 80% puede no alcanzarse en `ExperienciaForm` por dejar fuera `MultiSelect` e hitos | El `include` de coverage se ajusta en el paso 9; si `ExperienciaForm` no llega, se baja su umbral de forma explícita y documentada en vez de inflar los tests. |
-| `test/` fuera de `src/` puede quedar fuera del `tsconfig.json` y perder tipos | Se añade `test` al `include` del `tsconfig.json` junto con `"types": ["vitest/globals"]`. |
+| Mezclar fake timers con `userEvent` cuelga los tests si no se conecta el reloj                                   | `userEvent.setup({ advanceTimers: vi.advanceTimersByTime })` en cada test, siempre después de `vi.useFakeTimers()`.                                                                                                                      |
+| Los `input type="date"` se comportan de forma distinta en jsdom                                                  | Se rellenan con `fireEvent.change` y valor `YYYY-MM-DD` si `userEvent.type` da problemas.                                                                                                                                                |
+| `vi.mock` con ruta relativa podría no interceptar el módulo que importan los hooks                               | La ruta se escribe relativa al archivo de test (`../../src/api/api`), que Vitest resuelve al mismo id de módulo. Se verifica en el paso 4 antes de replicar el patrón.                                                                   |
+| Los `console.log` de los hooks ensucian la salida de los tests                                                   | El módulo `api` está mockeado (no se ejecuta su `console.log`); los de los hooks se silencian en `test/setup.ts` si molestan.                                                                                                            |
+| El umbral del 80% puede no alcanzarse en `ExperienciaForm` por dejar fuera `MultiSelect` e hitos                 | El `include` de coverage se ajusta en el paso 9; si `ExperienciaForm` no llega, se baja su umbral de forma explícita y documentada en vez de inflar los tests.                                                                           |
+| `test/` fuera de `src/` puede quedar fuera del `tsconfig.json` y perder tipos                                    | Se añade `test` al `include` del `tsconfig.json` junto con `"types": ["vitest/globals"]`.                                                                                                                                                |
 
 ## Notas de implementación
 

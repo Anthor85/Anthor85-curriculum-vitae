@@ -97,13 +97,13 @@ No se persiste. Vuelve a `false` al elegir pestaña, al pulsar fuera y en cada m
 
 ## Riesgos identificados
 
-| Riesgo | Mitigación |
-| --- | --- |
-| `display: contents` hace que `.information` pierda su `padding-right`, su `gap` y su `min-width: 0` | El `gap` se declara en `.basicInformation`, que en móvil es el flex container real; el padding lateral pasa a `.MainPage`. Se comprueba a 360px que nada se sale. |
-| `display: contents` en `.column` también anula su `gap: 2rem` entre foto, contacto y botón | La separación en móvil la dan `.identidad` (fila con su propio `gap`) y el `margin` del botón. |
-| El listener de `mousedown` puede tragarse el clic sobre el propio botón hamburguesa y reabrir el menú | El `ref` del contenedor del menú incluye el botón, y el listener ignora los clics dentro de ese `ref`. |
-| El nodo oculto `CurriculumPDF` mide 794px y podría generar scroll horizontal en móvil | Ya está en `position: absolute; left: -10000px`, fuera del flujo. Se verifica explícitamente en el criterio de scroll horizontal a 360px. |
-| El email largo del contacto desborda junto a una foto de 120px | `.contacto__linea` ya lleva `overflow-wrap: anywhere`; el bloque pasa a `flex: 1; min-width: 0` para que ese `wrap` funcione. |
+| Riesgo                                                                                                | Mitigación                                                                                                                                                        |
+| ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `display: contents` hace que `.information` pierda su `padding-right`, su `gap` y su `min-width: 0`   | El `gap` se declara en `.basicInformation`, que en móvil es el flex container real; el padding lateral pasa a `.MainPage`. Se comprueba a 360px que nada se sale. |
+| `display: contents` en `.column` también anula su `gap: 2rem` entre foto, contacto y botón            | La separación en móvil la dan `.identidad` (fila con su propio `gap`) y el `margin` del botón.                                                                    |
+| El listener de `mousedown` puede tragarse el clic sobre el propio botón hamburguesa y reabrir el menú | El `ref` del contenedor del menú incluye el botón, y el listener ignora los clics dentro de ese `ref`.                                                            |
+| El nodo oculto `CurriculumPDF` mide 794px y podría generar scroll horizontal en móvil                 | Ya está en `position: absolute; left: -10000px`, fuera del flujo. Se verifica explícitamente en el criterio de scroll horizontal a 360px.                         |
+| El email largo del contacto desborda junto a una foto de 120px                                        | `.contacto__linea` ya lleva `overflow-wrap: anywhere`; el bloque pasa a `flex: 1; min-width: 0` para que ese `wrap` funcione.                                     |
 
 ## Lo que **no** entra en esta spec
 

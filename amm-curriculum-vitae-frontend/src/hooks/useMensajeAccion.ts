@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import type { MensajeAccion } from '../interfaces/mensajeAccion.interface';
 
+const MENSAJE_ERROR = 'Ha ocurrido un error inesperado';
+
 export const useMensajeAccion = () => {
   const [mensaje, setMensaje] = useState<MensajeAccion | null>(null);
 
   const mostrarMensaje = (texto: string) =>
     setMensaje((anterior) => ({ texto, id: (anterior?.id ?? 0) + 1 }));
 
-  return { mensaje, mostrarMensaje };
+  const mostrarError = () => mostrarMensaje(MENSAJE_ERROR);
+
+  return { mensaje, mostrarMensaje, mostrarError };
 };

@@ -67,27 +67,27 @@ export interface LoginResponse extends Usuario {
 
 ### `authSlice`
 
-| Acción | Efecto |
-| --- | --- |
-| `onChecking` | `status: 'checking'`, `user: null`, `errorMessage: null` |
-| `onLogin(Usuario)` | `status: 'authenticated'`, `user: payload`, `errorMessage: null` |
+| Acción                     | Efecto                                                               |
+| -------------------------- | -------------------------------------------------------------------- |
+| `onChecking`               | `status: 'checking'`, `user: null`, `errorMessage: null`             |
+| `onLogin(Usuario)`         | `status: 'authenticated'`, `user: payload`, `errorMessage: null`     |
 | `onLogout(string \| null)` | `status: 'not-authenticated'`, `user: null`, `errorMessage: payload` |
 
 Estado inicial: `{ status: 'checking', user: null, errorMessage: null }`. Arrancar en `checking` evita el parpadeo a `/login` mientras se revalida el token.
 
 ### Claves de `localStorage`
 
-| Clave | Contenido |
-| --- | --- |
-| `token` | El JWT devuelto por `POST /api/auth` o por `GET /api/auth/renew` |
-| `token-init-date` | `new Date().getTime()` del momento en que se guardó |
+| Clave             | Contenido                                                        |
+| ----------------- | ---------------------------------------------------------------- |
+| `token`           | El JWT devuelto por `POST /api/auth` o por `GET /api/auth/renew` |
+| `token-init-date` | `new Date().getTime()` del momento en que se guardó              |
 
 ### Llamadas al backend
 
-| Llamada | Petición | Respuesta usada |
-| --- | --- | --- |
-| `startLogin` | `POST /auth` con `{ email, password }` | 200 → `{ uid, nombre, email, token }`; 400 → `error.response.data.msg` |
-| `checkAuthToken` | `GET /auth/renew` con `x-token` | 200 → `{ uid, nombre, email, token }`; 401 → `onLogout(null)` y `localStorage.clear()` |
+| Llamada          | Petición                               | Respuesta usada                                                                        |
+| ---------------- | -------------------------------------- | -------------------------------------------------------------------------------------- |
+| `startLogin`     | `POST /auth` con `{ email, password }` | 200 → `{ uid, nombre, email, token }`; 400 → `error.response.data.msg`                 |
+| `checkAuthToken` | `GET /auth/renew` con `x-token`        | 200 → `{ uid, nombre, email, token }`; 401 → `onLogout(null)` y `localStorage.clear()` |
 
 ### Casos de `test/pages/Login.test.tsx` (8 tests)
 
@@ -159,13 +159,13 @@ Render con `renderConStore` (el store de test incorpora el `auth` reducer) dentr
 
 ## Riesgos identificados
 
-| Riesgo | Mitigación |
-| --- | --- |
-| Los tests existentes de páginas se rompen al añadir el reducer `auth` al store de test | El paso 1 ejecuta `npm test` antes de seguir; el reducer nuevo no lo lee ninguna página existente |
-| El `checking` inicial deja `Loading...` pegado si `checkAuthToken` no despacha nunca (excepción no capturada) | El `catch` del hook siempre termina en `onLogout`, y el camino "sin token en `localStorage`" despacha `onLogout` sin llamar a la API |
-| El interceptor lee `localStorage` en cada petición y en jsdom podría no existir | Los tests de páginas mockean el módulo `api` entero, así que el interceptor no llega a ejecutarse; en `Login.test.tsx` jsdom sí provee `localStorage` |
-| `localStorage.clear()` borra claves ajenas si en el futuro se guarda algo más | Hoy solo se guardan estas dos claves. Si aparecen más, se cambia a `removeItem` en su propia spec |
-| Estado de sesión filtrado entre tests por no limpiar `localStorage` | `beforeEach` con `localStorage.clear()` en `Login.test.tsx` |
-| Alcanzar el 80% de cobertura en `Login.tsx` sin cubrir la rama del error de red | Es el caso 7 de los tests, escrito explícitamente para esa rama |
-| Redirigir a `/login` desde `RutaPrivada` con `state.from` y volver luego a una ruta que ya no existe | Las cinco rutas privadas están fijadas en el router; el `catch-all` a `/` cubre cualquier otra |
-| El frontend se despliega antes que la SPEC 07 y el login apunta a un endpoint inexistente | Las dos specs se implementan y despliegan juntas; la 14 depende explícitamente de la 07 |
+| Riesgo                                                                                                        | Mitigación                                                                                                                                            |
+| ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Los tests existentes de páginas se rompen al añadir el reducer `auth` al store de test                        | El paso 1 ejecuta `npm test` antes de seguir; el reducer nuevo no lo lee ninguna página existente                                                     |
+| El `checking` inicial deja `Loading...` pegado si `checkAuthToken` no despacha nunca (excepción no capturada) | El `catch` del hook siempre termina en `onLogout`, y el camino "sin token en `localStorage`" despacha `onLogout` sin llamar a la API                  |
+| El interceptor lee `localStorage` en cada petición y en jsdom podría no existir                               | Los tests de páginas mockean el módulo `api` entero, así que el interceptor no llega a ejecutarse; en `Login.test.tsx` jsdom sí provee `localStorage` |
+| `localStorage.clear()` borra claves ajenas si en el futuro se guarda algo más                                 | Hoy solo se guardan estas dos claves. Si aparecen más, se cambia a `removeItem` en su propia spec                                                     |
+| Estado de sesión filtrado entre tests por no limpiar `localStorage`                                           | `beforeEach` con `localStorage.clear()` en `Login.test.tsx`                                                                                           |
+| Alcanzar el 80% de cobertura en `Login.tsx` sin cubrir la rama del error de red                               | Es el caso 7 de los tests, escrito explícitamente para esa rama                                                                                       |
+| Redirigir a `/login` desde `RutaPrivada` con `state.from` y volver luego a una ruta que ya no existe          | Las cinco rutas privadas están fijadas en el router; el `catch-all` a `/` cubre cualquier otra                                                        |
+| El frontend se despliega antes que la SPEC 07 y el login apunta a un endpoint inexistente                     | Las dos specs se implementan y despliegan juntas; la 14 depende explícitamente de la 07                                                               |

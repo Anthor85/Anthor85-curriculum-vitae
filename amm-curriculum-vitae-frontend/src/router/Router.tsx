@@ -37,7 +37,7 @@ export const Router = () => {
   }, []);
 
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<p>Cargando...</p>}>
       <Routes>
         <Route path="/" element={<Curriculum />} />
         <Route

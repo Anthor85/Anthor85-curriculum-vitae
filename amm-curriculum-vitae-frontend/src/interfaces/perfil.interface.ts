@@ -13,9 +13,3 @@ export interface Perfil {
 export interface PerfilPayload extends Omit<Perfil, 'id'> {
   foto: string;
 }
-
-export interface PerfilState {
-  perfil: Perfil | null;
-  loading: boolean;
-  error: string | null;
-}

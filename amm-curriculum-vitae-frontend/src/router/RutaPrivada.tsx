@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 
+import { Header } from '../components/Header';
 import { useAuthStore } from '../hooks';
 
 interface Props {
@@ -18,5 +19,11 @@ export const RutaPrivada = ({ children }: Props) => {
   if (status === 'not-authenticated')
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
 
-  return <>{children}</>;
+  // El header vive aqui y no en cada pagina: toda ruta privada lo hereda.
+  return (
+    <>
+      <Header />
+      <main>{children}</main>
+    </>
+  );
 };

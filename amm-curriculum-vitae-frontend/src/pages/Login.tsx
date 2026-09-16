@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Button } from '../components/Button';
 import { MensajeAccion } from '../components/MensajeAccion';
-import { useAuthStore, useMensajeAccion } from '../hooks';
+import { useAuthStore, useEnvioFormulario, useMensajeAccion } from '../hooks';
 
 import styles from './Login.module.scss';
 
@@ -18,27 +18,18 @@ export const Login = () => {
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [isPending, setIsPending] = useState<boolean>(false);
+  const { isPending, enviar } = useEnvioFormulario(async () => {
+    const { ok, errorMessage } = await startLogin({ email, password });
 
-  const enviar = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    if (!ok) return mostrarMensaje(errorMessage!);
 
-    setIsPending(true);
-    try {
-      const { ok, errorMessage } = await startLogin({ email, password });
+    // El guard guarda en `state.from` la ruta privada que se pidio; sin ella
+    // se ha entrado directamente por /login.
+    const destino =
+      (location.state as { from?: string } | null)?.from ?? RUTA_POR_DEFECTO;
 
-      if (!ok) return mostrarMensaje(errorMessage!);
-
-      // El guard guarda en `state.from` la ruta privada que se pidio; sin ella
-      // se ha entrado directamente por /login.
-      const destino =
-        (location.state as { from?: string } | null)?.from ?? RUTA_POR_DEFECTO;
-
-      navigate(destino, { replace: true });
-    } finally {
-      setIsPending(false);
-    }
-  };
+    navigate(destino, { replace: true });
+  });
 
   return (
     <div className={styles.Login}>

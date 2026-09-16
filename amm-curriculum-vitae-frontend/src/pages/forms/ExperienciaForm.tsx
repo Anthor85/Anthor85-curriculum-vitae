@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useConocimientoStore } from '../../hooks';
+import { useConocimientoStore, useEnvioFormulario } from '../../hooks';
 import { MultiSelect } from '../../components/MultiSelect';
 import type { Conocimiento } from '../../interfaces/conocimiento.interface';
 import type {
   Experiencia,
   ExperienciaPayload,
-  HitoPayload,
 } from '../../interfaces/experiencia.interface';
 
 import { Button } from '../../components/Button';
@@ -38,37 +37,30 @@ export const ExperienciaForm = ({
 }: Props) => {
   const { conocimiento, getConocimiento } = useConocimientoStore();
 
-  const [experiencia, setExperiencia] =
-    useState<ExperienciaPayload>(EXPERIENCIA_VACIA);
-  const [isPending, setIsPending] = useState<boolean>(false);
-
+  // El padre remonta el form con `key` al cambiar la entidad en edición.
+  const [experiencia, setExperiencia] = useState<ExperienciaPayload>(() =>
+    experienciaEnEdicion
+      ? {
+          ...experienciaEnEdicion,
+          fechaInicio: experienciaEnEdicion.fechaInicio.slice(0, 10),
+          fechaFin: experienciaEnEdicion.fechaFin
+            ? experienciaEnEdicion.fechaFin.slice(0, 10)
+            : '',
+          hitos:
+            experienciaEnEdicion.hitos.length > 0
+              ? experienciaEnEdicion.hitos.map(({ id, descripcion }) => ({
+                  id,
+                  descripcion,
+                }))
+              : [{ descripcion: '' }],
+        }
+      : EXPERIENCIA_VACIA,
+  );
   useEffect(() => {
     if (!conocimiento || conocimiento.length === 0) {
       getConocimiento();
     }
   }, []);
-
-  useEffect(() => {
-    if (!experienciaEnEdicion) {
-      setExperiencia(EXPERIENCIA_VACIA);
-      return;
-    }
-
-    setExperiencia({
-      ...experienciaEnEdicion,
-      fechaInicio: experienciaEnEdicion.fechaInicio.slice(0, 10),
-      fechaFin: experienciaEnEdicion.fechaFin
-        ? experienciaEnEdicion.fechaFin.slice(0, 10)
-        : '',
-      hitos:
-        experienciaEnEdicion.hitos.length > 0
-          ? experienciaEnEdicion.hitos.map(({ id, descripcion }) => ({
-              id,
-              descripcion,
-            }))
-          : [{ descripcion: '' }],
-    });
-  }, [experienciaEnEdicion]);
 
   const anadirHito = () =>
     setExperiencia((prev) => ({
@@ -96,23 +88,16 @@ export const ExperienciaForm = ({
     onLimpiar();
   };
 
-  const enviar = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const { isPending, enviar } = useEnvioFormulario(async () => {
     const payload: ExperienciaPayload = {
       ...experiencia,
       fechaFin: experiencia.fechaFin ?? '',
       hitos: experiencia.hitos.filter((hito) => hito.descripcion.trim() !== ''),
     };
 
-    setIsPending(true);
-    try {
-      await onAddExperiencia(payload);
-      limpiarFormulario();
-    } finally {
-      setIsPending(false);
-    }
-  };
+    await onAddExperiencia(payload);
+    limpiarFormulario();
+  });
 
   return (
     <form onSubmit={enviar} className={styles.Form}>
@@ -169,9 +154,10 @@ export const ExperienciaForm = ({
       </div>
       {conocimiento && conocimiento.length > 0 ? (
         <div className={styles.tecnologias}>
-          <label>Tecnologías:</label>
+          <span id="tecnologias-titulo">Tecnologías:</span>
           <MultiSelect
             name="tecnologias"
+            ariaLabelledBy="tecnologias-titulo"
             options={conocimiento.map((tecnologia: Conocimiento) => ({
               id: tecnologia.id,
               label: tecnologia.titulo,
@@ -188,8 +174,8 @@ export const ExperienciaForm = ({
       ) : (
         <p>No hay tecnologías disponibles</p>
       )}
-      <div className={styles.hitos}>
-        <label>Hitos:</label>
+      <div className={styles.hitos} role="group" aria-labelledby="hitos-titulo">
+        <span id="hitos-titulo">Hitos:</span>
         {experiencia.hitos &&
           experiencia.hitos.length > 0 &&
           experiencia.hitos.map((hito, indice) => (
@@ -197,12 +183,14 @@ export const ExperienciaForm = ({
               <input
                 type="text"
                 name="hitos"
+                aria-label={`Hito ${indice + 1}`}
                 value={hito.descripcion}
                 onChange={(e) => cambiarHito(indice, e.target.value)}
               />
               <button
                 type="button"
                 className={styles.hitoBoton}
+                aria-label={`Borrar hito ${indice + 1}`}
                 onClick={() => borrarHito(indice)}
               >
                 X

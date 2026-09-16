@@ -1,3 +1,4 @@
+import { isAxiosError } from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/api';
 import { onChecking, onLogin, onLogout, RootState } from '../store';
@@ -9,9 +10,23 @@ import type {
 
 const ERROR_RED = 'No se ha podido conectar';
 
+// El backend firma el token con `expiresIn: '30d'`. Se replica aqui para poder
+// descartar la sesion en cliente sin esperar al 401 de `/auth/renew`.
+const DURACION_SESION = 30 * 24 * 60 * 60 * 1000;
+
 const guardarSesion = ({ token }: LoginResponse) => {
   localStorage.setItem('token', token);
   localStorage.setItem('token-init-date', String(new Date().getTime()));
+};
+
+// Sin fecha de inicio no se puede saber la antiguedad del token: se trata como
+// caducado para no arrastrar sesiones de versiones anteriores.
+const sesionCaducada = () => {
+  const inicio = Number(localStorage.getItem('token-init-date'));
+
+  if (!inicio) return true;
+
+  return new Date().getTime() - inicio > DURACION_SESION;
 };
 
 export const useAuthStore = () => {
@@ -37,7 +52,9 @@ export const useAuthStore = () => {
       return { ok: true, errorMessage: null };
     } catch (error) {
       // Sin `response` no hubo respuesta del servidor: es un fallo de red.
-      const mensaje: string = (error as any)?.response?.data?.msg ?? ERROR_RED;
+      const mensaje: string = isAxiosError<{ msg?: string }>(error)
+        ? (error.response?.data?.msg ?? ERROR_RED)
+        : ERROR_RED;
 
       dispatch(onLogout(mensaje));
 
@@ -49,6 +66,12 @@ export const useAuthStore = () => {
     const token = localStorage.getItem('token');
 
     if (!token) return dispatch(onLogout(null));
+
+    if (sesionCaducada()) {
+      localStorage.clear();
+
+      return dispatch(onLogout(null));
+    }
 
     try {
       const { data } = await api.get<LoginResponse>('/auth/renew');

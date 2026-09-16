@@ -85,10 +85,10 @@ interface Props {
 
 Mapeo de `Conocimiento` (API) → estado del formulario, al entrar en modo edición:
 
-| Campo del form | Origen                                                                |
-| -------------- | --------------------------------------------------------------------- |
-| `titulo`       | `conocimiento.titulo`                                                 |
-| `nivel`        | `conocimiento.nivel`                                                  |
+| Campo del form | Origen                |
+| -------------- | --------------------- |
+| `titulo`       | `conocimiento.titulo` |
+| `nivel`        | `conocimiento.nivel`  |
 
 Al salir de edición (`conocimientoEnEdicion === null`): `titulo` a `''` y `nivel` a `ConocimientoNivel.BASICO`, que es la opción por defecto del `<select>` actual.
 
@@ -145,13 +145,13 @@ Al salir de edición (`conocimientoEnEdicion === null`): `titulo` a `''` y `nive
 
 ## Riesgos
 
-| Riesgo                                                                                              | Mitigación                                                                                                                                                                                        |
-| ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Cambiar la firma de `createConocimiento` rompe otro consumidor del hook                             | `createConocimiento` solo lo consume `Conocimiento.tsx`; `ExperienciaCard` y `ExperienciaForm` usan el hook solo para `conocimiento` y `getConocimiento`. Se comprueba con una búsqueda antes de tocarlo. |
-| El `nivel` viaja en minúsculas y el `PUT`/`POST` responde 500 por el `enum` del modelo              | El paso 1 alinea el enum con los valores del backend y el `<select>` se genera desde él; hay criterio de aceptación explícito sobre los valores enviados.                                            |
-| Un conocimiento guardado con un `nivel` antiguo no coincide con ninguna `<option>` y el select queda en `Básico` | El `useEffect` asigna el valor tal cual viene; si no coincide, el usuario ve `Básico` y al guardar se normaliza. Documentado como decisión, no como bug.                                             |
-| Guardar en modo edición dispara un `POST` y duplica el conocimiento                                 | `Conocimiento.tsx` decide entre `createConocimiento` y `updateConocimiento` según `conocimientoEnEdicion`, con criterio de aceptación explícito de que se lanza `PUT`.                              |
-| Limpiar el formulario sin desvincular el id provoca un `PUT` que vacía el conocimiento editado      | `limpiarFormulario` llama siempre a `onLimpiar()`, que pone `conocimientoEnEdicion` a `null`. Criterio de aceptación específico.                                                                    |
-| El backend aún no tiene el `PUT` desplegado y la edición falla con 404 de ruta                      | Esta spec depende de la SPEC 03 del backend; se implementa después. El error se ve en el `console.error` del hook.                                                                                  |
-| Quitar `useActionState` pierde el `isPending` que deshabilita el submit                             | Se sustituye por un `useState<boolean>` propio, puesto a `true` antes del `await` y a `false` en el `finally`, igual que en `ExperienciaForm`.                                                      |
-| El botón `Borrar formulario` envía el formulario al no llevar `type`                                | `type="button"` explícito, con criterio de aceptación propio.                                                                                                                                       |
+| Riesgo                                                                                                           | Mitigación                                                                                                                                                                                                |
+| ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cambiar la firma de `createConocimiento` rompe otro consumidor del hook                                          | `createConocimiento` solo lo consume `Conocimiento.tsx`; `ExperienciaCard` y `ExperienciaForm` usan el hook solo para `conocimiento` y `getConocimiento`. Se comprueba con una búsqueda antes de tocarlo. |
+| El `nivel` viaja en minúsculas y el `PUT`/`POST` responde 500 por el `enum` del modelo                           | El paso 1 alinea el enum con los valores del backend y el `<select>` se genera desde él; hay criterio de aceptación explícito sobre los valores enviados.                                                 |
+| Un conocimiento guardado con un `nivel` antiguo no coincide con ninguna `<option>` y el select queda en `Básico` | El `useEffect` asigna el valor tal cual viene; si no coincide, el usuario ve `Básico` y al guardar se normaliza. Documentado como decisión, no como bug.                                                  |
+| Guardar en modo edición dispara un `POST` y duplica el conocimiento                                              | `Conocimiento.tsx` decide entre `createConocimiento` y `updateConocimiento` según `conocimientoEnEdicion`, con criterio de aceptación explícito de que se lanza `PUT`.                                    |
+| Limpiar el formulario sin desvincular el id provoca un `PUT` que vacía el conocimiento editado                   | `limpiarFormulario` llama siempre a `onLimpiar()`, que pone `conocimientoEnEdicion` a `null`. Criterio de aceptación específico.                                                                          |
+| El backend aún no tiene el `PUT` desplegado y la edición falla con 404 de ruta                                   | Esta spec depende de la SPEC 03 del backend; se implementa después. El error se ve en el `console.error` del hook.                                                                                        |
+| Quitar `useActionState` pierde el `isPending` que deshabilita el submit                                          | Se sustituye por un `useState<boolean>` propio, puesto a `true` antes del `await` y a `false` en el `finally`, igual que en `ExperienciaForm`.                                                            |
+| El botón `Borrar formulario` envía el formulario al no llevar `type`                                             | `type="button"` explícito, con criterio de aceptación propio.                                                                                                                                             |

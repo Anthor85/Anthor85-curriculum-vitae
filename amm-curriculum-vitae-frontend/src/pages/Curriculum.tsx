@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { exportToPDF } from '../helpers/exportToPDF';
 import { getIcons } from '../helpers/getIcons';
 import { ordenarCurriculum } from '../helpers/ordenarCurriculum';
@@ -17,10 +17,11 @@ import styles from './Curriculum.module.scss';
 
 export const Curriculum = () => {
   const pdfRef = useRef<HTMLDivElement>(null);
+  const [preparandoPDF, setPreparandoPDF] = useState(false);
   const { curriculum, getCurriculum } = useCurriculumStore();
 
   useEffect(() => {
-    getCurriculum();
+    if (!curriculum) getCurriculum();
   }, []);
 
   const { perfil } = curriculum || {};
@@ -36,7 +37,25 @@ export const Curriculum = () => {
     .join(' ');
   const nombrePDF = nombreFichero ? `CV ${nombreFichero}` : 'CV';
 
-  const vacio = (mensaje: string) => <p className={styles.vacio}>{mensaje}</p>;
+  useEffect(() => {
+    document.title = nombreFichero
+      ? `${nombreFichero} | Curriculum Vitae`
+      : 'Curriculum Vitae';
+  }, [nombreFichero]);
+
+  useEffect(() => {
+    const favicon = document.querySelector<HTMLLinkElement>('#favicon');
+    if (!favicon) return;
+    if (perfil?.foto) {
+      favicon.removeAttribute('type');
+      favicon.href = perfil.foto;
+    } else {
+      favicon.type = 'image/svg+xml';
+      favicon.href = '/favicon.svg';
+    }
+  }, [perfil?.foto]);
+
+  const vacio =(mensaje: string) => <p className={styles.vacio}>{mensaje}</p>;
 
   const tabs = [
     {
@@ -88,6 +107,13 @@ export const Curriculum = () => {
     },
   ];
 
+  useEffect(() => {
+    if (!preparandoPDF || !pdfRef.current) return;
+    exportToPDF(pdfRef.current, nombrePDF).finally(() =>
+      setPreparandoPDF(false),
+    );
+  }, [preparandoPDF, nombrePDF]);
+
   return (
     <>
       <div id="mainPage" className={styles.MainPage}>
@@ -107,7 +133,7 @@ export const Curriculum = () => {
                 <img
                   className={styles.photo}
                   src={perfil.foto}
-                  alt="Profile"
+                  alt={`${perfil.nombre} ${perfil.apellidos}`}
                   width={150}
                 />
               )}
@@ -129,9 +155,7 @@ export const Curriculum = () => {
               )}
             </div>
             <Button
-              onClick={() =>
-                pdfRef.current && exportToPDF(pdfRef.current, nombrePDF)
-              }
+              onClick={() => setPreparandoPDF(true)}
               name="Exportar a PDF"
               icon="descarga"
             />
@@ -145,15 +169,17 @@ export const Curriculum = () => {
         </div>
       </div>
 
-      <div ref={pdfRef} className={styles.pdfOculto}>
-        <CurriculumPDF
-          perfil={perfil || null}
-          experiencia={experienciaOrdenada}
-          formaciones={formacionesOrdenadas}
-          formacionesComplementarias={complementariasOrdenadas}
-          conocimiento={conocimientosOrdenados}
-        />
-      </div>
+      {preparandoPDF && (
+        <div ref={pdfRef} className={styles.pdfOculto}>
+          <CurriculumPDF
+            perfil={perfil || null}
+            experiencia={experienciaOrdenada}
+            formaciones={formacionesOrdenadas}
+            formacionesComplementarias={complementariasOrdenadas}
+            conocimiento={conocimientosOrdenados}
+          />
+        </div>
+      )}
     </>
   );
 };

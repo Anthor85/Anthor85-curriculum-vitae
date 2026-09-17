@@ -1,5 +1,3 @@
-const { response } = require('express');
-
 const Conocimiento = require('../models/Conocimiento');
 const Experiencia = require('../models/Experiencia');
 const Formacion = require('../models/Formacion');
@@ -7,7 +5,7 @@ const FormacionComplementaria = require('../models/FormacionComplementaria');
 const Perfil = require('../models/Perfil');
 const { conContexto } = require('../helpers/conContexto');
 
-const obtenerCurriculum = async (req, res = response) => {
+const obtenerCurriculum = async (req, res) => {
   const [
     conocimiento,
     experiencia,

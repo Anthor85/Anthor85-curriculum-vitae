@@ -1,4 +1,3 @@
-const { response } = require('express');
 const Experiencia = require('../models/Experiencia');
 const Hito = require('../models/Hito');
 const { HttpError } = require('../helpers/HttpError');
@@ -20,25 +19,28 @@ const normalizarHitos = (hitos) =>
     }))
     .filter(({ descripcion }) => descripcion !== '');
 
+// Las tecnologías llegan como cadena separada por comas (o como array si el
+// form manda el campo repetido). Sin filtrar los vacíos, "" produce [""] y
+// el cast a ObjectId falla.
+const normalizarTecnologias = (tecnologias) =>
+  []
+    .concat(tecnologias ?? [])
+    .flatMap((tech) => String(tech).split(','))
+    .map((tech) => tech.trim())
+    .filter((tech) => tech !== '');
+
 // Obtener todas las experiencias
-const obtenerExperiencias = async (req, res = response) => {
+const obtenerExperiencias = async (req, res) => {
   const experiencias = await Experiencia.find().populate('hitos');
   res.json(experiencias);
 };
 
 // Crear una nueva experiencia
-const crearExperiencia = async (req, res = response) => {
+const crearExperiencia = async (req, res) => {
   const { empresa, fechaInicio, fechaFin, descripcion, tecnologias, hitos } =
     req.body;
 
-  // Las tecnologías llegan como cadena separada por comas (o como array si el
-  // form manda el campo repetido). Sin filtrar los vacíos, "" produce [""] y
-  // el cast a ObjectId falla.
-  const tecnologiasSeleccionadas = []
-    .concat(tecnologias ?? [])
-    .flatMap((tech) => String(tech).split(','))
-    .map((tech) => tech.trim())
-    .filter((tech) => tech !== '');
+  const tecnologiasSeleccionadas = normalizarTecnologias(tecnologias);
 
   const nuevaExperiencia = new Experiencia({
     empresa,
@@ -73,7 +75,7 @@ const crearExperiencia = async (req, res = response) => {
 };
 
 // Actualizar una experiencia completa (reemplazo, no parcial)
-const actualizarExperiencia = async (req, res = response) => {
+const actualizarExperiencia = async (req, res) => {
   const { id } = req.params;
   const { empresa, descripcion, fechaInicio, fechaFin, tecnologias, hitos } =
     req.body;
@@ -83,13 +85,7 @@ const actualizarExperiencia = async (req, res = response) => {
     throw new HttpError(404, 'Experiencia no encontrada');
   }
 
-  // Misma normalización que al crear: las tecnologías pueden llegar como
-  // cadena separada por comas o como array, y "" produciría [""].
-  const tecnologiasSeleccionadas = []
-    .concat(tecnologias ?? [])
-    .flatMap((tech) => String(tech).split(','))
-    .map((tech) => tech.trim())
-    .filter((tech) => tech !== '');
+  const tecnologiasSeleccionadas = normalizarTecnologias(tecnologias);
 
   experiencia.empresa = empresa;
   experiencia.descripcion = descripcion;
@@ -137,7 +133,7 @@ const actualizarExperiencia = async (req, res = response) => {
   res.json(experienciaActualizada);
 };
 
-const eliminarExperiencia = async (req, res = response) => {
+const eliminarExperiencia = async (req, res) => {
   const { id } = req.params;
 
   const experienciaEliminada = await Experiencia.findByIdAndDelete(id);

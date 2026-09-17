@@ -1,7 +1,7 @@
 {
   "name": "amm-curriculum-vitae-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "API REST del currículum vitae: Express 5, MongoDB y autenticación JWT",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",

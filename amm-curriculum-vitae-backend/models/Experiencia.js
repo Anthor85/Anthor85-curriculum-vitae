@@ -1,5 +1,7 @@
 const { Schema, model } = require('mongoose');
 
+const toJSON = require('./plugins/toJSON');
+
 const ExperienciaSchema = Schema(
   {
     empresa: {
@@ -27,7 +29,6 @@ const ExperienciaSchema = Schema(
     },
   },
   {
-    toJSON: { virtuals: true },
     toObject: { virtuals: true },
   },
 );
@@ -40,16 +41,6 @@ ExperienciaSchema.virtual('hitos', {
   foreignField: 'experiencia',
 });
 
-ExperienciaSchema.method('toJSON', function () {
-  const { __v, _id, hitos, ...object } = this.toObject({ virtuals: true });
-  object.id = _id;
-  if (Array.isArray(hitos)) {
-    object.hitos = hitos.map(({ __v, _id, ...hito }) => ({
-      ...hito,
-      id: _id,
-    }));
-  }
-  return object;
-});
+ExperienciaSchema.plugin(toJSON, { virtuals: true });
 
 module.exports = model('Experiencia', ExperienciaSchema);

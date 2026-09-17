@@ -1,14 +1,13 @@
-const { response } = require('express');
 const FormacionComplementaria = require('../models/FormacionComplementaria');
 const { HttpError } = require('../helpers/HttpError');
 const { conContexto } = require('../helpers/conContexto');
 
-const obtenerFormacionesComplementarias = async (req, res = response) => {
+const obtenerFormacionesComplementarias = async (req, res) => {
   const formaciones = await FormacionComplementaria.find();
   res.json(formaciones);
 };
 
-const crearFormacionComplementaria = async (req, res = response) => {
+const crearFormacionComplementaria = async (req, res) => {
   const { titulo, institucion, fechaFin } = req.body;
 
   const nuevaFormacion = new FormacionComplementaria({
@@ -20,7 +19,7 @@ const crearFormacionComplementaria = async (req, res = response) => {
   res.status(201).json(nuevaFormacion);
 };
 
-const actualizarFormacionComplementaria = async (req, res = response) => {
+const actualizarFormacionComplementaria = async (req, res) => {
   const { id } = req.params;
 
   const formacionComplementaria = await FormacionComplementaria.findById(id);
@@ -37,7 +36,7 @@ const actualizarFormacionComplementaria = async (req, res = response) => {
   res.json(formacionComplementaria);
 };
 
-const deleteFormacionComplementaria = async (req, res = response) => {
+const eliminarFormacionComplementaria = async (req, res) => {
   const { id } = req.params;
 
   const formacionComplementariaEliminada =
@@ -65,8 +64,8 @@ module.exports = {
     'Error al actualizar la formación complementaria',
     actualizarFormacionComplementaria,
   ),
-  deleteFormacionComplementaria: conContexto(
+  eliminarFormacionComplementaria: conContexto(
     'Error al eliminar la formación complementaria',
-    deleteFormacionComplementaria,
+    eliminarFormacionComplementaria,
   ),
 };

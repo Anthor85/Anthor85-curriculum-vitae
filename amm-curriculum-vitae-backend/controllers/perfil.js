@@ -1,9 +1,8 @@
-const { response } = require('express');
 const Perfil = require('../models/Perfil');
 const { HttpError } = require('../helpers/HttpError');
 const { conContexto } = require('../helpers/conContexto');
 
-const obtenerPerfil = async (req, res = response) => {
+const obtenerPerfil = async (req, res) => {
   const perfil = await Perfil.findOne();
   if (!perfil) {
     throw new HttpError(404, 'Perfil no encontrado');
@@ -12,7 +11,7 @@ const obtenerPerfil = async (req, res = response) => {
   res.json(perfil);
 };
 
-const crearPerfil = async (req, res = response) => {
+const crearPerfil = async (req, res) => {
   const {
     nombre,
     apellidos,
@@ -38,7 +37,7 @@ const crearPerfil = async (req, res = response) => {
   res.status(201).json(nuevoPerfil);
 };
 
-const actualizarPerfil = async (req, res = response) => {
+const actualizarPerfil = async (req, res) => {
   const {
     nombre,
     apellidos,

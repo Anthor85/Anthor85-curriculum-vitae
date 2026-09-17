@@ -1,29 +1,28 @@
-const { response } = require('express');
 const Conocimiento = require('../models/Conocimiento');
 const { HttpError } = require('../helpers/HttpError');
 const { conContexto } = require('../helpers/conContexto');
 
 // Obtener todos los conocimientos
-const obtenerConocimientos = async (req, res = response) => {
+const obtenerConocimientos = async (req, res) => {
   const conocimientos = await Conocimiento.find();
   res.json(conocimientos);
 };
 
 // Crear un nuevo conocimiento
-const crearConocimiento = async (req, res = response) => {
+const crearConocimiento = async (req, res) => {
   const nuevoConocimiento = new Conocimiento(req.body);
   const conocimientoCreado = await nuevoConocimiento.save();
   res.status(201).json(conocimientoCreado);
 };
 
 //Crear múltiples conocimientos
-const crearConocimientos = async (req, res = response) => {
+const crearConocimientos = async (req, res) => {
   const conocimientosCreado = await Conocimiento.insertMany(req.body);
   res.status(201).json(conocimientosCreado);
 };
 
 // Actualizar un conocimiento
-const actualizarConocimiento = async (req, res = response) => {
+const actualizarConocimiento = async (req, res) => {
   const { id } = req.params;
 
   const conocimiento = await Conocimiento.findById(id);
@@ -39,7 +38,7 @@ const actualizarConocimiento = async (req, res = response) => {
   res.json(conocimiento);
 };
 
-const eliminarConocimiento = async (req, res = response) => {
+const eliminarConocimiento = async (req, res) => {
   const { id } = req.params;
 
   const conocimiento = await Conocimiento.findByIdAndDelete(id);

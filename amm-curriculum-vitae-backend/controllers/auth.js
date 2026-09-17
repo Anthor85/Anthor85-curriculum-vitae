@@ -1,11 +1,10 @@
-const { response } = require('express');
 const bcrypt = require('bcryptjs');
 const Usuario = require('../models/Usuario');
 const { generarJWT } = require('../helpers/jwt');
 const { HttpError } = require('../helpers/HttpError');
 const { conContexto } = require('../helpers/conContexto');
 
-const login = async (req, res = response) => {
+const login = async (req, res) => {
   const { email, password } = req.body;
 
   const usuario = await Usuario.findOne({ email });
@@ -28,7 +27,7 @@ const login = async (req, res = response) => {
   });
 };
 
-const revalidarToken = async (req, res = response) => {
+const revalidarToken = async (req, res) => {
   const usuario = await Usuario.findById(req.uid);
   if (!usuario) {
     throw new HttpError(401, 'Token no válido');

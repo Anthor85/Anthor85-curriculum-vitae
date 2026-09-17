@@ -1,14 +1,13 @@
-const { response } = require('express');
 const Formacion = require('../models/Formacion');
 const { HttpError } = require('../helpers/HttpError');
 const { conContexto } = require('../helpers/conContexto');
 
-const obtenerFormaciones = async (req, res = response) => {
+const obtenerFormaciones = async (req, res) => {
   const formaciones = await Formacion.find();
   res.json(formaciones);
 };
 
-const crearFormacion = async (req, res = response) => {
+const crearFormacion = async (req, res) => {
   const { titulo, institucion, descripcion, fechaFin } = req.body;
 
   const nuevaFormacion = new Formacion({
@@ -21,7 +20,7 @@ const crearFormacion = async (req, res = response) => {
   res.status(201).json(nuevaFormacion);
 };
 
-const actualizarFormacion = async (req, res = response) => {
+const actualizarFormacion = async (req, res) => {
   const { id } = req.params;
 
   const formacion = await Formacion.findById(id);
@@ -39,7 +38,7 @@ const actualizarFormacion = async (req, res = response) => {
   res.json(formacion);
 };
 
-const deleteFormacion = async (req, res = response) => {
+const eliminarFormacion = async (req, res) => {
   const { id } = req.params;
 
   const formacionEliminada = await Formacion.findByIdAndDelete(id);
@@ -60,8 +59,8 @@ module.exports = {
     'Error al actualizar la formación',
     actualizarFormacion,
   ),
-  deleteFormacion: conContexto(
+  eliminarFormacion: conContexto(
     'Error al eliminar la formación',
-    deleteFormacion,
+    eliminarFormacion,
   ),
 };

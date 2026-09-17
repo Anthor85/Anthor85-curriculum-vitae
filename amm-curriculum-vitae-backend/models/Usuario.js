@@ -1,5 +1,7 @@
 const { Schema, model } = require('mongoose');
 
+const toJSON = require('./plugins/toJSON');
+
 const UsuarioSchema = Schema({
   nombre: {
     type: String,
@@ -18,10 +20,6 @@ const UsuarioSchema = Schema({
   },
 });
 
-UsuarioSchema.method('toJSON', function () {
-  const { __v, _id, password: _password, ...object } = this.toObject();
-  object.id = _id;
-  return object;
-});
+UsuarioSchema.plugin(toJSON, { omitir: ['password'] });
 
 module.exports = model('Usuario', UsuarioSchema);

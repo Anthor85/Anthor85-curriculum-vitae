@@ -8,11 +8,15 @@ const seedUsuario = async () => {
     await dbConnection();
     console.log(`Base de datos: ${mongoose.connection.name}`);
 
-    const email = process.env.SEED_USER_EMAIL || 'ammlink@hotmail.com';
+    // Los datos del usuario semilla salen del .env: nada personal en el repo.
+    const nombre = process.env.SEED_USER_NOMBRE;
+    const email = process.env.SEED_USER_EMAIL;
     const password = process.env.SEED_USER_PASSWORD;
 
-    if (!password) {
-      console.error('Falta SEED_USER_PASSWORD en el .env');
+    if (!nombre || !email || !password) {
+      console.error(
+        'Faltan SEED_USER_NOMBRE, SEED_USER_EMAIL o SEED_USER_PASSWORD en el .env',
+      );
       return;
     }
 
@@ -25,7 +29,7 @@ const seedUsuario = async () => {
 
     const salt = bcrypt.genSaltSync();
     const nuevoUsuario = new Usuario({
-      nombre: 'Antonio',
+      nombre,
       email,
       password: bcrypt.hashSync(password, salt),
     });

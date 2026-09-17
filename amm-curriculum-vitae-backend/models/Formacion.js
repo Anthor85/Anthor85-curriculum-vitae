@@ -1,4 +1,6 @@
 const { Schema, model } = require('mongoose');
+
+const toJSON = require('./plugins/toJSON');
 const FormacionSchema = Schema({
   titulo: {
     type: String,
@@ -20,10 +22,6 @@ const FormacionSchema = Schema({
   },
 });
 
-FormacionSchema.method('toJSON', function () {
-  const { __v, _id, ...object } = this.toObject();
-  object.id = _id;
-  return object;
-});
+FormacionSchema.plugin(toJSON);
 
 module.exports = model('Formacion', FormacionSchema);

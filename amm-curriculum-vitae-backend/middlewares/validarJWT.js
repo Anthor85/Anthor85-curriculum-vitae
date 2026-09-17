@@ -1,11 +1,11 @@
-const { response } = require('express');
 const jwt = require('jsonwebtoken');
+const { HttpError } = require('../helpers/HttpError');
 
-const validarJWT = (req, res = response, next) => {
+const validarJWT = (req, _res, next) => {
   const token = req.header('x-token');
 
   if (!token) {
-    return res.status(401).json({ msg: 'No hay token en la petición' });
+    throw new HttpError(401, 'No hay token en la petición');
   }
 
   try {
@@ -15,7 +15,7 @@ const validarJWT = (req, res = response, next) => {
     req.nombre = nombre;
   } catch (error) {
     console.error(error);
-    return res.status(401).json({ msg: 'Token no válido' });
+    throw new HttpError(401, 'Token no válido');
   }
 
   next();

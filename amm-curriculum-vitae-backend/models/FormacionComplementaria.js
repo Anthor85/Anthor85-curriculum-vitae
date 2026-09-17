@@ -1,4 +1,6 @@
 const { Schema, model } = require('mongoose');
+
+const toJSON = require('./plugins/toJSON');
 const FormacionComplementariaSchema = Schema({
   titulo: {
     type: String,
@@ -15,11 +17,7 @@ const FormacionComplementariaSchema = Schema({
   },
 });
 
-FormacionComplementariaSchema.method('toJSON', function () {
-  const { __v, _id, ...object } = this.toObject();
-  object.id = _id;
-  return object;
-});
+FormacionComplementariaSchema.plugin(toJSON);
 
 module.exports = model(
   'FormacionComplementaria',

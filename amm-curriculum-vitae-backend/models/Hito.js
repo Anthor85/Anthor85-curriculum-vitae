@@ -1,5 +1,7 @@
 const { Schema, model } = require('mongoose');
 
+const toJSON = require('./plugins/toJSON');
+
 const HitoSchema = Schema({
   descripcion: {
     type: String,
@@ -13,10 +15,6 @@ const HitoSchema = Schema({
   },
 });
 
-HitoSchema.method('toJSON', function () {
-  const { __v, _id, ...object } = this.toObject();
-  object.id = _id;
-  return object;
-});
+HitoSchema.plugin(toJSON);
 
 module.exports = model('Hito', HitoSchema);

@@ -14,5 +14,4 @@
 npm-debug.log*
 
 /.vs
-/../backend.md
-/../frontend.md
+/coverage

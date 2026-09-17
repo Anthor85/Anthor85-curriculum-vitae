@@ -319,7 +319,9 @@ describe('<FormacionComplementaria />', () => {
       },
     });
 
-    expect(screen.getByText('Cargando...')).toBeInTheDocument();
+    expect(
+      screen.getByRole('img', { name: 'Cargando...' }),
+    ).toBeInTheDocument();
     expect(screen.queryByLabelText('Título:')).not.toBeInTheDocument();
 
     await flush();

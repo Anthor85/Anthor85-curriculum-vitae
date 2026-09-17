@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
+﻿import { useEffect } from 'react';
 import { useMensajeAccion, usePerfilStore } from '../hooks';
 import { PerfilForm } from './forms/PerfilForm';
 import type { PerfilPayload } from '../interfaces/perfil.interface';
+import { Spinner } from '../components/Spinner';
 
 import styles from './Layout.module.scss';
 
@@ -26,7 +27,7 @@ export const Perfil = () => {
       });
   }, [perfil, getPerfil, mostrarError]);
 
-  if (loading) return <p>Cargando...</p>;
+  if (loading) return <Spinner />;
 
   return (
     <div className={styles.Page}>

@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { Curriculum } from '../pages/Curriculum';
 import { useAuthStore } from '../hooks';
 import { RutaPrivada } from './RutaPrivada';
+import { Spinner } from '../components/Spinner';
 
 // El login y las pantallas privadas van en chunks aparte: el visitante del CV nunca los carga
 const Login = lazy(() =>
@@ -37,7 +38,7 @@ export const Router = () => {
   }, []);
 
   return (
-    <Suspense fallback={<p>Cargando...</p>}>
+    <Suspense fallback={<Spinner />}>
       <Routes>
         <Route path="/" element={<Curriculum />} />
         <Route

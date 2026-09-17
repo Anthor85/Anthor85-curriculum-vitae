@@ -299,10 +299,12 @@ describe('<Conocimiento />', () => {
 
   test('con loading en el store pinta «Cargando...»', async () => {
     renderConStore(<Conocimiento />, {
-      conocimiento: { conocimiento: [], loading: true, error: null },
+      conocimiento: { conocimiento: null, loading: true, error: null },
     });
 
-    expect(screen.getByText('Cargando...')).toBeInTheDocument();
+    expect(
+      screen.getByRole('img', { name: 'Cargando...' }),
+    ).toBeInTheDocument();
     expect(screen.queryByLabelText('Título:')).not.toBeInTheDocument();
 
     await flush();

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="64" height="64" role="img" aria-label="Cargando">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7efafa"/>
+      <stop offset="100%" stop-color="#0024ea"/>
+    </linearGradient>
+  </defs>
+  <g>
+    <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1.6s" repeatCount="indefinite"/>
+    <circle cx="25" cy="25" r="20" fill="none" stroke="url(#g)" stroke-width="4" stroke-linecap="round" stroke-dasharray="1 126">
+      <animate attributeName="stroke-dasharray" values="1 126;90 126;90 126" dur="1.6s" repeatCount="indefinite"/>
+      <animate attributeName="stroke-dashoffset" values="0;-35;-125" dur="1.6s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>

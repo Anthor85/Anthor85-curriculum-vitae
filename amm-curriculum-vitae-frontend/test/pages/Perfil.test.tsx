@@ -267,7 +267,9 @@ describe('<Perfil />', () => {
       },
     });
 
-    expect(screen.getByText('Cargando...')).toBeInTheDocument();
+    expect(
+      screen.getByRole('img', { name: 'Cargando...' }),
+    ).toBeInTheDocument();
     expect(screen.queryByLabelText('Nombre:')).not.toBeInTheDocument();
 
     await flush();

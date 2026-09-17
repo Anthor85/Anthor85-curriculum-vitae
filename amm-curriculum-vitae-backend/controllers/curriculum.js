@@ -5,22 +5,35 @@ const Experiencia = require('../models/Experiencia');
 const Formacion = require('../models/Formacion');
 const FormacionComplementaria = require('../models/FormacionComplementaria');
 const Perfil = require('../models/Perfil');
+const { conContexto } = require('../helpers/conContexto');
 
 const obtenerCurriculum = async (req, res = response) => {
-  try {
-    res.json({
-      conocimiento: await Conocimiento.find(),
-      experiencia: await Experiencia.find().populate('hitos'),
-      formaciones: await Formacion.find(),
-      formacionesComplementarias: await FormacionComplementaria.find(),
-      perfil: await Perfil.findOne(),
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: 'Error al obtener las formaciones' });
-  }
+  const [
+    conocimiento,
+    experiencia,
+    formaciones,
+    formacionesComplementarias,
+    perfil,
+  ] = await Promise.all([
+    Conocimiento.find(),
+    Experiencia.find().populate('hitos'),
+    Formacion.find(),
+    FormacionComplementaria.find(),
+    Perfil.findOne(),
+  ]);
+
+  res.json({
+    conocimiento,
+    experiencia,
+    formaciones,
+    formacionesComplementarias,
+    perfil,
+  });
 };
 
 module.exports = {
-  obtenerCurriculum,
+  obtenerCurriculum: conContexto(
+    'Error al obtener el curriculum',
+    obtenerCurriculum,
+  ),
 };

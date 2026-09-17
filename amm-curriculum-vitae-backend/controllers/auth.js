@@ -2,57 +2,49 @@ const { response } = require('express');
 const bcrypt = require('bcryptjs');
 const Usuario = require('../models/Usuario');
 const { generarJWT } = require('../helpers/jwt');
+const { HttpError } = require('../helpers/HttpError');
+const { conContexto } = require('../helpers/conContexto');
 
 const login = async (req, res = response) => {
   const { email, password } = req.body;
 
-  try {
-    const usuario = await Usuario.findOne({ email });
-    if (!usuario) {
-      return res.status(400).json({ msg: 'Credenciales incorrectas' });
-    }
-
-    const passwordValida = bcrypt.compareSync(password, usuario.password);
-    if (!passwordValida) {
-      return res.status(400).json({ msg: 'Credenciales incorrectas' });
-    }
-
-    const token = await generarJWT(usuario.id, usuario.nombre);
-
-    res.json({
-      uid: usuario.id,
-      nombre: usuario.nombre,
-      email: usuario.email,
-      token,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: 'Error al iniciar sesión' });
+  const usuario = await Usuario.findOne({ email });
+  if (!usuario) {
+    throw new HttpError(400, 'Credenciales incorrectas');
   }
+
+  const passwordValida = await bcrypt.compare(password, usuario.password);
+  if (!passwordValida) {
+    throw new HttpError(400, 'Credenciales incorrectas');
+  }
+
+  const token = generarJWT(usuario.id, usuario.nombre);
+
+  res.json({
+    uid: usuario.id,
+    nombre: usuario.nombre,
+    email: usuario.email,
+    token,
+  });
 };
 
 const revalidarToken = async (req, res = response) => {
-  try {
-    const usuario = await Usuario.findById(req.uid);
-    if (!usuario) {
-      return res.status(401).json({ msg: 'Token no válido' });
-    }
-
-    const token = await generarJWT(usuario.id, usuario.nombre);
-
-    res.json({
-      uid: usuario.id,
-      nombre: usuario.nombre,
-      email: usuario.email,
-      token,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: 'Error al renovar el token' });
+  const usuario = await Usuario.findById(req.uid);
+  if (!usuario) {
+    throw new HttpError(401, 'Token no válido');
   }
+
+  const token = generarJWT(usuario.id, usuario.nombre);
+
+  res.json({
+    uid: usuario.id,
+    nombre: usuario.nombre,
+    email: usuario.email,
+    token,
+  });
 };
 
 module.exports = {
-  login,
-  revalidarToken,
+  login: conContexto('Error al iniciar sesión', login),
+  revalidarToken: conContexto('Error al renovar el token', revalidarToken),
 };

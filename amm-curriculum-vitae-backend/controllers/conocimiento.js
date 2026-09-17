@@ -1,83 +1,74 @@
 const { response } = require('express');
 const Conocimiento = require('../models/Conocimiento');
+const { HttpError } = require('../helpers/HttpError');
+const { conContexto } = require('../helpers/conContexto');
 
 // Obtener todos los conocimientos
 const obtenerConocimientos = async (req, res = response) => {
-  try {
-    const conocimientos = await Conocimiento.find();
-    res.json(conocimientos);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: 'Error al obtener los conocimientos' });
-  }
+  const conocimientos = await Conocimiento.find();
+  res.json(conocimientos);
 };
 
 // Crear un nuevo conocimiento
 const crearConocimiento = async (req, res = response) => {
-  try {
-    const nuevoConocimiento = new Conocimiento(req.body);
-    const conocimientoCreado = await nuevoConocimiento.save();
-    res.status(201).json(conocimientoCreado);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: 'Error al crear el conocimiento' });
-  }
+  const nuevoConocimiento = new Conocimiento(req.body);
+  const conocimientoCreado = await nuevoConocimiento.save();
+  res.status(201).json(conocimientoCreado);
 };
 
 //Crear múltiples conocimientos
 const crearConocimientos = async (req, res = response) => {
-  const conocimientos = req.body;
-
-  try {
-    const conocimientosCreado = await Conocimiento.insertMany(conocimientos);
-    res.status(201).json(conocimientosCreado);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: 'Error al crear los conocimientos' });
-  }
+  const conocimientosCreado = await Conocimiento.insertMany(req.body);
+  res.status(201).json(conocimientosCreado);
 };
 
 // Actualizar un conocimiento
 const actualizarConocimiento = async (req, res = response) => {
   const { id } = req.params;
 
-  try {
-    const conocimiento = await Conocimiento.findById(id);
-    if (!conocimiento) {
-      return res.status(404).json({ msg: 'Conocimiento no encontrado' });
-    }
-
-    conocimiento.titulo = req.body.titulo;
-    conocimiento.nivel = req.body.nivel;
-
-    await conocimiento.save();
-
-    res.json(conocimiento);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: 'Error al actualizar el conocimiento' });
+  const conocimiento = await Conocimiento.findById(id);
+  if (!conocimiento) {
+    throw new HttpError(404, 'Conocimiento no encontrado');
   }
+
+  conocimiento.titulo = req.body.titulo;
+  conocimiento.nivel = req.body.nivel;
+
+  await conocimiento.save();
+
+  res.json(conocimiento);
 };
 
 const eliminarConocimiento = async (req, res = response) => {
   const { id } = req.params;
 
-  try {
-    const conocimiento = await Conocimiento.findByIdAndDelete(id);
-    if (!conocimiento) {
-      return res.status(404).json({ msg: 'Conocimiento no encontrado' });
-    }
-    res.json({ msg: 'Conocimiento eliminado', id });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: 'Error al eliminar el conocimiento' });
+  const conocimiento = await Conocimiento.findByIdAndDelete(id);
+  if (!conocimiento) {
+    throw new HttpError(404, 'Conocimiento no encontrado');
   }
+
+  res.json({ msg: 'Conocimiento eliminado', id });
 };
 
 module.exports = {
-  obtenerConocimientos,
-  crearConocimiento,
-  crearConocimientos,
-  actualizarConocimiento,
-  eliminarConocimiento,
+  obtenerConocimientos: conContexto(
+    'Error al obtener los conocimientos',
+    obtenerConocimientos,
+  ),
+  crearConocimiento: conContexto(
+    'Error al crear el conocimiento',
+    crearConocimiento,
+  ),
+  crearConocimientos: conContexto(
+    'Error al crear los conocimientos',
+    crearConocimientos,
+  ),
+  actualizarConocimiento: conContexto(
+    'Error al actualizar el conocimiento',
+    actualizarConocimiento,
+  ),
+  eliminarConocimiento: conContexto(
+    'Error al eliminar el conocimiento',
+    eliminarConocimiento,
+  ),
 };

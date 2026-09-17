@@ -1,4 +1,4 @@
-﻿const { response } = require('express');
+const { response } = require('express');
 const FormacionComplementaria = require('../models/FormacionComplementaria');
 
 const obtenerFormacionesComplementarias = async (req, res = response) => {
@@ -58,7 +58,6 @@ const actualizarFormacionComplementaria = async (req, res = response) => {
 
 const deleteFormacionComplementaria = async (req, res = response) => {
   const { id } = req.params;
-  console.log('ID recibido para eliminación:', id);
   try {
     const formacionComplementaria = await FormacionComplementaria.findById(id);
     if (!formacionComplementaria) {

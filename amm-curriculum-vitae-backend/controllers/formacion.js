@@ -13,12 +13,6 @@ const obtenerFormaciones = async (req, res = response) => {
 
 const crearFormacion = async (req, res = response) => {
   const { titulo, institucion, descripcion, fechaFin } = req.body;
-  console.log('Datos recibidos:', {
-    titulo,
-    institucion,
-    descripcion,
-    fechaFin,
-  });
   try {
     const nuevaFormacion = new Formacion({
       titulo,
@@ -59,7 +53,6 @@ const actualizarFormacion = async (req, res = response) => {
 
 const deleteFormacion = async (req, res = response) => {
   const { id } = req.params;
-  console.log('ID recibido para eliminación:', id);
   try {
     const formacion = await Formacion.findById(id);
     if (!formacion) {

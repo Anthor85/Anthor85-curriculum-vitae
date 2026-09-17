@@ -1,4 +1,4 @@
-﻿const { response } = require('express');
+const { response } = require('express');
 const Conocimiento = require('../models/Conocimiento');
 
 // Obtener todos los conocimientos
@@ -17,8 +17,6 @@ const crearConocimiento = async (req, res = response) => {
   try {
     const nuevoConocimiento = new Conocimiento(req.body);
     const conocimientoCreado = await nuevoConocimiento.save();
-    console.log('nuevo y creado', nuevoConocimiento, conocimientoCreado);
-
     res.status(201).json(conocimientoCreado);
   } catch (error) {
     console.error(error);

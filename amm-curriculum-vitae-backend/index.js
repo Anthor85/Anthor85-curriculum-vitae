@@ -1,5 +1,4 @@
-﻿const express = require('express');
-require('dotenv').config();
+const express = require('express');
 const cors = require('cors');
 const { dbConnection } = require('./database/config');
 
@@ -9,7 +8,7 @@ dbConnection();
 //Crear el servidor de express
 const app = express();
 
-// //CORS
+//CORS
 app.use(cors());
 
 //Lectura y parseo del body
@@ -26,15 +25,6 @@ app.use(
   require('./routes/formacionComplementaria'),
 );
 app.use('/api/perfil', require('./routes/perfil'));
-
-// app.use("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "public/index.html"));
-// });
-
-app.get(/(.*)/, (req, res, next) => {
-  console.log(req.path, req.params); // req.params will be { '0': '/the/path' }
-  next();
-});
 
 //Escuchar peticiones solo en local; en Vercel se exporta la app
 if (require.main === module) {

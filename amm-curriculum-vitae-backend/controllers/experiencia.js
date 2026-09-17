@@ -1,4 +1,4 @@
-﻿const { response } = require('express');
+const { response } = require('express');
 const Experiencia = require('../models/Experiencia');
 const Hito = require('../models/Hito');
 
@@ -31,21 +31,8 @@ const obtenerExperiencias = async (req, res = response) => {
 
 // Crear una nueva experiencia
 const crearExperiencia = async (req, res = response) => {
-  const {
-    titulo,
-    empresa,
-    fechaInicio,
-    fechaFin,
-    descripcion,
-    tecnologias,
-    hitos,
-  } = req.body;
-
-  console.log('Crear Experiencia');
-
-  console.log('body', req.body);
-  console.log('tecnologias', tecnologias);
-  console.log('hitos', hitos);
+  const { empresa, fechaInicio, fechaFin, descripcion, tecnologias, hitos } =
+    req.body;
 
   try {
     // Las tecnologías llegan como cadena separada por comas (o como array si el
@@ -58,14 +45,12 @@ const crearExperiencia = async (req, res = response) => {
       .filter((tech) => tech !== '');
 
     const nuevaExperiencia = new Experiencia({
-      titulo,
       empresa,
       fechaInicio,
       fechaFin: fechaFin === '' ? null : fechaFin, // Si fechaFin está vacío, se guarda como null
       descripcion,
       tecnologias: tecnologiasSeleccionadas,
     });
-    console.log('nuevaExperiencia', nuevaExperiencia);
 
     await nuevaExperiencia.save();
 
@@ -170,13 +155,9 @@ const eliminarExperiencia = async (req, res = response) => {
 
   try {
     const experienciaEliminada = await Experiencia.findByIdAndDelete(id);
-    console.log('Experiencia eliminada:', experienciaEliminada);
-
     // Los hitos solo se gestionan a través de la experiencia: sin cascada
     // quedarían huérfanos y sin forma de borrarlos.
     const { deletedCount } = await Hito.deleteMany({ experiencia: id });
-    console.log('Hitos eliminados:', deletedCount);
-
     res.json({
       msg: 'Experiencia eliminada',
       experiencia: experienciaEliminada,

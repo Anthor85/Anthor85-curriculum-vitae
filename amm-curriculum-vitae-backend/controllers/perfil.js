@@ -1,4 +1,4 @@
-﻿const { response } = require('express');
+const { response } = require('express');
 const Perfil = require('../models/Perfil');
 
 const obtenerPerfil = async (req, res = response) => {

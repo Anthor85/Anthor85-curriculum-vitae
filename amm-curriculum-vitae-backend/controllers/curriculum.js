@@ -1,4 +1,4 @@
-﻿const { response } = require('express');
+const { response } = require('express');
 
 const Conocimiento = require('../models/Conocimiento');
 const Experiencia = require('../models/Experiencia');

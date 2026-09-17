@@ -14,11 +14,12 @@ import {
 import { CurriculumPDF } from './components/curriculum/pdf';
 
 import styles from './Curriculum.module.scss';
+import { Spinner } from '../components/Spinner';
 
 export const Curriculum = () => {
   const pdfRef = useRef<HTMLDivElement>(null);
   const [preparandoPDF, setPreparandoPDF] = useState(false);
-  const { curriculum, getCurriculum } = useCurriculumStore();
+  const { curriculum, getCurriculum, loading, error } = useCurriculumStore();
 
   useEffect(() => {
     if (!curriculum) getCurriculum();
@@ -113,8 +114,11 @@ export const Curriculum = () => {
       setPreparandoPDF(false),
     );
   }, [preparandoPDF, nombrePDF]);
+  const cargando = loading || (!curriculum && !error);
 
-  return (
+  return cargando ? (
+    <Spinner />
+  ) : (
     <>
       <div id="mainPage" className={styles.MainPage}>
         <div className={styles.header}>

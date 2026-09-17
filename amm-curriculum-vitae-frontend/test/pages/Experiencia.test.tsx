@@ -375,7 +375,9 @@ describe('<Experiencia />', () => {
       experiencia: { experiencia: null, loading: true, error: null },
     });
 
-    expect(screen.getByText('Cargando...')).toBeInTheDocument();
+    expect(
+      screen.getByRole('img', { name: 'Cargando...' }),
+    ).toBeInTheDocument();
     expect(screen.queryByLabelText('Empresa:')).not.toBeInTheDocument();
 
     await flush();

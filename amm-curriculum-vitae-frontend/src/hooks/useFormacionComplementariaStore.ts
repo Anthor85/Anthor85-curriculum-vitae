@@ -1,4 +1,8 @@
-import { setFormacionComplementaria } from '../store';
+import {
+  setErrorFormacionComplementaria,
+  setFormacionComplementaria,
+  setLoadingFormacionComplementaria,
+} from '../store';
 import type {
   FormacionComplementaria,
   FormacionComplementariaPayload,
@@ -11,5 +15,7 @@ export const useFormacionComplementariaStore = crearCrudStore<
 >()(
   'formacionComplementaria',
   setFormacionComplementaria,
+  setLoadingFormacionComplementaria,
+  setErrorFormacionComplementaria,
   (state) => state.formacionComplementaria,
 );

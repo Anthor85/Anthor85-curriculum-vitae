@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { ActionCreatorWithPayload } from '@reduxjs/toolkit';
 import api from '../api/api';
-import type { RootState } from '../store';
+import { type RootState } from '../store';
 import type { EstadoCrud } from './crearSliceCrud';
 
 export type HookCrud<N extends string, T, P> = EstadoCrud<N, T[]> &
@@ -20,6 +20,8 @@ export const crearCrudStore =
   <N extends string>(
     nombre: N,
     setAccion: ActionCreatorWithPayload<T[]>,
+    setLoading: ActionCreatorWithPayload<boolean>,
+    setError: ActionCreatorWithPayload<string | null>,
     selector: (state: RootState) => EstadoCrud<N, T[]>,
   ) => {
     const sufijo = nombre[0].toUpperCase() + nombre.slice(1);
@@ -31,29 +33,45 @@ export const crearCrudStore =
       const estado = useSelector(selector);
       const lista = estado[nombre] as T[] | null;
 
+      const inicializarLlamada = useCallback(() => {
+        dispatch(setLoading(true));
+        dispatch(setError(null));
+      }, [dispatch]);
+
       const get = useCallback(async () => {
+        inicializarLlamada();
         try {
           const { data } = await api.get<T[]>(endpoint);
           dispatch(setAccion(data));
           return true;
         } catch (error) {
-          console.error(`Error obteniendo ${nombre}:`, error);
+          const errorMessage = `Error obteniendo ${nombre}`;
+          dispatch(setError(errorMessage));
+          console.error(errorMessage, error);
           return false;
+        } finally {
+          dispatch(setLoading(false));
         }
-      }, [dispatch]);
+      }, [dispatch, inicializarLlamada]);
 
       const create = async (payload: P) => {
+        inicializarLlamada();
         try {
           const { data } = await api.post<T>(endpoint, payload);
           if (lista) dispatch(setAccion([...lista, data]));
           return true;
         } catch (error) {
-          console.error(`Error creando ${nombre}:`, error);
+          const errorMessage = `Error creando ${nombre}`;
+          dispatch(setError(errorMessage));
+          console.error(errorMessage, error);
           return false;
+        } finally {
+          dispatch(setLoading(false));
         }
       };
 
       const update = async (id: string, payload: P) => {
+        inicializarLlamada();
         try {
           const { data } = await api.put<T>(`${endpoint}/${id}`, payload);
           if (lista)
@@ -64,21 +82,30 @@ export const crearCrudStore =
             );
           return true;
         } catch (error) {
-          console.error(`Error actualizando ${nombre}:`, error);
+          const errorMessage = `Error actualizando ${nombre}`;
+          dispatch(setError(errorMessage));
+          console.error(errorMessage, error);
           return false;
+        } finally {
+          dispatch(setLoading(false));
         }
       };
 
       // Se filtra por el id enviado: el backend no responde igual en todos los delete.
       const remove = async (id: string) => {
+        inicializarLlamada();
         try {
           await api.delete(`${endpoint}/${id}`);
           if (lista)
             dispatch(setAccion(lista.filter((item) => item.id !== id)));
           return true;
         } catch (error) {
-          console.error(`Error eliminando ${nombre}:`, error);
+          const errorMessage = `Error eliminando ${nombre}`;
+          dispatch(setError(errorMessage));
+          console.error(errorMessage, error);
           return false;
+        } finally {
+          dispatch(setLoading(false));
         }
       };
 

@@ -2,6 +2,7 @@ import { Fragment, useEffect, useState, type ReactNode } from 'react';
 import { useMensajeAccion } from '../hooks/useMensajeAccion';
 import type { MensajeAccion } from '../interfaces/mensajeAccion.interface';
 import type { HookCrud } from './crearCrudStore';
+import { Spinner } from '../components/Spinner';
 
 import styles from '../pages/Layout.module.scss';
 
@@ -82,11 +83,11 @@ export const crearPaginaCrud = <N extends string, T extends { id: string }, P>({
         });
     }, [lista, get, mostrarError]);
 
-    if (store.loading) return <p>Cargando...</p>;
+    if (store.loading && lista === null) return <Spinner />;
 
     return (
       <div className={styles.Page}>
-        {lista && lista.length > 0 && (
+        {lista && lista.length > 0 ? (
           <div className={styles.data}>
             {lista.map((item) => (
               <Fragment key={item.id}>
@@ -98,6 +99,10 @@ export const crearPaginaCrud = <N extends string, T extends { id: string }, P>({
                 })}
               </Fragment>
             ))}
+          </div>
+        ) : (
+          <div className={styles.data}>
+            <Spinner />
           </div>
         )}
         <div className={styles.form}>

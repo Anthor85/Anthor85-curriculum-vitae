@@ -3,6 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 
 import { Header } from '../components/Header';
 import { useAuthStore } from '../hooks';
+import { Spinner } from '../components/Spinner';
 
 interface Props {
   children: ReactNode;
@@ -14,7 +15,7 @@ export const RutaPrivada = ({ children }: Props) => {
 
   // Mientras se revalida el token no se pinta nada: sin este estado la pagina
   // parpadearia a /login antes de saber si hay sesion.
-  if (status === 'checking') return <p>Cargando...</p>;
+  if (status === 'checking') return <Spinner />;
 
   if (status === 'not-authenticated')
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;

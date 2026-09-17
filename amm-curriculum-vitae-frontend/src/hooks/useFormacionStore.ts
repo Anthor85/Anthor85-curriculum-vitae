@@ -1,4 +1,4 @@
-import { setFormacion } from '../store';
+import { setErrorFormacion, setFormacion, setLoadingFormacion } from '../store';
 import type {
   Formacion,
   FormacionPayload,
@@ -8,5 +8,7 @@ import { crearCrudStore } from '../helpers/crearCrudStore';
 export const useFormacionStore = crearCrudStore<Formacion, FormacionPayload>()(
   'formacion',
   setFormacion,
+  setLoadingFormacion,
+  setErrorFormacion,
   (state) => state.formacion,
 );

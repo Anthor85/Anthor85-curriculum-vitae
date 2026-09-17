@@ -5,7 +5,10 @@ const { HttpError } = require('../helpers/HttpError');
 const { conContexto } = require('../helpers/conContexto');
 
 const login = async (req, res) => {
-  const { email, password } = req.body;
+  // Express 5 deja req.body como undefined si la peticion no trae cuerpo;
+  // sin el ?? {} la desestructuracion lanzaria un TypeError (500) en vez de
+  // acabar en el 400 de credenciales incorrectas.
+  const { email, password } = req.body ?? {};
 
   const usuario = await Usuario.findOne({ email });
   if (!usuario) {

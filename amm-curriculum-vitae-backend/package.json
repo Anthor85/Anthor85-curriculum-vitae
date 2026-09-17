@@ -8,6 +8,9 @@
     "start": "node index.js",
     "seed": "node scripts/seedUsuario.js",
     "clone-db": "node scripts/clonarBBDD.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -27,10 +30,14 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
+    "@vitest/coverage-v8": "^5.0.1",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.11.0",
+    "mongodb-memory-server": "^11.2.0",
     "nodemon": "^3.1.14",
-    "prettier": "^3.9.6"
+    "prettier": "^3.9.6",
+    "supertest": "^7.2.2",
+    "vitest": "^5.0.1"
   }
 }

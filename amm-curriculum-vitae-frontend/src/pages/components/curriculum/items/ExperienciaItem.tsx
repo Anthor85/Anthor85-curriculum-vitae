@@ -36,10 +36,10 @@ export const ExperienciaItem = ({
         desactivado={!expandible}
       >
         <div className={styles.items}>
+          <p className={styles.descripcion}>{experiencia.descripcion}</p>
           <span className={styles.fechas}>
             {rangoFechas(experiencia.fechaInicio, experiencia.fechaFin)}
           </span>
-          <p className={styles.descripcion}>{experiencia.descripcion}</p>
           {tecnologias.length > 0 && (
             <div className={styles.coleccion}>
               <p className={styles.etiqueta} data-pdf-con-siguiente>

@@ -17,6 +17,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* En escritorio: ocultar el scroll del documento y dejar que los contenedores internos gestionen el desplazamiento. */
+@media (min-width: 769px) {
+  html,
+  body,
+  #root {
+    height: 100%;
+    overflow: hidden;
+  }
+}
+
 input,
 textarea,
 select,

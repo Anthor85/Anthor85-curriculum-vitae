@@ -37,7 +37,7 @@
 
   .subtitulo {
     font-size: 1rem;
-    color: v.$color-gray-600;
+    // color: v.$color-gray-600;
   }
 
   .items {
@@ -49,27 +49,26 @@
   }
 
   .fechas {
-    display: inline-block;
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: v.$color-white;
-    background: linear-gradient(90deg, v.$color-primary, v.$color-primary-dark);
-    padding: 0.3rem 0.6rem;
-    border-radius: 8px;
-    white-space: nowrap;
+    color: v.$color-gray-600;
+    line-height: 1.55;
+    // display: inline-block;
+    // font-size: 0.72rem;
+    // font-weight: 700;
+    // color: v.$color-white;
+    // background: linear-gradient(90deg, v.$color-primary, v.$color-primary-dark);
+    // padding: 0.3rem 0.6rem;
+    // border-radius: 8px;
+    // white-space: nowrap;
   }
 
   .descripcion {
     margin: 0;
-    line-height: 1.55;
-    color: v.$color-gray-600;
+    // color: v.$color-gray-600;
   }
 
   .coleccion {
     display: grid;
     gap: 0.3rem;
-    max-height: 300px;
-    overflow-y: auto;
     width: 100%;
 
     .etiqueta {
@@ -100,11 +99,12 @@
     gap: 0.4rem;
 
     li {
-      background: linear-gradient(
-        90deg,
-        v.$color-primary,
-        v.$color-primary-dark
-      );
+      // background: linear-gradient(
+      //   90deg,
+      //   v.$color-primary,
+      //   v.$color-primary-dark
+      // );
+      background: v.$color-secondary;
       color: v.$color-white;
       border-radius: 8px;
       padding: 0.22rem 0.65rem;

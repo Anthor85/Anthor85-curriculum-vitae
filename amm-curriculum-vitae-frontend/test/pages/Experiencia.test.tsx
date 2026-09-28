@@ -386,9 +386,9 @@ describe('<Experiencia />', () => {
   test('la Card pinta el rango de fechas y «En la actualidad» sin fechaFin', async () => {
     await renderPagina();
 
-    expect(screen.getByText('15/01/2020 - 30/06/2022')).toBeInTheDocument();
+    expect(screen.getByText('01/2020 - 06/2022')).toBeInTheDocument();
     expect(
-      screen.getByText('01/07/2022 - En la actualidad'),
+      screen.getByText('07/2022 - En la actualidad'),
     ).toBeInTheDocument();
   });
 

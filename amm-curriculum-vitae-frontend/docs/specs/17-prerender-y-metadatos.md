@@ -58,14 +58,14 @@ No hay estructuras persistidas nuevas. Se introducen:
 
 **Resultado del helper `metasCurriculum(perfil, siteUrl)`**
 
-| Campo         | Tipo                               | Origen                                                    |
-| ------------- | ---------------------------------- | --------------------------------------------------------- |
-| `titulo`      | `string`                           | `nombre` + `apellidos` + `\| Curriculum Vitae`            |
-| `descripcion` | `string`                           | `perfil.descripcion`, máx. 160 caracteres; `''` sin perfil |
-| `url`         | `string`                           | `siteUrl` + `/`                                           |
-| `imagen`      | `string`                           | `perfil.foto` o `siteUrl` + `/og-image.png`               |
-| `tarjeta`     | `'summary' \| 'summary_large_image'` | según haya foto o no                                     |
-| `favicon`     | `string \| null`                   | `perfil.foto` o `null` (se deja el SVG)                   |
+| Campo         | Tipo                                 | Origen                                                     |
+| ------------- | ------------------------------------ | ---------------------------------------------------------- |
+| `titulo`      | `string`                             | `nombre` + `apellidos` + `\| Curriculum Vitae`             |
+| `descripcion` | `string`                             | `perfil.descripcion`, máx. 160 caracteres; `''` sin perfil |
+| `url`         | `string`                             | `siteUrl` + `/`                                            |
+| `imagen`      | `string`                             | `perfil.foto` o `siteUrl` + `/og-image.png`                |
+| `tarjeta`     | `'summary' \| 'summary_large_image'` | según haya foto o no                                       |
+| `favicon`     | `string \| null`                     | `perfil.foto` o `null` (se deja el SVG)                    |
 
 El helper exporta también la función que compone el título, para que `Curriculum.tsx` y el prerender no dupliquen el formato.
 
@@ -75,36 +75,36 @@ El helper exporta también la función que compone el título, para que `Curricu
 
 **Variables de entorno**
 
-| Variable        | Dónde se lee                         | Si falta en el build |
-| --------------- | ------------------------------------ | -------------------- |
-| `VITE_BASE_URL` | app (ya existe) y `prerender.mjs`    | el build falla       |
-| `VITE_SITE_URL` | `prerender.mjs`                      | el build falla       |
+| Variable        | Dónde se lee                      | Si falta en el build |
+| --------------- | --------------------------------- | -------------------- |
+| `VITE_BASE_URL` | app (ya existe) y `prerender.mjs` | el build falla       |
+| `VITE_SITE_URL` | `prerender.mjs`                   | el build falla       |
 
 El script las carga con `loadEnv` de Vite: `.env` en local, variables del proyecto en Vercel.
 
 **Ficheros**
 
-| Fichero                                  | Cambio                                                                                   |
-| ---------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `src/entry-server.tsx`                   | nuevo                                                                                    |
-| `src/helpers/metasCurriculum.ts`         | nuevo                                                                                    |
-| `scripts/prerender.mjs`                  | nuevo                                                                                    |
-| `public/og-image.png`                    | nuevo                                                                                    |
-| `test/helpers/metasCurriculum.test.tsx`  | nuevo                                                                                    |
-| `src/index.tsx`                          | `hydrateRoot` condicional, precarga del store y revalidación                             |
-| `src/vite-env.d.ts`                      | tipo de `window.__CURRICULUM__`                                                          |
-| `src/pages/Curriculum.tsx`               | el título sale del helper; nada más                                                      |
-| `src/components/Tabs.tsx` + `.module.scss` | todos los paneles en el DOM con `hidden`                                               |
-| `src/components/Expandable.tsx` + `.module.scss` | contenido siempre en el DOM con `hidden`                                         |
-| `test/components/Tabs.test.tsx`          | "no está en el documento" pasa a "no es visible"; `aria-controls` por panel              |
-| `test/components/Expandable.test.tsx`    | ídem para el contenido plegado                                                           |
-| `package.json`                           | scripts `build` y `build:spa`                                                            |
-| `vercel.json`                            | destino del rewrite: `/spa.html`                                                         |
-| `vite.config.js`                         | `src/entry-server.tsx` fuera de cobertura, como `src/index.tsx`                          |
-| `.gitignore`, ignores de ESLint y Prettier | `dist-server/`                                                                         |
-| `eslint.config.mjs`                      | globals de Node para `scripts/**` si el lint los pide                                    |
-| `.env`                                   | `VITE_SITE_URL`                                                                          |
-| `README.md`                              | secciones de variables, scripts y despliegue                                             |
+| Fichero                                          | Cambio                                                                      |
+| ------------------------------------------------ | --------------------------------------------------------------------------- |
+| `src/entry-server.tsx`                           | nuevo                                                                       |
+| `src/helpers/metasCurriculum.ts`                 | nuevo                                                                       |
+| `scripts/prerender.mjs`                          | nuevo                                                                       |
+| `public/og-image.png`                            | nuevo                                                                       |
+| `test/helpers/metasCurriculum.test.tsx`          | nuevo                                                                       |
+| `src/index.tsx`                                  | `hydrateRoot` condicional, precarga del store y revalidación                |
+| `src/vite-env.d.ts`                              | tipo de `window.__CURRICULUM__`                                             |
+| `src/pages/Curriculum.tsx`                       | el título sale del helper; nada más                                         |
+| `src/components/Tabs.tsx` + `.module.scss`       | todos los paneles en el DOM con `hidden`                                    |
+| `src/components/Expandable.tsx` + `.module.scss` | contenido siempre en el DOM con `hidden`                                    |
+| `test/components/Tabs.test.tsx`                  | "no está en el documento" pasa a "no es visible"; `aria-controls` por panel |
+| `test/components/Expandable.test.tsx`            | ídem para el contenido plegado                                              |
+| `package.json`                                   | scripts `build` y `build:spa`                                               |
+| `vercel.json`                                    | destino del rewrite: `/spa.html`                                            |
+| `vite.config.js`                                 | `src/entry-server.tsx` fuera de cobertura, como `src/index.tsx`             |
+| `.gitignore`, ignores de ESLint y Prettier       | `dist-server/`                                                              |
+| `eslint.config.mjs`                              | globals de Node para `scripts/**` si el lint los pide                       |
+| `.env`                                           | `VITE_SITE_URL`                                                             |
+| `README.md`                                      | secciones de variables, scripts y despliegue                                |
 
 `index.html` no cambia: el script localiza `<title>…</title>`, `</head>`, `<link id="favicon" …>` y `<div id="root"></div>` en el HTML ya compilado. Si no encuentra alguno de los cuatro, falla.
 
@@ -163,16 +163,16 @@ El script las carga con `loadEnv` de Vite: `.env` en local, variables del proyec
 
 ## Riesgos identificados
 
-| Riesgo                                                                                                      | Mitigación                                                                                                                                      |
-| ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Desajuste de hidratación por zona horaria: `dateConverter` usa mes y año locales y el build corre en UTC    | El script fija `TZ=Europe/Madrid`. Un visitante en otra zona puede ver un aviso en consola y React repinta ese tramo; el contenido sigue siendo correcto |
-| Los nombres de clase de CSS Modules difieren entre el build SSR y el de cliente                             | Los dos builds usan la misma configuración de Vite; el paso 6 comprueba que no hay avisos y que los estilos se aplican                          |
-| Algún módulo toca `window`, `document` o `localStorage` al importarse y rompe el build SSR                  | Hoy solo se usan dentro de efectos, manejadores e interceptores; el paso 4 lo confirma. `html2canvas` y `jspdf` ya se cargan con `import()` dinámico |
-| El store es un singleton y el render de servidor lo deja con datos                                          | El script hace un solo render por proceso y termina                                                                                             |
-| Vercel aplica el rewrite también a `/` y sirve `spa.html`                                                    | El paso 7 lo comprueba en un deploy de preview antes de producción; si ocurre, se excluye `/` del patrón del rewrite                            |
-| `hidden` no oculta porque el `display` del módulo gana al del navegador                                     | Regla `[hidden]` explícita en los dos `.module.scss`; los tests usan `toBeVisible`                                                              |
-| La animación de `Expandable` no se reproduce al pasar de `hidden` a visible                                 | El paso 1 lo comprueba a mano; una animación por `@keyframes` se relanza al dejar de estar en `display: none`                                   |
-| El backend en frío tarda en responder y el build falla                                                      | Relanzar el deploy; si se repite, añadir un reintento al script                                                                                 |
-| Se edita el CV y no se redespliega: rastreadores y tarjetas muestran datos viejos                           | Documentado en el README; las personas ven los datos nuevos por la revalidación. El Deploy Hook queda para otra spec                            |
-| `perfil.foto` no es pública o no es una imagen válida para tarjetas                                         | Se comprueba con Post Inspector en el paso 9; vaciando el campo foto se usa la tarjeta por defecto                                              |
-| Un backend caído bloquea cualquier deploy del frontend                                                      | Asumido: es preferible a publicar la página vacía. `build:spa` permite compilar en local sin backend                                            |
+| Riesgo                                                                                                   | Mitigación                                                                                                                                               |
+| -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Desajuste de hidratación por zona horaria: `dateConverter` usa mes y año locales y el build corre en UTC | El script fija `TZ=Europe/Madrid`. Un visitante en otra zona puede ver un aviso en consola y React repinta ese tramo; el contenido sigue siendo correcto |
+| Los nombres de clase de CSS Modules difieren entre el build SSR y el de cliente                          | Los dos builds usan la misma configuración de Vite; el paso 6 comprueba que no hay avisos y que los estilos se aplican                                   |
+| Algún módulo toca `window`, `document` o `localStorage` al importarse y rompe el build SSR               | Hoy solo se usan dentro de efectos, manejadores e interceptores; el paso 4 lo confirma. `html2canvas` y `jspdf` ya se cargan con `import()` dinámico     |
+| El store es un singleton y el render de servidor lo deja con datos                                       | El script hace un solo render por proceso y termina                                                                                                      |
+| Vercel aplica el rewrite también a `/` y sirve `spa.html`                                                | El paso 7 lo comprueba en un deploy de preview antes de producción; si ocurre, se excluye `/` del patrón del rewrite                                     |
+| `hidden` no oculta porque el `display` del módulo gana al del navegador                                  | Regla `[hidden]` explícita en los dos `.module.scss`; los tests usan `toBeVisible`                                                                       |
+| La animación de `Expandable` no se reproduce al pasar de `hidden` a visible                              | El paso 1 lo comprueba a mano; una animación por `@keyframes` se relanza al dejar de estar en `display: none`                                            |
+| El backend en frío tarda en responder y el build falla                                                   | Relanzar el deploy; si se repite, añadir un reintento al script                                                                                          |
+| Se edita el CV y no se redespliega: rastreadores y tarjetas muestran datos viejos                        | Documentado en el README; las personas ven los datos nuevos por la revalidación. El Deploy Hook queda para otra spec                                     |
+| `perfil.foto` no es pública o no es una imagen válida para tarjetas                                      | Se comprueba con Post Inspector en el paso 9; vaciando el campo foto se usa la tarjeta por defecto                                                       |
+| Un backend caído bloquea cualquier deploy del frontend                                                   | Asumido: es preferible a publicar la página vacía. `build:spa` permite compilar en local sin backend                                                     |

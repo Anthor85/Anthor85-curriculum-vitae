@@ -387,9 +387,7 @@ describe('<Experiencia />', () => {
     await renderPagina();
 
     expect(screen.getByText('01/2020 - 06/2022')).toBeInTheDocument();
-    expect(
-      screen.getByText('07/2022 - En la actualidad'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('07/2022 - En la actualidad')).toBeInTheDocument();
   });
 
   test('la Card pinta los hitos de la experiencia y nada si no tiene', async () => {

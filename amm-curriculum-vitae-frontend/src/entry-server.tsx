@@ -7,6 +7,9 @@ import type { Curriculum } from './interfaces/curriculum.interface';
 import { Router } from './router/Router';
 import { setCurriculum, store } from './store';
 
+// El script de prerender no puede importar TypeScript: le llega por aquí.
+export { metasCurriculum } from './helpers/metasCurriculum';
+
 // Mismo árbol que index.tsx, con el store ya cargado y el router fijo en "/".
 // El store es un singleton: un solo render por proceso.
 export const render = (curriculum: Curriculum): string => {

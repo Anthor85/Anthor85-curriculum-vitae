@@ -27,6 +27,7 @@ export default defineConfig({
         'src/interfaces/**',
         'src/**/index.ts',
         'src/index.tsx',
+        'src/entry-server.tsx',
         'src/router/**',
         'src/pages/Curriculum.tsx',
         'src/pages/components/**',

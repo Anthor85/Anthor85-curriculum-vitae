@@ -20,8 +20,6 @@ describe('rangoFechas', () => {
   });
 
   test('acepta fechas en formato corto', () => {
-    expect(rangoFechas('2019-03-01', '2021-11-15')).toBe(
-      '03/2019 - 11/2021',
-    );
+    expect(rangoFechas('2019-03-01', '2021-11-15')).toBe('03/2019 - 11/2021');
   });
 });

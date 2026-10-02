@@ -10,7 +10,14 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['dist', 'build', 'coverage', 'node_modules', 'references'],
+    ignores: [
+      'dist',
+      'dist-server',
+      'build',
+      'coverage',
+      'node_modules',
+      'references',
+    ],
   },
   {
     files: ['**/*.{js,jsx,ts,tsx}'],

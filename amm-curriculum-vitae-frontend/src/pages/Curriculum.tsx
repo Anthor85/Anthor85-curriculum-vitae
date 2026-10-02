@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { exportToPDF } from '../helpers/exportToPDF';
+import { tituloCurriculum } from '../helpers/metasCurriculum';
 import { ordenarCurriculum } from '../helpers/ordenarCurriculum';
 import { Button } from '../components/Button';
 import { Tabs } from '../components/Tabs';
@@ -38,11 +39,11 @@ export const Curriculum = () => {
     .join(' ');
   const nombrePDF = nombreFichero ? `CV ${nombreFichero}` : 'CV';
 
+  const titulo = tituloCurriculum(perfil);
+
   useEffect(() => {
-    document.title = nombreFichero
-      ? `${nombreFichero} | Curriculum Vitae`
-      : 'Curriculum Vitae';
-  }, [nombreFichero]);
+    document.title = titulo;
+  }, [titulo]);
 
   useEffect(() => {
     const favicon = document.querySelector<HTMLLinkElement>('#favicon');

@@ -26,5 +26,6 @@ yarn-error.log*
 /references
 /.vs
 /dist
+/dist-server
 /../backend.md
 /../frontend.md

@@ -39,11 +39,9 @@ export const Expandable = ({
           className={`${styles.triangulo} ${abierto ? styles.abierto : ''}`}
         ></span>
       </button>
-      {abierto && (
-        <div className={styles.contenido}>
-          <div className={styles.contenidoInterior}>{children}</div>
-        </div>
-      )}
+      <div className={styles.contenido} hidden={!abierto}>
+        <div className={styles.contenidoInterior}>{children}</div>
+      </div>
     </div>
   );
 };

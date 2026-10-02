@@ -28,7 +28,7 @@ export const Tabs = ({ tabs }: Props) => {
 
   const prefijo = useId();
   const idTab = (id: string) => `${prefijo}-tab-${id}`;
-  const idPanel = `${prefijo}-panel`;
+  const idPanel = (id: string) => `${prefijo}-panel-${id}`;
   const idDesplegable = `${prefijo}-desplegable`;
 
   const tabActiva = tabs.find((tab) => tab.id === activa);
@@ -90,7 +90,7 @@ export const Tabs = ({ tabs }: Props) => {
               role="tab"
               id={idTab(tab.id)}
               aria-selected={seleccionada}
-              aria-controls={idPanel}
+              aria-controls={idPanel(tab.id)}
               tabIndex={seleccionada ? 0 : -1}
               className={`${styles.boton} ${seleccionada ? styles.activa : ''}`}
               onClick={() => setActiva(tab.id)}
@@ -130,17 +130,19 @@ export const Tabs = ({ tabs }: Props) => {
           </div>
         )}
       </div>
-      {tabActiva && (
+      {tabs.map((tab) => (
         <div
+          key={tab.id}
           className={styles.panel}
           role="tabpanel"
-          id={idPanel}
-          aria-labelledby={idTab(tabActiva.id)}
+          id={idPanel(tab.id)}
+          aria-labelledby={idTab(tab.id)}
           tabIndex={0}
+          hidden={tab.id !== activa}
         >
-          {tabActiva.contenido}
+          {tab.contenido}
         </div>
-      )}
+      ))}
     </div>
   );
 };

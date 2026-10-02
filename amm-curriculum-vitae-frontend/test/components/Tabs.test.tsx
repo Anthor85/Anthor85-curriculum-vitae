@@ -59,6 +59,21 @@ describe('<Tabs />', () => {
     expect(panel).toHaveTextContent('Contenido perfil');
   });
 
+  it('cada tab apunta con aria-controls a su propio panel, que existe en el DOM', () => {
+    render(<Tabs tabs={TABS} />);
+
+    const ids = TABS.map((tab) =>
+      tabEscritorio(tab.titulo).getAttribute('aria-controls'),
+    );
+
+    expect(new Set(ids).size).toBe(TABS.length);
+    TABS.forEach((tab, indice) => {
+      const panel = document.getElementById(ids[indice]!);
+      expect(panel).toHaveAttribute('role', 'tabpanel');
+      expect(panel).toHaveTextContent(`Contenido ${tab.id}`);
+    });
+  });
+
   it('navega entre tabs con flechas, Home y End moviendo el foco', async () => {
     const user = userEvent.setup();
     render(<Tabs tabs={TABS} />);
@@ -71,7 +86,7 @@ describe('<Tabs />', () => {
       'aria-selected',
       'true',
     );
-    expect(screen.getByText('Contenido experiencia')).toBeInTheDocument();
+    expect(screen.getByText('Contenido experiencia')).toBeVisible();
 
     await user.keyboard('{End}');
     expect(tabEscritorio('Formacion')).toHaveFocus();
@@ -84,7 +99,7 @@ describe('<Tabs />', () => {
 
     await user.keyboard('{Home}');
     expect(tabEscritorio('Perfil')).toHaveFocus();
-    expect(screen.getByText('Contenido perfil')).toBeInTheDocument();
+    expect(screen.getByText('Contenido perfil')).toBeVisible();
   });
 
   it('ignora teclas que no son de navegacion', async () => {
@@ -107,12 +122,14 @@ describe('<Tabs />', () => {
     expect(tabMovil('Experiencia')).not.toHaveAttribute('aria-current');
   });
 
-  it('pinta el contenido de la primera tab al montar y no el de las demas', () => {
+  it('pinta todos los paneles al montar y solo es visible el de la primera tab', () => {
     render(<Tabs tabs={TABS} />);
 
-    expect(screen.getByText('Contenido perfil')).toBeInTheDocument();
-    expect(screen.queryByText('Contenido experiencia')).not.toBeInTheDocument();
-    expect(screen.queryByText('Contenido formacion')).not.toBeInTheDocument();
+    expect(screen.getByText('Contenido perfil')).toBeVisible();
+    expect(screen.getByText('Contenido experiencia')).toBeInTheDocument();
+    expect(screen.getByText('Contenido experiencia')).not.toBeVisible();
+    expect(screen.getByText('Contenido formacion')).toBeInTheDocument();
+    expect(screen.getByText('Contenido formacion')).not.toBeVisible();
   });
 
   it('cambia el contenido del panel al pinchar en otra tab de escritorio', async () => {
@@ -121,8 +138,8 @@ describe('<Tabs />', () => {
 
     await user.click(tabEscritorio('Experiencia'));
 
-    expect(screen.getByText('Contenido experiencia')).toBeInTheDocument();
-    expect(screen.queryByText('Contenido perfil')).not.toBeInTheDocument();
+    expect(screen.getByText('Contenido experiencia')).toBeVisible();
+    expect(screen.getByText('Contenido perfil')).not.toBeVisible();
   });
 
   it('abre el desplegable movil al pulsar el hamburguesa', async () => {
@@ -146,7 +163,7 @@ describe('<Tabs />', () => {
     await user.click(hamburguesa());
     await user.click(tabMovil('Formacion'));
 
-    expect(screen.getByText('Contenido formacion')).toBeInTheDocument();
+    expect(screen.getByText('Contenido formacion')).toBeVisible();
     expect(hamburguesa()).toHaveAttribute('aria-expanded', 'false');
     expect(
       within(menuMovil()).queryByRole('button', { name: 'Formacion' }),

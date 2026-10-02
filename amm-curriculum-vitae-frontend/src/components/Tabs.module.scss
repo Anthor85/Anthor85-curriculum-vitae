@@ -48,6 +48,11 @@
 
     scrollbar-width: thin;
 
+    // display: flex anula el hidden del navegador
+    &[hidden] {
+      display: none;
+    }
+
     &::-webkit-scrollbar {
       width: 8px;
     }

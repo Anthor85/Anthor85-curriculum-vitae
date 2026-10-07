@@ -157,6 +157,72 @@ describe('exportToPDF', () => {
     expect(cortes()).toEqual([0, 470, 990]);
   });
 
+  describe('imágenes externas', () => {
+    const EXTERNA = 'https://fotos.example.com/foto.jpg';
+
+    const conImagen = (src: string) => {
+      const div = contenedor(400);
+      const img = document.createElement('img');
+      // jsdom no implementa decode()
+      img.decode = async () => {};
+      img.src = src;
+      div.appendChild(img);
+      return { div, img };
+    };
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    test('se capturan incrustadas, pedidas sin Referer, y luego se restauran', async () => {
+      const fetchMock = vi.fn(async () => ({
+        ok: true,
+        blob: async () => new Blob(['foto'], { type: 'image/jpeg' }),
+      }));
+      vi.stubGlobal('fetch', fetchMock);
+      const { div, img } = conImagen(EXTERNA);
+
+      let srcEnCaptura = '';
+      html2canvasMock.mockImplementationOnce(async () => {
+        srcEnCaptura = img.src;
+        return canvas;
+      });
+
+      await exportToPDF(div as HTMLDivElement, 'cv');
+
+      expect(fetchMock).toHaveBeenCalledWith(EXTERNA, {
+        referrerPolicy: 'no-referrer',
+      });
+      expect(srcEnCaptura).toMatch(/^data:image\/jpeg;base64,/);
+      expect(img.src).toBe(EXTERNA);
+    });
+
+    test('si la descarga falla se exporta con la URL original', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () => {
+          throw new TypeError('Failed to fetch');
+        }),
+      );
+      const { div, img } = conImagen(EXTERNA);
+
+      await exportToPDF(div as HTMLDivElement, 'cv');
+
+      expect(img.src).toBe(EXTERNA);
+      expect(doc.save).toHaveBeenCalledWith('cv.pdf');
+    });
+
+    test('las imágenes del propio sitio no se descargan', async () => {
+      const fetchMock = vi.fn();
+      vi.stubGlobal('fetch', fetchMock);
+      const { div } = conImagen('/icons/sobre.svg');
+
+      await exportToPDF(div as HTMLDivElement, 'cv');
+
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+  });
+
   test('los elementos sin altura no mueven los cortes', async () => {
     const div = contenedor(1200, [['p', { top: 500, bottom: 500 }]]);
 

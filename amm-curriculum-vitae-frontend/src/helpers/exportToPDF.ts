@@ -47,6 +47,42 @@ const esperarImagenes = (contenedor: HTMLElement) =>
     ),
   );
 
+const aDataURL = (blob: Blob) =>
+  new Promise<string>((resolve, reject) => {
+    const lector = new FileReader();
+    lector.onload = () => resolve(lector.result as string);
+    lector.onerror = () => reject(lector.error);
+    lector.readAsDataURL(blob);
+  });
+
+// html2canvas vuelve a pedir las imagenes externas enviando el Referer, y hay
+// servidores que lo rechazan: se descargan sin el y se incrustan mientras dura
+// la captura. Devuelve la funcion que restaura las URLs originales
+const incrustarImagenesExternas = async (contenedor: HTMLElement) => {
+  const externas = [...contenedor.querySelectorAll('img')].filter(
+    (img) =>
+      /^https?:/.test(img.src) &&
+      new URL(img.src).origin !== window.location.origin,
+  );
+
+  const originales = await Promise.all(
+    externas.map(async (img) => {
+      const src = img.src;
+
+      try {
+        const respuesta = await fetch(src, { referrerPolicy: 'no-referrer' });
+        if (respuesta.ok) img.src = await aDataURL(await respuesta.blob());
+      } catch {
+        // Sin CORS o sin red: se deja la URL original
+      }
+
+      return [img, src] as const;
+    }),
+  );
+
+  return () => originales.forEach(([img, src]) => (img.src = src));
+};
+
 // html2canvas y jspdf solo se cargan al exportar, no en el bundle inicial
 export const exportToPDF = async (
   exportableHTML: HTMLDivElement,
@@ -57,15 +93,24 @@ export const exportToPDF = async (
     import('jspdf'),
   ]);
 
-  await esperarImagenes(exportableHTML);
+  const restaurarImagenes = await incrustarImagenesExternas(exportableHTML);
+  let canvas: HTMLCanvasElement;
+  let bloques: Bloque[];
+  let altoHTML: number;
 
-  const bloques = obtenerBloques(exportableHTML);
-  const altoHTML = exportableHTML.getBoundingClientRect().height;
+  try {
+    await esperarImagenes(exportableHTML);
 
-  const canvas = await html2canvas(exportableHTML, {
-    useCORS: true,
-    scale: 2,
-  });
+    bloques = obtenerBloques(exportableHTML);
+    altoHTML = exportableHTML.getBoundingClientRect().height;
+
+    canvas = await html2canvas(exportableHTML, {
+      useCORS: true,
+      scale: 2,
+    });
+  } finally {
+    restaurarImagenes();
+  }
 
   const doc = new jsPDF();
   const imgData = canvas.toDataURL('image/jpeg', 0.92);

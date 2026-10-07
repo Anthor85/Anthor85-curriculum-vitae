@@ -1,4 +1,5 @@
 import { getIcons } from '../../../../helpers/getIcons';
+import { urlFoto } from '../../../../helpers/urlFoto';
 import { Perfil } from '../../../../interfaces/perfil.interface';
 
 interface ContactoProps {
@@ -12,8 +13,10 @@ export const Contacto = ({ perfil, styles }: ContactoProps) => {
       {perfil?.foto && (
         <img
           className={styles.photo}
-          src={perfil.foto}
+          src={urlFoto(perfil.foto)}
           alt={`${perfil.nombre} ${perfil.apellidos}`}
+          // Drive responde 429 a las peticiones con Referer de localhost
+          referrerPolicy="no-referrer"
           width={150}
         />
       )}

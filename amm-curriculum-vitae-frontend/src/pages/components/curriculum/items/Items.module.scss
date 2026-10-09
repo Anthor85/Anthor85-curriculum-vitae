@@ -66,6 +66,64 @@
     // color: v.$color-gray-600;
   }
 
+  // Cabecera: empresa + fechas en la misma línea, descripción debajo
+  .cabecera {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'titulo fechas'
+      'descripcion descripcion';
+    align-items: center;
+    gap: 0.35rem 1rem;
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+
+    .titulo {
+      grid-area: titulo;
+      font-size: 1.3rem;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      color: v.$color-gray-900;
+    }
+
+    .fechas {
+      grid-area: fechas;
+      font-size: 0.75rem;
+      font-weight: 700;
+      line-height: 1.2;
+      color: v.$color-white;
+      background: linear-gradient(
+        90deg,
+        v.$color-primary,
+        v.$color-primary-dark
+      );
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .descripcion {
+      grid-area: descripcion;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      color: v.$color-gray-600;
+    }
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        'titulo'
+        'fechas'
+        'descripcion';
+
+      .fechas {
+        justify-self: start;
+      }
+    }
+  }
+
   .coleccion {
     display: grid;
     gap: 0.3rem;
@@ -117,6 +175,7 @@
   &.pdf {
     .fechas {
       font-size: 0.85rem;
+      font-weight: 400;
       color: v.$color-gray-600;
       background: none;
       padding: 0;

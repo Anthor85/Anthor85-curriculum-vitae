@@ -14,9 +14,10 @@ const PERFIL_VACIO: PerfilPayload = {
   email: '',
   telefono: '',
   direccion: '',
-  fechaNacimiento: '',
   descripcion: '',
   foto: '',
+  linkedinURL: '',
+  githubURL: '',
 };
 
 interface Props {
@@ -31,8 +32,9 @@ export const PerfilForm = ({ perfil, onSubmitPerfil, mensaje }: Props) => {
     perfil
       ? {
           ...perfil,
-          fechaNacimiento: perfil.fechaNacimiento?.slice(0, 10) ?? '',
           foto: perfil.foto ?? '',
+          linkedinURL: perfil.linkedinURL ?? '',
+          githubURL: perfil.githubURL ?? '',
         }
       : PERFIL_VACIO,
   );
@@ -46,6 +48,8 @@ export const PerfilForm = ({ perfil, onSubmitPerfil, mensaje }: Props) => {
       direccion: datosPerfil.direccion.trim(),
       descripcion: datosPerfil.descripcion.trim(),
       foto: datosPerfil.foto.trim(),
+      linkedinURL: datosPerfil.linkedinURL.trim(),
+      githubURL: datosPerfil.githubURL.trim(),
     };
 
     await onSubmitPerfil(payload);
@@ -119,19 +123,6 @@ export const PerfilForm = ({ perfil, onSubmitPerfil, mensaje }: Props) => {
         />
       </div>
       <div className={styles.field}>
-        <label htmlFor="fechaNacimiento">Fecha de Nacimiento:</label>
-        <input
-          type="date"
-          id="fechaNacimiento"
-          name="fechaNacimiento"
-          value={datosPerfil.fechaNacimiento}
-          onChange={(e) =>
-            setDatosPerfil({ ...datosPerfil, fechaNacimiento: e.target.value })
-          }
-          required
-        />
-      </div>
-      <div className={styles.field}>
         <label htmlFor="descripcion">Descripción:</label>
         <input
           type="text"
@@ -153,6 +144,30 @@ export const PerfilForm = ({ perfil, onSubmitPerfil, mensaje }: Props) => {
           value={datosPerfil.foto}
           onChange={(e) =>
             setDatosPerfil({ ...datosPerfil, foto: e.target.value })
+          }
+        />
+      </div>
+      <div className={styles.field}>
+        <label htmlFor="linkedinURL">LinkedIn:</label>
+        <input
+          type="url"
+          id="linkedinURL"
+          name="linkedinURL"
+          value={datosPerfil.linkedinURL}
+          onChange={(e) =>
+            setDatosPerfil({ ...datosPerfil, linkedinURL: e.target.value })
+          }
+        />
+      </div>
+      <div className={styles.field}>
+        <label htmlFor="githubURL">GitHub:</label>
+        <input
+          type="url"
+          id="githubURL"
+          name="githubURL"
+          value={datosPerfil.githubURL}
+          onChange={(e) =>
+            setDatosPerfil({ ...datosPerfil, githubURL: e.target.value })
           }
         />
       </div>

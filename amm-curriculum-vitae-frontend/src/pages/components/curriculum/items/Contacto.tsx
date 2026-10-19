@@ -1,4 +1,9 @@
-import { getIcons } from '../../../../helpers/getIcons';
+import {
+  enlaceEmail,
+  enlaceMaps,
+  enlaceTelefono,
+} from '../../../../helpers/enlacesContacto';
+import { getIcons, type IconName } from '../../../../helpers/getIcons';
 import { urlFoto } from '../../../../helpers/urlFoto';
 import { Perfil } from '../../../../interfaces/perfil.interface';
 
@@ -7,7 +12,57 @@ interface ContactoProps {
   styles: CSSModuleClasses;
 }
 
+interface Linea {
+  icono: IconName;
+  texto: string;
+  href: string;
+  externa: boolean;
+}
+
 export const Contacto = ({ perfil, styles }: ContactoProps) => {
+  const lineas: Linea[] = perfil
+    ? [
+        {
+          icono: 'chincheta',
+          texto: perfil.direccion,
+          href: enlaceMaps(perfil.direccion),
+          externa: true,
+        },
+        {
+          icono: 'telefono',
+          texto: perfil.telefono,
+          href: enlaceTelefono(perfil.telefono),
+          externa: false,
+        },
+        {
+          icono: 'sobre',
+          texto: perfil.email,
+          href: enlaceEmail(perfil.email),
+          externa: false,
+        },
+        ...(perfil.linkedinURL
+          ? [
+              {
+                icono: 'linkedin' as const,
+                texto: 'LinkedIn',
+                href: perfil.linkedinURL,
+                externa: true,
+              },
+            ]
+          : []),
+        ...(perfil.githubURL
+          ? [
+              {
+                icono: 'github' as const,
+                texto: 'GitHub',
+                href: perfil.githubURL,
+                externa: true,
+              },
+            ]
+          : []),
+      ]
+    : [];
+
   return (
     <>
       {perfil?.foto && (
@@ -22,18 +77,17 @@ export const Contacto = ({ perfil, styles }: ContactoProps) => {
       )}
       {perfil && (
         <div className={styles.contacto}>
-          <div className={styles.contacto__linea}>
-            <img src={getIcons('chincheta')} alt="" />
-            <span>{perfil.direccion}</span>
-          </div>
-          <div className={styles.contacto__linea}>
-            <img src={getIcons('telefono')} alt="" />
-            <span>{perfil.telefono}</span>
-          </div>
-          <div className={styles.contacto__linea}>
-            <img src={getIcons('sobre')} alt="" />
-            <span>{perfil.email}</span>
-          </div>
+          {lineas.map(({ icono, texto, href, externa }) => (
+            <a
+              key={icono}
+              className={styles.contacto__linea}
+              href={href}
+              {...(externa && { target: '_blank', rel: 'noopener noreferrer' })}
+            >
+              <img src={getIcons(icono)} alt="" />
+              <span>{texto}</span>
+            </a>
+          ))}
         </div>
       )}
     </>

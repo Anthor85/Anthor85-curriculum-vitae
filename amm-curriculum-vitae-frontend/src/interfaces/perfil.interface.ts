@@ -5,11 +5,14 @@ export interface Perfil {
   email: string;
   telefono: string;
   direccion: string;
-  fechaNacimiento: string;
   descripcion: string;
   foto?: string;
+  linkedinURL?: string;
+  githubURL?: string;
 }
 
 export interface PerfilPayload extends Omit<Perfil, 'id'> {
   foto: string;
+  linkedinURL: string;
+  githubURL: string;
 }

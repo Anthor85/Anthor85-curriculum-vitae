@@ -29,10 +29,6 @@ const PerfilSchema = Schema({
     required: true,
     trim: true,
   },
-  fechaNacimiento: {
-    type: Date,
-    required: true,
-  },
   descripcion: {
     type: String,
     required: true,
@@ -41,6 +37,16 @@ const PerfilSchema = Schema({
   foto: {
     type: String,
     trim: true,
+  },
+  linkedinURL: {
+    type: String,
+    trim: true,
+    match: /^https?:\/\//i,
+  },
+  githubURL: {
+    type: String,
+    trim: true,
+    match: /^https?:\/\//i,
   },
 });
 

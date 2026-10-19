@@ -113,7 +113,13 @@
           font-size: 0.9rem;
           line-height: 1.4;
           color: v.$color-gray-800;
+          text-decoration: none;
           overflow-wrap: anywhere;
+
+          &:hover span,
+          &:focus-visible span {
+            text-decoration: underline;
+          }
 
           img {
             flex-shrink: 0;

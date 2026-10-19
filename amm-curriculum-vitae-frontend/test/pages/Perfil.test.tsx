@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import {
@@ -30,9 +30,10 @@ const PERFIL: IPerfil = {
   email: 'antonio@menendez.com',
   telefono: '666555444',
   direccion: 'Alicante',
-  fechaNacimiento: '1990-01-01',
   descripcion: 'Técnico en informática',
   foto: 'www.mifoto.com/foto.jpg',
+  linkedinURL: 'https://www.linkedin.com/in/antonio',
+  githubURL: 'https://github.com/antonio',
 };
 
 // Sin perfil el back responde 404 y el hook lo ignora: la pagina se queda en
@@ -59,10 +60,6 @@ const renderPagina = async (perfil: IPerfil | null = null) => {
   return utils;
 };
 
-// Los input type="date" no responden bien a user.type en jsdom.
-const escribirFecha = (campo: HTMLElement, valor: string) =>
-  fireEvent.change(campo, { target: { value: valor } });
-
 describe('<Perfil />', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -85,9 +82,11 @@ describe('<Perfil />', () => {
     expect(screen.getByLabelText('Email:')).toBeInTheDocument();
     expect(screen.getByLabelText('Teléfono:')).toBeInTheDocument();
     expect(screen.getByLabelText('Dirección:')).toBeInTheDocument();
-    expect(screen.getByLabelText('Fecha de Nacimiento:')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Fecha de Nacimiento:')).toBeNull();
     expect(screen.getByLabelText('Descripción:')).toBeInTheDocument();
     expect(screen.getByLabelText('Foto:')).toBeInTheDocument();
+    expect(screen.getByLabelText('LinkedIn:')).toBeInTheDocument();
+    expect(screen.getByLabelText('GitHub:')).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: 'Crear Perfil' }),
     ).toBeInTheDocument();
@@ -102,8 +101,9 @@ describe('<Perfil />', () => {
     expect(screen.getByLabelText('Nombre:')).toHaveValue('');
     expect(screen.getByLabelText('Apellidos:')).toHaveValue('');
     expect(screen.getByLabelText('Email:')).toHaveValue('');
-    expect(screen.getByLabelText('Fecha de Nacimiento:')).toHaveValue('');
     expect(screen.getByLabelText('Foto:')).toHaveValue('');
+    expect(screen.getByLabelText('LinkedIn:')).toHaveValue('');
+    expect(screen.getByLabelText('GitHub:')).toHaveValue('');
   });
 
   test('crear llama a api.post y muestra el mensaje', async () => {
@@ -115,7 +115,6 @@ describe('<Perfil />', () => {
     await user.type(screen.getByLabelText('Email:'), 'antonio@menendez.com');
     await user.type(screen.getByLabelText('Teléfono:'), '666555444');
     await user.type(screen.getByLabelText('Dirección:'), 'Alicante');
-    escribirFecha(screen.getByLabelText('Fecha de Nacimiento:'), '1990-01-01');
     await user.type(
       screen.getByLabelText('Descripción:'),
       'Técnico en informática',
@@ -130,9 +129,10 @@ describe('<Perfil />', () => {
       email: 'antonio@menendez.com',
       telefono: '666555444',
       direccion: 'Alicante',
-      fechaNacimiento: '1990-01-01',
       descripcion: 'Técnico en informática',
       foto: '',
+      linkedinURL: '',
+      githubURL: '',
     });
     // Tras crear, el perfil ya existe en el store y el boton cambia.
     expect(
@@ -167,14 +167,17 @@ describe('<Perfil />', () => {
     expect(screen.getByLabelText('Email:')).toHaveValue('antonio@menendez.com');
     expect(screen.getByLabelText('Teléfono:')).toHaveValue('666555444');
     expect(screen.getByLabelText('Dirección:')).toHaveValue('Alicante');
-    expect(screen.getByLabelText('Fecha de Nacimiento:')).toHaveValue(
-      '1990-01-01',
-    );
     expect(screen.getByLabelText('Descripción:')).toHaveValue(
       'Técnico en informática',
     );
     expect(screen.getByLabelText('Foto:')).toHaveValue(
       'www.mifoto.com/foto.jpg',
+    );
+    expect(screen.getByLabelText('LinkedIn:')).toHaveValue(
+      'https://www.linkedin.com/in/antonio',
+    );
+    expect(screen.getByLabelText('GitHub:')).toHaveValue(
+      'https://github.com/antonio',
     );
     expect(
       screen.getByRole('button', { name: 'Actualizar Perfil' }),
@@ -206,9 +209,10 @@ describe('<Perfil />', () => {
       email: 'antonio@menendez.com',
       telefono: '666555444',
       direccion: 'Valencia',
-      fechaNacimiento: '1990-01-01',
       descripcion: 'Técnico en informática',
       foto: 'www.mifoto.com/foto.jpg',
+      linkedinURL: 'https://www.linkedin.com/in/antonio',
+      githubURL: 'https://github.com/antonio',
     });
     expect(nombre).toHaveValue('Antonio Manuel');
 
@@ -230,6 +234,45 @@ describe('<Perfil />', () => {
     expect(apiMock.put).toHaveBeenCalledWith(
       '/perfil',
       expect.objectContaining({ foto: 'www.otrafoto.com/foto.jpg' }),
+    );
+  });
+
+  test('editar recorta los espacios de LinkedIn y GitHub', async () => {
+    const user = setupUser();
+    await renderPagina(PERFIL);
+
+    const linkedin = screen.getByLabelText('LinkedIn:');
+    await user.clear(linkedin);
+    await user.type(linkedin, '  https://www.linkedin.com/in/otro  ');
+    const github = screen.getByLabelText('GitHub:');
+    await user.clear(github);
+    await user.type(github, '  https://github.com/otro  ');
+
+    await user.click(screen.getByRole('button', { name: 'Actualizar Perfil' }));
+    await flush();
+
+    expect(apiMock.put).toHaveBeenCalledWith(
+      '/perfil',
+      expect.objectContaining({
+        linkedinURL: 'https://www.linkedin.com/in/otro',
+        githubURL: 'https://github.com/otro',
+      }),
+    );
+  });
+
+  test('se puede guardar con LinkedIn y GitHub vacios', async () => {
+    const user = setupUser();
+    await renderPagina(PERFIL);
+
+    await user.clear(screen.getByLabelText('LinkedIn:'));
+    await user.clear(screen.getByLabelText('GitHub:'));
+
+    await user.click(screen.getByRole('button', { name: 'Actualizar Perfil' }));
+    await flush();
+
+    expect(apiMock.put).toHaveBeenCalledWith(
+      '/perfil',
+      expect.objectContaining({ linkedinURL: '', githubURL: '' }),
     );
   });
 

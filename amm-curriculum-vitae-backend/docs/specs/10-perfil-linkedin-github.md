@@ -1,6 +1,6 @@
 # SPEC 10 — Campos `linkedinURL` y `githubURL` en Perfil y retirada de `fechaNacimiento`
 
-> **Estado:** Aprobada
+> **Estado:** Implementada
 > **Depende de:** SPEC 06 (`06-editar-perfil.md`, Implementada), que fija el `POST`/`PUT /api/perfil` y la normalización de `foto`; SPEC 09 (`09-tests-backend-vitest.md`), que fija `test/api/perfil.test.js` y `crearPerfilEnBd`
 > **Fecha:** 2026-10-09
 > **Objetivo:** Añadir al modelo `Perfil` dos campos opcionales, `linkedinURL` y `githubURL`, que `POST` y `PUT /api/perfil` guardan, validan como URL `http(s)` y borran cuando llegan vacíos, igual que hoy `foto`, y retirar del modelo y de la API el campo `fechaNacimiento`, que no se usa.

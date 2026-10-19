@@ -19,6 +19,13 @@
       height: 2rem;
       max-width: 50vw;
     }
+
+    textarea {
+      flex: 1;
+      max-width: 50vw;
+      font: inherit;
+      resize: vertical;
+    }
   }
 
   .tecnologias {
@@ -72,7 +79,8 @@
       }
 
       input,
-      select {
+      select,
+      textarea {
         width: 100%;
         max-width: none;
       }

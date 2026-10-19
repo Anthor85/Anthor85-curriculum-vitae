@@ -1,0 +1,45 @@
+.Resumen {
+  max-width: 70ch;
+  padding-left: 1rem;
+  border-left: 3px solid v.$color-primary;
+}
+
+.texto {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: v.$color-gray-800;
+}
+
+.toggle {
+  display: none;
+  margin-top: 0.25rem;
+  padding: 0.25rem 0;
+  background: none;
+  border: none;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: v.$color-primary;
+  cursor: pointer;
+
+  @include v.foco-visible;
+}
+
+// El recorte y el botón solo existen en móvil
+@media (max-width: 768px) {
+  .texto {
+    font-size: 1rem;
+  }
+
+  .recortado {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .toggle {
+    display: block;
+  }
+}

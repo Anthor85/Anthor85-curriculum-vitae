@@ -71,10 +71,6 @@
       min-height: 0;
       padding-right: 35px;
       padding-top: calc(3rem + 50px);
-      .role {
-        font-size: 1.5rem;
-        color: v.$color-gray-600;
-      }
     }
     .column {
       display: flex;
@@ -162,8 +158,8 @@
         display: contents;
         padding-top: 0;
 
-        .role {
-          order: -3;
+        .resumen {
+          order: -2;
         }
       }
 
@@ -175,7 +171,7 @@
           flex-direction: row;
           align-items: center;
           gap: 1rem;
-          order: -2;
+          order: -3;
         }
 
         .photo {

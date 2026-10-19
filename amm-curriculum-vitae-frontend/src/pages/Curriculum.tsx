@@ -3,6 +3,7 @@ import { exportToPDF } from '../helpers/exportToPDF';
 import { tituloCurriculum } from '../helpers/metasCurriculum';
 import { ordenarCurriculum } from '../helpers/ordenarCurriculum';
 import { Button } from '../components/Button';
+import { Resumen } from '../components/Resumen';
 import { Tabs } from '../components/Tabs';
 import { useCurriculumStore } from '../hooks';
 import {
@@ -143,8 +144,10 @@ export const Curriculum = () => {
             />
           </div>
           <div className={styles.information}>
-            {perfil && (
-              <span className={styles.role}>{perfil.descripcion}</span>
+            {perfil?.descripcion && (
+              <div className={styles.resumen}>
+                <Resumen texto={perfil.descripcion} />
+              </div>
             )}
             <Tabs tabs={tabs} />
           </div>

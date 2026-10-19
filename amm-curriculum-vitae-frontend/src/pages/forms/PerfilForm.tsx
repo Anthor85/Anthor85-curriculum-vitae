@@ -133,10 +133,10 @@ export const PerfilForm = ({ perfil, onSubmitPerfil, mensaje }: Props) => {
       </div>
       <div className={styles.field}>
         <label htmlFor="descripcion">Descripción:</label>
-        <input
-          type="text"
+        <textarea
           id="descripcion"
           name="descripcion"
+          rows={5}
           value={datosPerfil.descripcion}
           onChange={(e) =>
             setDatosPerfil({ ...datosPerfil, descripcion: e.target.value })

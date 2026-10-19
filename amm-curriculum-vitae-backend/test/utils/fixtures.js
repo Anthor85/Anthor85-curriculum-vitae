@@ -68,7 +68,6 @@ const crearPerfilEnBd = (datos = {}) =>
     email: 'test@test.com',
     telefono: '600000000',
     direccion: 'Calle de test, 1',
-    fechaNacimiento: '1985-05-20',
     descripcion: 'Desarrollador full stack',
     ...datos,
   });

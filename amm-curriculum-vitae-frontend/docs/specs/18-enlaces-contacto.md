@@ -1,6 +1,6 @@
 # SPEC 18 — Enlaces de contacto, LinkedIn y GitHub, y retirada de `fechaNacimiento`
 
-> **Estado:** Aprobada
+> **Estado:** Implementada
 > **Depende de:** SPEC 10 del backend (`../amm-curriculum-vitae-backend/docs/specs/10-perfil-linkedin-github.md`, Borrador), que aporta `linkedinURL` y `githubURL` en la API y retira `fechaNacimiento`; SPEC 07 (`07-editar-perfil-frontend.md`), que fija `PerfilForm` y `PerfilPayload`; SPEC 09 (`09-curriculum-pestanas-y-contacto.md`), que creó `Contacto`; SPEC 11 (`11-vista-movil.md`), que fija la cabecera en móvil
 > **Fecha:** 2026-10-09
 > **Objetivo:** Que el formulario de `/perfil` edite `linkedinURL` y `githubURL` y deje de pedir `fechaNacimiento`, y que el bloque de contacto de la página principal convierta dirección, teléfono y email en enlaces (Maps, `tel:`, `mailto:`) y añada debajo dos líneas enlazadas a LinkedIn y GitHub con sus iconos.

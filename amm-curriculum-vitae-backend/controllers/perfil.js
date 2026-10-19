@@ -19,8 +19,9 @@ const crearPerfil = async (req, res) => {
     telefono,
     email,
     direccion,
-    fechaNacimiento,
     foto,
+    linkedinURL,
+    githubURL,
   } = req.body;
 
   const nuevoPerfil = new Perfil({
@@ -29,9 +30,10 @@ const crearPerfil = async (req, res) => {
     descripcion,
     telefono,
     email,
-    fechaNacimiento,
     direccion,
     foto: foto || undefined,
+    linkedinURL: linkedinURL || undefined,
+    githubURL: githubURL || undefined,
   });
   await nuevoPerfil.save();
   res.status(201).json(nuevoPerfil);
@@ -45,8 +47,9 @@ const actualizarPerfil = async (req, res) => {
     telefono,
     email,
     direccion,
-    fechaNacimiento,
     foto,
+    linkedinURL,
+    githubURL,
   } = req.body;
 
   const perfil = await Perfil.findOne();
@@ -60,8 +63,9 @@ const actualizarPerfil = async (req, res) => {
   perfil.telefono = telefono;
   perfil.email = email;
   perfil.direccion = direccion;
-  perfil.fechaNacimiento = fechaNacimiento;
   perfil.foto = foto || undefined;
+  perfil.linkedinURL = linkedinURL || undefined;
+  perfil.githubURL = githubURL || undefined;
 
   await perfil.save();
   res.json(perfil);

@@ -22,6 +22,7 @@ const crearPerfil = async (req, res) => {
     foto,
     linkedinURL,
     githubURL,
+    idiomas,
   } = req.body;
 
   const nuevoPerfil = new Perfil({
@@ -34,6 +35,7 @@ const crearPerfil = async (req, res) => {
     foto: foto || undefined,
     linkedinURL: linkedinURL || undefined,
     githubURL: githubURL || undefined,
+    idiomas: idiomas || [],
   });
   await nuevoPerfil.save();
   res.status(201).json(nuevoPerfil);
@@ -50,6 +52,7 @@ const actualizarPerfil = async (req, res) => {
     foto,
     linkedinURL,
     githubURL,
+    idiomas,
   } = req.body;
 
   const perfil = await Perfil.findOne();
@@ -66,6 +69,7 @@ const actualizarPerfil = async (req, res) => {
   perfil.foto = foto || undefined;
   perfil.linkedinURL = linkedinURL || undefined;
   perfil.githubURL = githubURL || undefined;
+  perfil.idiomas = idiomas || [];
 
   await perfil.save();
   res.json(perfil);

@@ -48,6 +48,18 @@ const PerfilSchema = Schema({
     trim: true,
     match: /^https?:\/\//i,
   },
+  idiomas: {
+    type: [
+      new Schema(
+        {
+          idioma: { type: String, required: true, trim: true },
+          nivel: { type: String, required: true, trim: true },
+        },
+        { _id: false },
+      ),
+    ],
+    default: [],
+  },
 });
 
 PerfilSchema.plugin(toJSON);

@@ -21,6 +21,16 @@ const renderContacto = (perfil: Perfil | null) =>
   render(<Contacto perfil={perfil} styles={STYLES} />);
 
 describe('<Contacto />', () => {
+  test('muestra el bloque Idiomas solo si hay idiomas', () => {
+    const { unmount } = renderContacto(PERFIL);
+    expect(screen.queryByText('Idiomas')).not.toBeInTheDocument();
+    unmount();
+
+    renderContacto({ ...PERFIL, idiomas: [{ idioma: 'Inglés', nivel: 'B2' }] });
+    expect(screen.getByText('Idiomas')).toBeInTheDocument();
+    expect(screen.getByText('Inglés · B2')).toBeInTheDocument();
+  });
+
   test('cada linea es un enlace con su href', () => {
     renderContacto(PERFIL);
 

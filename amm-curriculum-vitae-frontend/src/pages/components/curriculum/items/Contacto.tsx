@@ -63,6 +63,21 @@ export const Contacto = ({ perfil, styles }: ContactoProps) => {
       ]
     : [];
 
+  // dirección, teléfono y email; el resto son enlaces a redes
+  const LINEAS_DATOS = 3;
+
+  const renderLinea = ({ icono, texto, href, externa }: Linea) => (
+    <a
+      key={icono}
+      className={styles.contacto__linea}
+      href={href}
+      {...(externa && { target: '_blank', rel: 'noopener noreferrer' })}
+    >
+      <img src={getIcons(icono)} alt="" />
+      <span>{texto}</span>
+    </a>
+  );
+
   return (
     <>
       {perfil?.foto && (
@@ -77,17 +92,24 @@ export const Contacto = ({ perfil, styles }: ContactoProps) => {
       )}
       {perfil && (
         <div className={styles.contacto}>
-          {lineas.map(({ icono, texto, href, externa }) => (
-            <a
-              key={icono}
-              className={styles.contacto__linea}
-              href={href}
-              {...(externa && { target: '_blank', rel: 'noopener noreferrer' })}
-            >
-              <img src={getIcons(icono)} alt="" />
-              <span>{texto}</span>
-            </a>
-          ))}
+          <div className={styles.contacto__datos}>
+            {lineas.slice(0, LINEAS_DATOS).map(renderLinea)}
+          </div>
+          <div className={styles.contacto__redes}>
+            {lineas.slice(LINEAS_DATOS).map(renderLinea)}
+          </div>
+          {perfil.idiomas && perfil.idiomas.length > 0 && (
+            <div className={styles.contacto__idiomas}>
+              <h3>Idiomas</h3>
+              <ul>
+                {perfil.idiomas.map(({ idioma, nivel }) => (
+                  <li key={idioma}>
+                    {idioma} · {nivel}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
     </>

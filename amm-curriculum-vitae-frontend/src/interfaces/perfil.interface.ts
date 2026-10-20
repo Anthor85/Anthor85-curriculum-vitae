@@ -14,6 +14,7 @@ export interface Perfil {
   foto?: string;
   linkedinURL?: string;
   githubURL?: string;
+  disponibilidad?: string;
   idiomas?: Idioma[];
 }
 
@@ -21,5 +22,6 @@ export interface PerfilPayload extends Omit<Perfil, 'id'> {
   foto: string;
   linkedinURL: string;
   githubURL: string;
+  disponibilidad: string;
   idiomas: Idioma[];
 }

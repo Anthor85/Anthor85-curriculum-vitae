@@ -18,6 +18,7 @@ const PERFIL_VACIO: PerfilPayload = {
   foto: '',
   linkedinURL: '',
   githubURL: '',
+  disponibilidad: '',
   idiomas: [],
 };
 
@@ -36,6 +37,7 @@ export const PerfilForm = ({ perfil, onSubmitPerfil, mensaje }: Props) => {
           foto: perfil.foto ?? '',
           linkedinURL: perfil.linkedinURL ?? '',
           githubURL: perfil.githubURL ?? '',
+          disponibilidad: perfil.disponibilidad ?? '',
           idiomas: perfil.idiomas ?? [],
         }
       : PERFIL_VACIO,
@@ -77,6 +79,7 @@ export const PerfilForm = ({ perfil, onSubmitPerfil, mensaje }: Props) => {
       foto: datosPerfil.foto.trim(),
       linkedinURL: datosPerfil.linkedinURL.trim(),
       githubURL: datosPerfil.githubURL.trim(),
+      disponibilidad: datosPerfil.disponibilidad.trim(),
       idiomas: datosPerfil.idiomas
         .map(({ idioma, nivel }) => ({
           idioma: idioma.trim(),
@@ -201,6 +204,19 @@ export const PerfilForm = ({ perfil, onSubmitPerfil, mensaje }: Props) => {
           value={datosPerfil.githubURL}
           onChange={(e) =>
             setDatosPerfil({ ...datosPerfil, githubURL: e.target.value })
+          }
+        />
+      </div>
+      <div className={styles.field}>
+        <label htmlFor="disponibilidad">Disponibilidad:</label>
+        <input
+          type="text"
+          id="disponibilidad"
+          name="disponibilidad"
+          placeholder="Disponible de inmediato · remoto / híbrido en Murcia"
+          value={datosPerfil.disponibilidad}
+          onChange={(e) =>
+            setDatosPerfil({ ...datosPerfil, disponibilidad: e.target.value })
           }
         />
       </div>

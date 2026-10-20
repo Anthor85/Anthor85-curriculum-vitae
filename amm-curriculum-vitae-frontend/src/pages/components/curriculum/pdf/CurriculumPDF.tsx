@@ -235,8 +235,15 @@ const DatoContacto = ({
 );
 
 const Contacto = ({ perfil }: { perfil: Perfil }) => {
-  const { direccion, telefono, email, linkedinURL, githubURL, idiomas } =
-    perfil;
+  const {
+    direccion,
+    telefono,
+    email,
+    linkedinURL,
+    githubURL,
+    disponibilidad,
+    idiomas,
+  } = perfil;
 
   return (
     <View style={styles.contacto}>
@@ -288,6 +295,11 @@ const Contacto = ({ perfil }: { perfil: Perfil }) => {
           >
             {urlEnLineas(githubURL)}
           </Link>
+        </DatoContacto>
+      ) : null}
+      {disponibilidad ? (
+        <DatoContacto etiqueta="Disponibilidad">
+          <Text style={styles.valorContacto}>{disponibilidad}</Text>
         </DatoContacto>
       ) : null}
       {idiomas?.length ? (

@@ -48,6 +48,10 @@ const PerfilSchema = Schema({
     trim: true,
     match: /^https?:\/\//i,
   },
+  disponibilidad: {
+    type: String,
+    trim: true,
+  },
   idiomas: {
     type: [
       new Schema(

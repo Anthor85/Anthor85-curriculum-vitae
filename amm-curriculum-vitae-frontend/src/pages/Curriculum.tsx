@@ -143,6 +143,9 @@ export const Curriculum = () => {
             <div className={styles.identidad}>
               <Contacto perfil={perfil || null} styles={styles} />
             </div>
+            {perfil?.disponibilidad && (
+              <p className={styles.disponibilidad}>{perfil.disponibilidad}</p>
+            )}
             <Button
               onClick={() => setPreparandoPDF(true)}
               name="Descargar CV (PDF)"

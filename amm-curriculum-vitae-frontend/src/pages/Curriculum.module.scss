@@ -83,6 +83,29 @@
         display: contents;
       }
 
+      .disponibilidad {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        width: 300px;
+        margin: 0;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        font-weight: bold;
+        color: v.$color-primary-dark;
+
+        // Alineado con el texto de las líneas de contacto (icono de 18px)
+        &::before {
+          content: '';
+          flex-shrink: 0;
+          width: 8px;
+          height: 8px;
+          margin: 0 5px;
+          border-radius: 50%;
+          background: v.$color-primary;
+        }
+      }
+
       .photo {
         left: 35px;
         top: 30px;
@@ -203,6 +226,14 @@
           align-items: start;
           gap: 1rem;
           order: -3;
+        }
+
+        // Una línea justo encima del resumen (tras la rejilla de identidad)
+        .disponibilidad {
+          order: -1;
+          width: auto;
+          gap: 0.5rem;
+          font-size: 0.85rem;
         }
 
         .photo {

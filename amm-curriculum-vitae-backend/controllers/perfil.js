@@ -22,6 +22,7 @@ const crearPerfil = async (req, res) => {
     foto,
     linkedinURL,
     githubURL,
+    disponibilidad,
     idiomas,
   } = req.body;
 
@@ -35,6 +36,7 @@ const crearPerfil = async (req, res) => {
     foto: foto || undefined,
     linkedinURL: linkedinURL || undefined,
     githubURL: githubURL || undefined,
+    disponibilidad: disponibilidad || undefined,
     idiomas: idiomas || [],
   });
   await nuevoPerfil.save();
@@ -52,10 +54,11 @@ const actualizarPerfil = async (req, res) => {
     foto,
     linkedinURL,
     githubURL,
+    disponibilidad,
     idiomas,
   } = req.body;
 
-  const perfil = await Perfil.findOne();
+  const perfil =await Perfil.findOne();
   if (!perfil) {
     throw new HttpError(404, 'Perfil no encontrado');
   }
@@ -69,6 +72,7 @@ const actualizarPerfil = async (req, res) => {
   perfil.foto = foto || undefined;
   perfil.linkedinURL = linkedinURL || undefined;
   perfil.githubURL = githubURL || undefined;
+  perfil.disponibilidad = disponibilidad || undefined;
   perfil.idiomas = idiomas || [];
 
   await perfil.save();

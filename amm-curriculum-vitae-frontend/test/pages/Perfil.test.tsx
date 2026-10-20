@@ -133,6 +133,7 @@ describe('<Perfil />', () => {
       foto: '',
       linkedinURL: '',
       githubURL: '',
+      disponibilidad: '',
       idiomas: [],
     });
     // Tras crear, el perfil ya existe en el store y el boton cambia.
@@ -214,6 +215,7 @@ describe('<Perfil />', () => {
       foto: 'www.mifoto.com/foto.jpg',
       linkedinURL: 'https://www.linkedin.com/in/antonio',
       githubURL: 'https://github.com/antonio',
+      disponibilidad: '',
       idiomas: [],
     });
     expect(nombre).toHaveValue('Antonio Manuel');

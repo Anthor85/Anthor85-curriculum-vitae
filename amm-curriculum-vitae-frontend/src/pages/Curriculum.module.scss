@@ -128,12 +128,6 @@
   }
 }
 
-.pdfOculto {
-  position: absolute;
-  left: -10000px;
-  top: 0;
-}
-
 @media (max-width: 768px) {
   .MainPage {
     /* Permitimos scroll del documento en móvil para que position:sticky funcione */

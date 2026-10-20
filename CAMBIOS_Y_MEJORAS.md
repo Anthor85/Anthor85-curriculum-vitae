@@ -243,11 +243,11 @@ Funciona bien en general: sin scroll horizontal, nombre sin recortar, foto y con
 - **Teléfono y email no pulsables** (ver 1.2): en móvil es donde más se nota, no se puede llamar ni escribir con un toque.
 - La experiencia plegada (1.1) pesa igual que en escritorio: en la primera pantalla solo se leen dos nombres de empresa.
 
-### 3.8 Detalles de contenido
+### 3.8 Detalles de contenido - Implementada
 
 - Unificar grafías: "FrontEnd" / "Frontend" / "Front-End"; "Typescript" → "TypeScript"; "Javascript" → "JavaScript"; "JQuery" → "jQuery"; "IA ClaudeCode" → "Claude Code".
 - "Proyecto Fin de Grado -> Lenguaje…": sustituir la flecha por dos puntos.
-- Fechas de formación con un solo mes ("10/2013"): indicar que es fecha de finalización o usar solo el año.
+- ~~Fechas de formación con un solo mes ("10/2013"): indicar que es fecha de finalización o usar solo el año.~~ Hecho: solo año (web, PDF y cards).
 - Añadir modalidad y ubicación a cada experiencia (remoto / Murcia / Valencia…).
 - La foto es correcta y profesional. Tenerla en cuenta si se opta a empresas de EE. UU./Reino Unido, donde no se suele incluir.
 

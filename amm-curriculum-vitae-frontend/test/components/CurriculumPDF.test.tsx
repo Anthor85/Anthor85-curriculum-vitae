@@ -233,7 +233,7 @@ describe('CurriculumPDF', () => {
     expect(screen.getByText('Ingeniería Informática')).toBeInTheDocument();
     expect(
       screen.getByText(
-        (_, el) => el?.textContent === 'Ingeniería Informática (UPM - 06/2019)',
+        (_, el) => el?.textContent === 'Ingeniería Informática (UPM - 2019)',
       ),
     ).toBeInTheDocument();
     expect(screen.getByText('Curso de React')).toBeInTheDocument();

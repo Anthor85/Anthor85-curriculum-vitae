@@ -10,7 +10,7 @@ import {
   View,
 } from '@react-pdf/renderer';
 import { competenciasClave } from '../../../../helpers/competenciasClave';
-import { dateConverter } from '../../../../helpers/dateConverter';
+import { anioFecha } from '../../../../helpers/anioFecha';
 import {
   enlaceEmail,
   enlaceMaps,
@@ -200,7 +200,7 @@ const detalleFormacion = ({
 }: Formacion | FormacionComplementaria) => {
   const partes = [
     institucion,
-    fechaFin ? dateConverter(new Date(fechaFin)) : '',
+    fechaFin ? anioFecha(fechaFin) : '',
   ].filter(Boolean);
 
   return partes.length ? ` (${partes.join(' - ')})` : '';

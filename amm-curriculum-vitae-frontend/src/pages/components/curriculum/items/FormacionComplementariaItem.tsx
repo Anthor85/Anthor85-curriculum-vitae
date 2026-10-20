@@ -1,4 +1,4 @@
-import { dateConverter } from '../../../../helpers/dateConverter';
+import { anioFecha } from '../../../../helpers/anioFecha';
 import { FormacionComplementaria } from '../../../../interfaces/formacionComplementaria.interface';
 
 import styles from './Items.module.scss';
@@ -18,7 +18,7 @@ export const FormacionComplementariaItem = ({
       </span>
       {formacionComplementaria.fechaFin && (
         <span className={styles.fechas}>
-          {dateConverter(new Date(formacionComplementaria.fechaFin))}
+          {anioFecha(formacionComplementaria.fechaFin)}
         </span>
       )}
     </div>

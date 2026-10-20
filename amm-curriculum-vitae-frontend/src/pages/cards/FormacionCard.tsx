@@ -1,5 +1,5 @@
 import { Button } from '../../components/Button';
-import { dateConverter } from '../../helpers/dateConverter';
+import { anioFecha } from '../../helpers/anioFecha';
 import { Formacion } from '../../interfaces/formacion.interface';
 
 import styles from './Cards.module.scss';
@@ -26,7 +26,7 @@ export const FormacionCard = ({
           <b>Institución:</b> {institucion}
         </div>
         <div className={styles.subdata}>
-          <b>Fecha:</b> {dateConverter(new Date(fechaFin))}
+          <b>Fecha:</b> {anioFecha(fechaFin)}
         </div>
         {descripcion && (
           <div className={styles.subdata}>

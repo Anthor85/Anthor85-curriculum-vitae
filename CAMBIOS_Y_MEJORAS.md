@@ -20,7 +20,7 @@ Las cinco cosas que más impacto tendrían, por orden:
 
 ## 1. Prioridad alta
 
-### 1.1 La experiencia está plegada por defecto
+### 1.1 La experiencia está plegada por defecto - Implementado
 
 Al entrar solo se leen "Aplanet", "PcComponentes", "Tissat/Alterna Tecnologías" y "Everis". Cargo, fechas, tecnologías e hitos exigen un clic por empresa.
 
@@ -31,7 +31,7 @@ Al entrar solo se leen "Aplanet", "PcComponentes", "Tissat/Alterna Tecnologías"
 
 Código: `ExperienciaItem.tsx` (la cabecera del `Expandable` solo lleva `experiencia.empresa`).
 
-### 1.2 No hay ningún enlace en toda la página
+### 1.2 No hay ningún enlace en toda la página - Implementado
 
 El DOM no contiene ni un solo `<a>`. Faltan:
 
@@ -41,7 +41,7 @@ El DOM no contiene ni un solo `<a>`. Faltan:
 
 **Cambio:** añadir campos `linkedin`, `github` (y opcional `web`) al perfil (`perfil.interface.ts`, formulario y backend) y pintarlos en `Contacto.tsx` junto a email y teléfono enlazados.
 
-### 1.3 Falta un resumen profesional
+### 1.3 Falta un resumen profesional - Implementado
 
 El único texto de presentación es "Desarrollador web especializado en Front-End". No dice años de experiencia, stack principal, qué tipo de producto ha construido ni qué busca.
 
@@ -61,7 +61,7 @@ Ejemplos actuales: "Creación de componentes en React + Typescript", "Mantenimie
 
 **Cambio:** reescribir como acción + contexto + resultado. Por ejemplo: qué funciones de IA, para qué usuarios, qué mejoró; cuántos idiomas/mercados habilitó i18next; qué supuso el refactor del formulario de devoluciones (menos incidencias, menos tiempo de gestión, etc.). Solo con datos reales; si no hay cifra, al menos el alcance.
 
-### 1.5 El PDF exportado es una imagen
+### 1.5 El PDF exportado es una imagen - Implementada
 
 `exportToPDF.ts` captura el HTML con html2canvas y lo inserta como JPEG. Consecuencias:
 

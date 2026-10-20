@@ -3,7 +3,7 @@ const ID_DRIVE = [
   /^https?:\/\/drive\.google\.com\/file\/d\/([\w-]+)/,
 ];
 
-// Los enlaces de Drive redirigen sin cabeceras CORS y html2canvas no puede
+// Los enlaces de Drive redirigen sin cabeceras CORS y el navegador no puede
 // pintarlos: se usa la URL final de la imagen, que sí las trae
 export const urlFoto = (url: string) => {
   for (const patron of ID_DRIVE) {

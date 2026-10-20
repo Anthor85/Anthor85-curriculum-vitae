@@ -10,22 +10,16 @@ interface Props {
   experiencia: Experiencia;
   conocimiento: Conocimiento[];
   expandible?: boolean;
-  enPDF?: boolean;
 }
 
 export const ExperienciaItem = ({
   experiencia,
   conocimiento,
   expandible = true,
-  enPDF = false,
 }: Props) => {
   const tecnologias = tecnologiasFilter(experiencia.tecnologias, conocimiento);
 
-  const clases = [
-    styles.Item,
-    expandible && styles.expandable,
-    enPDF && styles.pdf,
-  ]
+  const clases = [styles.Item, expandible && styles.expandable]
     .filter(Boolean)
     .join(' ');
 
@@ -46,9 +40,7 @@ export const ExperienciaItem = ({
         <div className={styles.items}>
           {tecnologias.length > 0 && (
             <div className={styles.coleccion}>
-              <p className={styles.etiqueta} data-pdf-con-siguiente>
-                Tecnologías utilizadas:
-              </p>
+              <p className={styles.etiqueta}>Tecnologías utilizadas:</p>
               <ul className={styles.tecnologias}>
                 {tecnologias.map((tech) => (
                   <li key={tech.id}>{tech.titulo}</li>
@@ -58,9 +50,7 @@ export const ExperienciaItem = ({
           )}
           {experiencia.hitos?.length ? (
             <div className={styles.coleccion}>
-              <p className={styles.etiqueta} data-pdf-con-siguiente>
-                Algunos Hitos:
-              </p>
+              <p className={styles.etiqueta}>Algunos Hitos:</p>
               <ul>
                 {experiencia.hitos.map((hito) => (
                   <li key={hito.id}>{hito.descripcion}</li>

@@ -13,7 +13,7 @@ Es el frontend del monorepo; el API vive en `../amm-curriculum-vitae-backend`.
 - **React Router 7** para el enrutado
 - **Sass** con CSS Modules (`*.module.scss`)
 - **axios** para las llamadas al API
-- **jsPDF** + **html2canvas** para el export a PDF
+- **@react-pdf/renderer** para generar el PDF (texto real, enlaces y metadatos)
 - **Vitest** + **Testing Library** para los tests
 - **ESLint** + **Prettier**
 

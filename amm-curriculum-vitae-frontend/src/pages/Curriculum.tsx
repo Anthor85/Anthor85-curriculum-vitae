@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { exportToPDF } from '../helpers/exportToPDF';
 import { tituloCurriculum } from '../helpers/metasCurriculum';
 import { ordenarCurriculum } from '../helpers/ordenarCurriculum';
@@ -13,13 +13,11 @@ import {
   FormacionComplementariaItem,
   FormacionItem,
 } from './components/curriculum/items';
-import { CurriculumPDF } from './components/curriculum/pdf';
 
 import styles from './Curriculum.module.scss';
 import { Spinner } from '../components/Spinner';
 
 export const Curriculum = () => {
-  const pdfRef = useRef<HTMLDivElement>(null);
   const [preparandoPDF, setPreparandoPDF] = useState(false);
   const { curriculum, getCurriculum, loading, error } = useCurriculumStore();
 
@@ -111,11 +109,19 @@ export const Curriculum = () => {
   ];
 
   useEffect(() => {
-    if (!preparandoPDF || !pdfRef.current) return;
-    exportToPDF(pdfRef.current, nombrePDF).finally(() =>
-      setPreparandoPDF(false),
-    );
-  }, [preparandoPDF, nombrePDF]);
+    if (!preparandoPDF) return;
+    const ordenado = ordenarCurriculum(curriculum);
+    exportToPDF(
+      {
+        perfil: curriculum?.perfil || null,
+        experiencia: ordenado.experienciaOrdenada,
+        formaciones: ordenado.formacionesOrdenadas,
+        formacionesComplementarias: ordenado.complementariasOrdenadas,
+        conocimiento: ordenado.conocimientosOrdenados,
+      },
+      nombrePDF,
+    ).finally(() => setPreparandoPDF(false));
+  }, [preparandoPDF, curriculum, nombrePDF]);
   const cargando = loading || (!curriculum && !error);
 
   return cargando ? (
@@ -139,7 +145,7 @@ export const Curriculum = () => {
             </div>
             <Button
               onClick={() => setPreparandoPDF(true)}
-              name="Exportar a PDF"
+              name="Descargar CV (PDF)"
               icon="descarga"
             />
           </div>
@@ -153,18 +159,6 @@ export const Curriculum = () => {
           </div>
         </div>
       </div>
-
-      {preparandoPDF && (
-        <div ref={pdfRef} className={styles.pdfOculto}>
-          <CurriculumPDF
-            perfil={perfil || null}
-            experiencia={experienciaOrdenada}
-            formaciones={formacionesOrdenadas}
-            formacionesComplementarias={complementariasOrdenadas}
-            conocimiento={conocimientosOrdenados}
-          />
-        </div>
-      )}
     </>
   );
 };

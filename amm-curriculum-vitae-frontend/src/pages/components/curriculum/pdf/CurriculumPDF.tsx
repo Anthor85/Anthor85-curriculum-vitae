@@ -235,7 +235,8 @@ const DatoContacto = ({
 );
 
 const Contacto = ({ perfil }: { perfil: Perfil }) => {
-  const { direccion, telefono, email, linkedinURL, githubURL } = perfil;
+  const { direccion, telefono, email, linkedinURL, githubURL, idiomas } =
+    perfil;
 
   return (
     <View style={styles.contacto}>
@@ -287,6 +288,15 @@ const Contacto = ({ perfil }: { perfil: Perfil }) => {
           >
             {urlEnLineas(githubURL)}
           </Link>
+        </DatoContacto>
+      ) : null}
+      {idiomas?.length ? (
+        <DatoContacto etiqueta="Idiomas">
+          {idiomas.map(({ idioma, nivel }) => (
+            <Text key={idioma} style={styles.valorContacto}>
+              {idioma} · {nivel}
+            </Text>
+          ))}
         </DatoContacto>
       ) : null}
     </View>

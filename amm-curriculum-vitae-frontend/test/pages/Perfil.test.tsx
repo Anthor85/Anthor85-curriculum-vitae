@@ -133,6 +133,7 @@ describe('<Perfil />', () => {
       foto: '',
       linkedinURL: '',
       githubURL: '',
+      idiomas: [],
     });
     // Tras crear, el perfil ya existe en el store y el boton cambia.
     expect(
@@ -213,6 +214,7 @@ describe('<Perfil />', () => {
       foto: 'www.mifoto.com/foto.jpg',
       linkedinURL: 'https://www.linkedin.com/in/antonio',
       githubURL: 'https://github.com/antonio',
+      idiomas: [],
     });
     expect(nombre).toHaveValue('Antonio Manuel');
 
@@ -273,6 +275,41 @@ describe('<Perfil />', () => {
     expect(apiMock.put).toHaveBeenCalledWith(
       '/perfil',
       expect.objectContaining({ linkedinURL: '', githubURL: '' }),
+    );
+  });
+
+  test('editar permite añadir idiomas y descarta las filas vacías', async () => {
+    const user = setupUser();
+    await renderPagina(PERFIL);
+
+    await user.click(screen.getByRole('button', { name: '+ Añadir idioma' }));
+    await user.type(screen.getByLabelText('Idioma 1'), '  Inglés ');
+    await user.type(screen.getByLabelText('Nivel del idioma 1'), ' B2 ');
+    await user.click(screen.getByRole('button', { name: '+ Añadir idioma' }));
+
+    await user.click(screen.getByRole('button', { name: 'Actualizar Perfil' }));
+    await flush();
+
+    expect(apiMock.put).toHaveBeenCalledWith(
+      '/perfil',
+      expect.objectContaining({ idiomas: [{ idioma: 'Inglés', nivel: 'B2' }] }),
+    );
+  });
+
+  test('editar permite borrar un idioma', async () => {
+    const user = setupUser();
+    await renderPagina({
+      ...PERFIL,
+      idiomas: [{ idioma: 'Inglés', nivel: 'B2' }],
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Borrar idioma 1' }));
+    await user.click(screen.getByRole('button', { name: 'Actualizar Perfil' }));
+    await flush();
+
+    expect(apiMock.put).toHaveBeenCalledWith(
+      '/perfil',
+      expect.objectContaining({ idiomas: [] }),
     );
   });
 

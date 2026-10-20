@@ -48,6 +48,7 @@ describe('/api/perfil', () => {
         telefono: '600000000',
         direccion: 'Calle de test, 1',
         descripcion: 'Desarrollador full stack',
+        idiomas: [],
       });
       expect(body).not.toHaveProperty('_id');
       expect(body).not.toHaveProperty('__v');
@@ -83,8 +84,31 @@ describe('/api/perfil', () => {
         id: expect.any(String),
         ...perfilValido,
         foto: 'https://test.com/foto.png',
+        idiomas: [],
       });
       await expect(Perfil.countDocuments()).resolves.toBe(1);
+    });
+
+    it('con idiomas los guarda y los devuelve sin _id', async () => {
+      const idiomas = [{ idioma: 'Inglés', nivel: 'B2' }];
+
+      const { body } = await request(app)
+        .post('/api/perfil')
+        .set('x-token', token)
+        .send({ ...perfilValido, idiomas })
+        .expect(201);
+
+      expect(body.idiomas).toEqual(idiomas);
+    });
+
+    it('con un idioma sin nivel devuelve 500 y no crea nada', async () => {
+      await request(app)
+        .post('/api/perfil')
+        .set('x-token', token)
+        .send({ ...perfilValido, idiomas: [{ idioma: 'Inglés', nivel: '' }] })
+        .expect(500);
+
+      await expect(Perfil.countDocuments()).resolves.toBe(0);
     });
 
     it('con foto vacia guarda el perfil sin el campo foto', async () => {
@@ -173,6 +197,7 @@ describe('/api/perfil', () => {
         id: perfil._id.toString(),
         ...perfilValido,
         nombre: 'Antonio Manuel',
+        idiomas: [],
       });
       const enBd = await Perfil.findById(perfil._id);
       expect(enBd.nombre).toBe('Antonio Manuel');

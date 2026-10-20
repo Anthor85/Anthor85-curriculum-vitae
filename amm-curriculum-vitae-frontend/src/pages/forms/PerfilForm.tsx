@@ -18,6 +18,7 @@ const PERFIL_VACIO: PerfilPayload = {
   foto: '',
   linkedinURL: '',
   githubURL: '',
+  idiomas: [],
 };
 
 interface Props {
@@ -35,9 +36,35 @@ export const PerfilForm = ({ perfil, onSubmitPerfil, mensaje }: Props) => {
           foto: perfil.foto ?? '',
           linkedinURL: perfil.linkedinURL ?? '',
           githubURL: perfil.githubURL ?? '',
+          idiomas: perfil.idiomas ?? [],
         }
       : PERFIL_VACIO,
   );
+
+  const anadirIdioma = () =>
+    setDatosPerfil((prev) => ({
+      ...prev,
+      idiomas: [...prev.idiomas, { idioma: '', nivel: '' }],
+    }));
+
+  const borrarIdioma = (indice: number) =>
+    setDatosPerfil((prev) => ({
+      ...prev,
+      idiomas: prev.idiomas.filter((_, i) => i !== indice),
+    }));
+
+  const cambiarIdioma = (
+    indice: number,
+    campo: 'idioma' | 'nivel',
+    valor: string,
+  ) =>
+    setDatosPerfil((prev) => ({
+      ...prev,
+      idiomas: prev.idiomas.map((item, i) =>
+        i === indice ? { ...item, [campo]: valor } : item,
+      ),
+    }));
+
   const { isPending, enviar } = useEnvioFormulario(async () => {
     const payload: PerfilPayload = {
       ...datosPerfil,
@@ -50,6 +77,12 @@ export const PerfilForm = ({ perfil, onSubmitPerfil, mensaje }: Props) => {
       foto: datosPerfil.foto.trim(),
       linkedinURL: datosPerfil.linkedinURL.trim(),
       githubURL: datosPerfil.githubURL.trim(),
+      idiomas: datosPerfil.idiomas
+        .map(({ idioma, nivel }) => ({
+          idioma: idioma.trim(),
+          nivel: nivel.trim(),
+        }))
+        .filter(({ idioma, nivel }) => idioma !== '' && nivel !== ''),
     };
 
     await onSubmitPerfil(payload);
@@ -170,6 +203,39 @@ export const PerfilForm = ({ perfil, onSubmitPerfil, mensaje }: Props) => {
             setDatosPerfil({ ...datosPerfil, githubURL: e.target.value })
           }
         />
+      </div>
+      <div
+        className={styles.hitos}
+        role="group"
+        aria-labelledby="idiomas-titulo"
+      >
+        <span id="idiomas-titulo">Idiomas:</span>
+        {datosPerfil.idiomas.map((item, indice) => (
+          <div key={indice} className={styles.hitoFila}>
+            <input
+              type="text"
+              aria-label={`Idioma ${indice + 1}`}
+              placeholder="Inglés"
+              value={item.idioma}
+              onChange={(e) => cambiarIdioma(indice, 'idioma', e.target.value)}
+            />
+            <input
+              type="text"
+              aria-label={`Nivel del idioma ${indice + 1}`}
+              placeholder="B2"
+              value={item.nivel}
+              onChange={(e) => cambiarIdioma(indice, 'nivel', e.target.value)}
+            />
+            <button
+              type="button"
+              aria-label={`Borrar idioma ${indice + 1}`}
+              onClick={() => borrarIdioma(indice)}
+            >
+              X
+            </button>
+          </div>
+        ))}
+        <Button type="button" onClick={anadirIdioma} name="+ Añadir idioma" />
       </div>
       <div className={styles.actions}>
         <Button

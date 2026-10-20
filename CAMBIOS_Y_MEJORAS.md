@@ -121,13 +121,13 @@ El perfil incluye Inglés B2 (05/2026) pero la web no tiene versión en inglés.
 
 **Cambio:** versión EN con selector de idioma y `hreflang`.
 
-### 2.5 Idiomas escondidos
+### 2.5 Idiomas escondidos - Implementado
 
 "Inglés B2" figura como un curso dentro de Formación Complementaria. Es un dato que los reclutadores filtran.
 
 **Cambio:** bloque "Idiomas" visible en la columna de contacto.
 
-### 2.6 Datos personales expuestos
+### 2.6 Datos personales expuestos - Implementado
 
 - El teléfono y el código postal están en abierto, indexables por cualquier bot.
 - El JSON incrustado en el HTML (`window.__CURRICULUM__`) incluye **`fechaNacimiento`**, aunque no se muestre en pantalla. Cualquiera puede leerlo en el código fuente.

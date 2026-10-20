@@ -3,6 +3,7 @@
   flex-direction: row;
   padding: 2rem;
   align-items: baseline;
+  overflow-y: auto;
   // El header privado ocupa la franja superior: la pagina toma el resto.
   height: calc(100vh - v.$altura-header);
 

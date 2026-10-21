@@ -82,7 +82,7 @@ Comprobado sobre un PDF descargado de la web (07/10/2026), a nivel de estructura
 
 Además, el botón dice "Exportar a PDF", que suena a herramienta interna; para un visitante es más claro "Descargar CV (PDF)".
 
-### 1.6 Periodo sin explicar desde 05/2025
+### 1.6 Periodo sin explicar desde 05/2025 - Disponibilidad Implementada, lo demás de momento no
 
 La última experiencia termina en 05/2025 y hoy es 10/2026: unos 17 meses. La formación reciente (React PRO, Unity 6, Inglés B2, IA Claude Code) lo explica, pero está en otra pestaña y nadie la relaciona.
 

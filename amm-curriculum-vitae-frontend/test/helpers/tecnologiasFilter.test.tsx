@@ -1,13 +1,13 @@
 import { tecnologiasFilter } from '../../src/helpers/tecnologiasFilter';
 import {
-  ConocimientoNivel,
+  ConocimientoPrioridad,
   type Conocimiento,
 } from '../../src/interfaces/conocimiento.interface';
 
 const conocimiento = (id: string, titulo: string): Conocimiento => ({
   id,
   titulo,
-  nivel: ConocimientoNivel.AVANZADO,
+  prioridad: ConocimientoPrioridad.ALTA,
 });
 
 const CONOCIMIENTOS = [

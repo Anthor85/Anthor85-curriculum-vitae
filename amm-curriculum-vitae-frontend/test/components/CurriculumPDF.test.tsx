@@ -48,7 +48,7 @@ import {
   CurriculumPDF,
   DatosCurriculumPDF,
 } from '../../src/pages/components/curriculum/pdf/CurriculumPDF';
-import { ConocimientoNivel } from '../../src/interfaces/conocimiento.interface';
+import { ConocimientoPrioridad } from '../../src/interfaces/conocimiento.interface';
 
 const datos: DatosCurriculumPDF = {
   perfil: {
@@ -64,10 +64,10 @@ const datos: DatosCurriculumPDF = {
     githubURL: 'https://github.com/ana',
   },
   conocimiento: [
-    { id: 'c1', titulo: 'Angular', nivel: ConocimientoNivel.AVANZADO },
-    { id: 'c2', titulo: 'Docker', nivel: ConocimientoNivel.BASICO },
-    { id: 'c3', titulo: 'Node', nivel: ConocimientoNivel.INTERMEDIO },
-    { id: 'c4', titulo: 'React', nivel: ConocimientoNivel.AVANZADO },
+    { id: 'c1', titulo: 'Angular', prioridad: ConocimientoPrioridad.MUY_ALTA },
+    { id: 'c2', titulo: 'Docker', prioridad: ConocimientoPrioridad.ALTA },
+    { id: 'c3', titulo: 'Node', prioridad: ConocimientoPrioridad.BAJA },
+    { id: 'c4', titulo: 'React', prioridad: ConocimientoPrioridad.MUY_BAJA },
   ],
   experiencia: [
     {
@@ -172,30 +172,31 @@ describe('CurriculumPDF', () => {
     );
   });
 
-  test('competencias clave: Avanzado e Intermedio, nunca Básico', () => {
+  test('competencias: todos los conocimientos en el orden recibido, sin rótulos', () => {
     renderPDF();
 
-    expect(screen.getByText('Competencias clave')).toBeInTheDocument();
-    expect(screen.getByText('Avanzado')).toBeInTheDocument();
-    expect(screen.getByText('Intermedio')).toBeInTheDocument();
-    // Angular también aparece en las tecnologías, pero dentro de una línea
-    expect(screen.getByText('Angular')).toBeInTheDocument();
-    expect(screen.getByText('React')).toBeInTheDocument();
-    expect(screen.getByText('Node')).toBeInTheDocument();
-    expect(screen.queryByText('Docker')).not.toBeInTheDocument();
+    expect(screen.getByText('Competencias')).toBeInTheDocument();
+    // Las tecnologías del puesto van en una sola línea y no casan aquí
+    expect(
+      screen
+        .getAllByText(/^(Angular|Docker|Node|React)$/)
+        .map((el) => el.textContent),
+    ).toEqual(['Angular', 'Docker', 'Node', 'React']);
+    [
+      'Competencias clave',
+      'Avanzado',
+      'Intermedio',
+      'Básico',
+      ...Object.values(ConocimientoPrioridad),
+    ].forEach((texto) =>
+      expect(screen.queryByText(texto)).not.toBeInTheDocument(),
+    );
   });
 
-  test('un nivel vacío no pinta su línea y sin ninguno no hay sección', () => {
-    const { unmount } = renderPDF({
-      conocimiento: datos.conocimiento.filter(
-        (c) => c.nivel !== ConocimientoNivel.INTERMEDIO,
-      ),
-    });
-    expect(screen.queryByText('Intermedio')).not.toBeInTheDocument();
-    unmount();
+  test('sin conocimientos no pinta la sección Competencias', () => {
+    renderPDF({ conocimiento: [] });
 
-    renderPDF({ conocimiento: [datos.conocimiento[1]] });
-    expect(screen.queryByText('Competencias clave')).not.toBeInTheDocument();
+    expect(screen.queryByText('Competencias')).not.toBeInTheDocument();
   });
 
   test('experiencia: empresa, cargo, fechas, tecnologías en línea e hitos', () => {
@@ -213,6 +214,16 @@ describe('CurriculumPDF', () => {
     expect(screen.getByText('Redujo el tiempo de carga')).toBeInTheDocument();
   });
 
+  test('las tecnologías del puesto siguen el orden de los conocimientos recibidos', () => {
+    renderPDF({ conocimiento: [...datos.conocimiento].reverse() });
+
+    expect(
+      screen.getByText(
+        (_, el) => el?.textContent === 'Tecnologías: React, Docker, Angular',
+      ),
+    ).toBeInTheDocument();
+  });
+
   test('sin tecnologías no pinta la línea Tecnologías', () => {
     renderPDF({ experiencia: [{ ...datos.experiencia[0], tecnologias: [] }] });
 
@@ -223,8 +234,8 @@ describe('CurriculumPDF', () => {
     const { container } = renderPDF();
 
     const sinPartir = container.querySelectorAll('[data-wrap="no"]');
-    // cabecera del puesto + 2 hitos + 3 competencias (Angular, React, Node)
-    expect(sinPartir).toHaveLength(6);
+    // cabecera del puesto + 2 hitos + 4 competencias
+    expect(sinPartir).toHaveLength(7);
   });
 
   test('formaciones: título e (institución - fecha), omitido si no hay datos', () => {

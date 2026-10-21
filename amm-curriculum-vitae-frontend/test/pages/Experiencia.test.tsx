@@ -63,8 +63,8 @@ const configurarApi = () => {
 };
 
 const CONOCIMIENTO = [
-  { id: 't1', titulo: 'React', nivel: 'Avanzado' },
-  { id: 't2', titulo: 'TypeScript', nivel: 'Intermedio' },
+  { id: 't1', titulo: 'React', prioridad: 'Alta' },
+  { id: 't2', titulo: 'TypeScript', prioridad: 'Media' },
 ];
 
 // Variante de configurarApi con tecnologias: el form pinta el MultiSelect y la

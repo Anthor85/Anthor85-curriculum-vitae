@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useEnvioFormulario } from '../../hooks';
 import {
-  ConocimientoNivel,
+  ConocimientoPrioridad,
   type Conocimiento,
   type ConocimientoPayload,
 } from '../../interfaces/conocimiento.interface';
@@ -14,7 +14,7 @@ import styles from './Form.module.scss';
 
 const CONOCIMIENTO_VACIO: ConocimientoPayload = {
   titulo: '',
-  nivel: ConocimientoNivel.BASICO,
+  prioridad: ConocimientoPrioridad.MEDIA,
 };
 
 interface Props {
@@ -35,7 +35,7 @@ export const ConocimientoForm = ({
     conocimientoEnEdicion
       ? {
           titulo: conocimientoEnEdicion.titulo,
-          nivel: conocimientoEnEdicion.nivel,
+          prioridad: conocimientoEnEdicion.prioridad,
         }
       : CONOCIMIENTO_VACIO,
   );
@@ -70,20 +70,20 @@ export const ConocimientoForm = ({
         />
       </div>
       <div className={styles.field}>
-        <label htmlFor="nivel">Nivel:</label>
+        <label htmlFor="prioridad">Prioridad:</label>
         <select
-          id="nivel"
-          name="nivel"
-          value={conocimiento.nivel}
+          id="prioridad"
+          name="prioridad"
+          value={conocimiento.prioridad}
           onChange={(e) =>
             setConocimiento({
               ...conocimiento,
-              nivel: e.target.value as ConocimientoNivel,
+              prioridad: e.target.value as ConocimientoPrioridad,
             })
           }
           required
         >
-          {Object.values(ConocimientoNivel).map((valor) => (
+          {Object.values(ConocimientoPrioridad).map((valor) => (
             <option key={valor} value={valor}>
               {valor}
             </option>

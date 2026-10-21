@@ -16,15 +16,15 @@ export const ConocimientoCard = ({
   onEditar,
   enEdicion,
 }: Props) => {
-  const { titulo, nivel, id } = conocimiento;
+  const { titulo, prioridad, id } = conocimiento;
 
   return (
     <div className={`${styles.Card} ${enEdicion ? styles.enEdicion : ''}`}>
       <div className={styles.data}>
         <div className={styles.title}>{titulo}</div>
-        {nivel && (
+        {prioridad && (
           <div className={styles.subdata}>
-            <b>Nivel:</b> {nivel}
+            <b>Prioridad:</b> {prioridad}
           </div>
         )}
       </div>

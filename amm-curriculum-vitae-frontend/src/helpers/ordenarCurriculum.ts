@@ -1,10 +1,23 @@
-import { Conocimiento } from '../interfaces/conocimiento.interface';
+import {
+  Conocimiento,
+  ConocimientoPrioridad,
+} from '../interfaces/conocimiento.interface';
 import { Curriculum } from '../interfaces/curriculum.interface';
 import { Experiencia } from '../interfaces/experiencia.interface';
 import { Formacion } from '../interfaces/formacion.interface';
 import { FormacionComplementaria } from '../interfaces/formacionComplementaria.interface';
 
 const tiempo = (fecha?: string) => (fecha ? new Date(fecha).getTime() || 0 : 0);
+
+const PRIORIDADES = Object.values(ConocimientoPrioridad);
+
+// Sin prioridad o con un valor desconocido cuenta como Media.
+const indicePrioridad = (prioridad?: ConocimientoPrioridad) => {
+  const indice = prioridad ? PRIORIDADES.indexOf(prioridad) : -1;
+  return indice === -1
+    ? PRIORIDADES.indexOf(ConocimientoPrioridad.MEDIA)
+    : indice;
+};
 
 interface CurriculumOrdenado {
   conocimientosOrdenados: Conocimiento[];
@@ -29,8 +42,10 @@ export const ordenarCurriculum = (
     complementariasOrdenadas: [...(formacionesComplementarias || [])].sort(
       (a, b) => tiempo(b.fechaFin) - tiempo(a.fechaFin),
     ),
-    conocimientosOrdenados: [...(conocimiento || [])].sort((a, b) =>
-      a.titulo.localeCompare(b.titulo),
+    conocimientosOrdenados: [...(conocimiento || [])].sort(
+      (a, b) =>
+        indicePrioridad(a.prioridad) - indicePrioridad(b.prioridad) ||
+        a.titulo.localeCompare(b.titulo),
     ),
   };
 };

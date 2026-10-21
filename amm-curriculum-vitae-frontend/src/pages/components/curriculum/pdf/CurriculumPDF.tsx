@@ -9,7 +9,6 @@ import {
   Text,
   View,
 } from '@react-pdf/renderer';
-import { competenciasClave } from '../../../../helpers/competenciasClave';
 import { anioFecha } from '../../../../helpers/anioFecha';
 import {
   enlaceEmail,
@@ -96,15 +95,6 @@ const styles = StyleSheet.create({
     borderBottomColor: COLOR_PRIMARIO,
     paddingBottom: 3,
     marginBottom: 6,
-  },
-  nivel: {
-    fontFamily: 'Helvetica-Bold',
-    fontSize: 6.5,
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
-    color: COLOR_PRIMARIO_OSCURO,
-    marginTop: 4,
-    marginBottom: 3,
   },
   competencia: { flexDirection: 'row', marginBottom: 2 },
   competenciaTexto: { flex: 1, fontSize: 8.5, lineHeight: 1.25 },
@@ -198,10 +188,9 @@ const detalleFormacion = ({
   institucion,
   fechaFin,
 }: Formacion | FormacionComplementaria) => {
-  const partes = [
-    institucion,
-    fechaFin ? anioFecha(fechaFin) : '',
-  ].filter(Boolean);
+  const partes = [institucion, fechaFin ? anioFecha(fechaFin) : ''].filter(
+    Boolean,
+  );
 
   return partes.length ? ` (${partes.join(' - ')})` : '';
 };
@@ -315,39 +304,20 @@ const Contacto = ({ perfil }: { perfil: Perfil }) => {
   );
 };
 
-const ListaCompetencias = ({
-  nivel,
-  titulos,
-}: {
-  nivel: string;
-  titulos: string[];
-}) => {
-  if (!titulos.length) return null;
-
-  return (
-    <View>
-      <Text style={styles.nivel}>{nivel}</Text>
-      {titulos.map((titulo) => (
-        <View key={titulo} style={styles.competencia} wrap={false}>
-          <Text style={styles.vineta}>•</Text>
-          <Text style={styles.competenciaTexto}>{titulo}</Text>
-        </View>
-      ))}
-    </View>
-  );
-};
-
 const Competencias = ({ conocimiento }: { conocimiento: Conocimiento[] }) => {
-  const { avanzado, intermedio } = competenciasClave(conocimiento);
-  if (!avanzado.length && !intermedio.length) return null;
+  if (!conocimiento.length) return null;
 
   return (
     <View>
       <Text style={styles.tituloLateral} minPresenceAhead={40}>
-        Competencias clave
+        Competencias
       </Text>
-      <ListaCompetencias nivel="Avanzado" titulos={avanzado} />
-      <ListaCompetencias nivel="Intermedio" titulos={intermedio} />
+      {conocimiento.map(({ id, titulo }) => (
+        <View key={id} style={styles.competencia} wrap={false}>
+          <Text style={styles.vineta}>•</Text>
+          <Text style={styles.competenciaTexto}>{titulo}</Text>
+        </View>
+      ))}
     </View>
   );
 };

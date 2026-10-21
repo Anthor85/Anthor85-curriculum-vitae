@@ -1,6 +1,6 @@
 # SPEC 20 — Prioridad de conocimientos en formulario, cards, Curriculum y PDF
 
-> **Estado:** Aprobada
+> **Estado:** Implementada
 > **Depende de:** SPEC 11 del backend (`11-prioridad-conocimiento.md`, Borrador), que sustituye `nivel` por `prioridad` en la API; SPEC 04 (`04-editar-conocimiento-frontend.md`), que fija `ConocimientoForm` y `ConocimientoCard`; SPEC 19 (`19-pdf-texto-real.md`, Implementada), que fija `Competencias clave` en `CurriculumPDF`
 > **Fecha:** 2026-10-21
 > **Objetivo:** Sustituir en el frontend `nivel` por `prioridad` (`Muy alta`…`Muy baja`), editable en el formulario y visible solo en la card de administración, y ordenar los conocimientos de `Curriculum` y del PDF por prioridad y después alfabéticamente, sin mostrar nunca la prioridad en texto.

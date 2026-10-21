@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { avanzarMensaje, flush, renderConStore, textoMensaje } from '../utils';
 import {
   Conocimiento as IConocimiento,
-  ConocimientoNivel,
+  ConocimientoPrioridad,
 } from '../../src/interfaces/conocimiento.interface';
 
 const apiMock = vi.hoisted(() => ({
@@ -22,8 +22,8 @@ vi.mock('../../src/api/api', () => ({
 import { Conocimiento } from '../../src/pages/Conocimiento';
 
 const CONOCIMIENTOS: IConocimiento[] = [
-  { id: '1', titulo: 'React', nivel: ConocimientoNivel.AVANZADO },
-  { id: '2', titulo: 'Sass', nivel: ConocimientoNivel.INTERMEDIO },
+  { id: '1', titulo: 'React', prioridad: ConocimientoPrioridad.ALTA },
+  { id: '2', titulo: 'Sass', prioridad: ConocimientoPrioridad.BAJA },
 ];
 
 const configurarApi = () => {
@@ -70,11 +70,26 @@ describe('<Conocimiento />', () => {
     expect(screen.getAllByRole('button', { name: 'Eliminar' })).toHaveLength(2);
   });
 
+  test('la Card muestra la prioridad del conocimiento', async () => {
+    await renderPagina();
+
+    const subdatos = screen.getAllByText(
+      (_, el) =>
+        el?.firstElementChild?.tagName === 'B' &&
+        /^Prioridad: /.test(el.textContent ?? ''),
+    );
+
+    expect(subdatos.map((el) => el.textContent)).toEqual([
+      'Prioridad: Alta',
+      'Prioridad: Baja',
+    ]);
+  });
+
   test('pinta el formulario con sus campos y sus botones', async () => {
     await renderPagina();
 
     expect(screen.getByLabelText('Título:')).toBeInTheDocument();
-    expect(screen.getByLabelText('Nivel:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Prioridad:')).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: 'Agregar Conocimiento' }),
     ).toBeInTheDocument();
@@ -86,21 +101,53 @@ describe('<Conocimiento />', () => {
     ).toBeInTheDocument();
   });
 
+  test('el select de prioridad ofrece las cinco opciones en orden y por defecto Media', async () => {
+    await renderPagina();
+
+    const prioridad = screen.getByLabelText('Prioridad:');
+    const opciones = Array.from(
+      (prioridad as HTMLSelectElement).options,
+      (o) => o.value,
+    );
+
+    expect(opciones).toEqual(['Muy alta', 'Alta', 'Media', 'Baja', 'Muy baja']);
+    expect(prioridad).toHaveValue(ConocimientoPrioridad.MEDIA);
+  });
+
+  test('crear sin tocar el select envía prioridad Media y no nivel', async () => {
+    const user = setupUser();
+    await renderPagina();
+
+    await user.type(screen.getByLabelText('Título:'), 'TypeScript');
+    await user.click(
+      screen.getByRole('button', { name: 'Agregar Conocimiento' }),
+    );
+
+    await flush();
+
+    const [, payload] = apiMock.post.mock.calls[0];
+    expect(payload).toEqual({
+      titulo: 'TypeScript',
+      prioridad: ConocimientoPrioridad.MEDIA,
+    });
+    expect(payload).not.toHaveProperty('nivel');
+  });
+
   test('«Borrar formulario» deja los campos en su valor por defecto', async () => {
     const user = setupUser();
     await renderPagina();
 
     const titulo = screen.getByLabelText('Título:');
-    const nivel = screen.getByLabelText('Nivel:');
+    const prioridad = screen.getByLabelText('Prioridad:');
 
     await user.type(titulo, 'TypeScript');
-    await user.selectOptions(nivel, ConocimientoNivel.AVANZADO);
+    await user.selectOptions(prioridad, ConocimientoPrioridad.MUY_ALTA);
     expect(titulo).toHaveValue('TypeScript');
 
     await user.click(screen.getByRole('button', { name: 'Borrar formulario' }));
 
     expect(titulo).toHaveValue('');
-    expect(nivel).toHaveValue(ConocimientoNivel.BASICO);
+    expect(prioridad).toHaveValue(ConocimientoPrioridad.MEDIA);
   });
 
   test('crear llama a api.post, pinta la Card nueva y muestra el mensaje', async () => {
@@ -109,8 +156,8 @@ describe('<Conocimiento />', () => {
 
     await user.type(screen.getByLabelText('Título:'), 'TypeScript');
     await user.selectOptions(
-      screen.getByLabelText('Nivel:'),
-      ConocimientoNivel.AVANZADO,
+      screen.getByLabelText('Prioridad:'),
+      ConocimientoPrioridad.ALTA,
     );
     await user.click(
       screen.getByRole('button', { name: 'Agregar Conocimiento' }),
@@ -120,7 +167,7 @@ describe('<Conocimiento />', () => {
 
     expect(apiMock.post).toHaveBeenCalledWith('/conocimiento', {
       titulo: 'TypeScript',
-      nivel: ConocimientoNivel.AVANZADO,
+      prioridad: ConocimientoPrioridad.ALTA,
     });
     expect(screen.getByText('TypeScript')).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: 'Editar' })).toHaveLength(3);
@@ -155,8 +202,8 @@ describe('<Conocimiento />', () => {
     await user.click(screen.getAllByRole('button', { name: 'Editar' })[0]);
 
     expect(screen.getByLabelText('Título:')).toHaveValue('React');
-    expect(screen.getByLabelText('Nivel:')).toHaveValue(
-      ConocimientoNivel.AVANZADO,
+    expect(screen.getByLabelText('Prioridad:')).toHaveValue(
+      ConocimientoPrioridad.ALTA,
     );
     expect(
       screen.getByRole('heading', { name: 'Editar Conocimiento' }),
@@ -174,8 +221,8 @@ describe('<Conocimiento />', () => {
     await user.click(screen.getByRole('button', { name: 'Borrar formulario' }));
 
     expect(screen.getByLabelText('Título:')).toHaveValue('');
-    expect(screen.getByLabelText('Nivel:')).toHaveValue(
-      ConocimientoNivel.BASICO,
+    expect(screen.getByLabelText('Prioridad:')).toHaveValue(
+      ConocimientoPrioridad.MEDIA,
     );
     expect(
       screen.getByRole('heading', { name: 'Crear Conocimiento' }),
@@ -202,7 +249,7 @@ describe('<Conocimiento />', () => {
 
     expect(apiMock.put).toHaveBeenCalledWith('/conocimiento/1', {
       titulo: 'React 19',
-      nivel: ConocimientoNivel.AVANZADO,
+      prioridad: ConocimientoPrioridad.ALTA,
     });
     expect(screen.getByText('React 19')).toBeInTheDocument();
     expect(screen.queryByText('React')).not.toBeInTheDocument();

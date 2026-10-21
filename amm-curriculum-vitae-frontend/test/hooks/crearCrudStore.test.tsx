@@ -2,7 +2,7 @@ import { act } from '@testing-library/react';
 
 import { renderHookConStore } from '../utils';
 import {
-  ConocimientoNivel,
+  ConocimientoPrioridad,
   type Conocimiento,
 } from '../../src/interfaces/conocimiento.interface';
 
@@ -23,7 +23,7 @@ import { useConocimientoStore } from '../../src/hooks/useConocimientoStore';
 const conocimiento = (id: string, titulo: string): Conocimiento => ({
   id,
   titulo,
-  nivel: ConocimientoNivel.BASICO,
+  prioridad: ConocimientoPrioridad.MEDIA,
 });
 
 const REACT = conocimiento('1', 'React');
@@ -87,14 +87,14 @@ describe('crearCrudStore', () => {
       expect(
         await result.current.createConocimiento({
           titulo: 'Node',
-          nivel: ConocimientoNivel.BASICO,
+          prioridad: ConocimientoPrioridad.MEDIA,
         }),
       ).toBe(true);
     });
 
     expect(apiMock.post).toHaveBeenCalledWith('/conocimiento', {
       titulo: 'Node',
-      nivel: ConocimientoNivel.BASICO,
+      prioridad: ConocimientoPrioridad.MEDIA,
     });
     expect(listaEnStore(store)).toEqual([REACT, NODE]);
   });
@@ -108,14 +108,14 @@ describe('crearCrudStore', () => {
       expect(
         await result.current.updateConocimiento('1', {
           titulo: 'React 19',
-          nivel: ConocimientoNivel.BASICO,
+          prioridad: ConocimientoPrioridad.MEDIA,
         }),
       ).toBe(true);
     });
 
     expect(apiMock.put).toHaveBeenCalledWith('/conocimiento/1', {
       titulo: 'React 19',
-      nivel: ConocimientoNivel.BASICO,
+      prioridad: ConocimientoPrioridad.MEDIA,
     });
     expect(listaEnStore(store)).toEqual([actualizado, NODE]);
   });
@@ -141,11 +141,11 @@ describe('crearCrudStore', () => {
     await act(async () => {
       await result.current.createConocimiento({
         titulo: 'Node',
-        nivel: ConocimientoNivel.BASICO,
+        prioridad: ConocimientoPrioridad.MEDIA,
       });
       await result.current.updateConocimiento('2', {
         titulo: 'Node',
-        nivel: ConocimientoNivel.BASICO,
+        prioridad: ConocimientoPrioridad.MEDIA,
       });
       await result.current.deleteConocimiento('2');
     });
@@ -165,13 +165,13 @@ describe('crearCrudStore', () => {
       expect(
         await result.current.createConocimiento({
           titulo: 'Node',
-          nivel: ConocimientoNivel.BASICO,
+          prioridad: ConocimientoPrioridad.MEDIA,
         }),
       ).toBe(false);
       expect(
         await result.current.updateConocimiento('1', {
           titulo: 'Node',
-          nivel: ConocimientoNivel.BASICO,
+          prioridad: ConocimientoPrioridad.MEDIA,
         }),
       ).toBe(false);
       expect(await result.current.deleteConocimiento('1')).toBe(false);

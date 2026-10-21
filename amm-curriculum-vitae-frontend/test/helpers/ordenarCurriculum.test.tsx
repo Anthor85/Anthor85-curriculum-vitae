@@ -1,17 +1,21 @@
 import { ordenarCurriculum } from '../../src/helpers/ordenarCurriculum';
 import type { Curriculum } from '../../src/interfaces/curriculum.interface';
 import {
-  ConocimientoNivel,
+  ConocimientoPrioridad,
   type Conocimiento,
 } from '../../src/interfaces/conocimiento.interface';
 import type { Experiencia } from '../../src/interfaces/experiencia.interface';
 import type { Formacion } from '../../src/interfaces/formacion.interface';
 import type { FormacionComplementaria } from '../../src/interfaces/formacionComplementaria.interface';
 
-const conocimiento = (id: string, titulo: string): Conocimiento => ({
+const conocimiento = (
+  id: string,
+  titulo: string,
+  prioridad: ConocimientoPrioridad = ConocimientoPrioridad.MEDIA,
+): Conocimiento => ({
   id,
   titulo,
-  nivel: ConocimientoNivel.BASICO,
+  prioridad,
 });
 
 const experiencia = (id: string, fechaInicio?: string): Experiencia =>
@@ -104,6 +108,52 @@ describe('ordenarCurriculum', () => {
     expect(
       ordenarCurriculum(curriculum).conocimientosOrdenados.map((c) => c.titulo),
     ).toEqual(['ángular', 'React', 'Zustand']);
+  });
+
+  test('los conocimientos se ordenan por prioridad y alfabeticamente dentro de cada una', () => {
+    const curriculum = {
+      conocimiento: [
+        conocimiento('1', 'Sonata'),
+        conocimiento('2', 'Unity3D', ConocimientoPrioridad.ALTA),
+        conocimiento('3', 'Visual Studio', ConocimientoPrioridad.MUY_ALTA),
+        conocimiento('4', 'Cobol', ConocimientoPrioridad.MUY_BAJA),
+        conocimiento('5', 'Java'),
+        conocimiento('6', 'C++', ConocimientoPrioridad.MUY_ALTA),
+        conocimiento('7', 'Pascal', ConocimientoPrioridad.BAJA),
+        conocimiento('8', 'TypeScript', ConocimientoPrioridad.ALTA),
+        conocimiento('9', 'Ajax', ConocimientoPrioridad.MUY_ALTA),
+      ],
+    } as unknown as Curriculum;
+
+    expect(
+      ordenarCurriculum(curriculum).conocimientosOrdenados.map((c) => c.titulo),
+    ).toEqual([
+      'Ajax',
+      'C++',
+      'Visual Studio',
+      'TypeScript',
+      'Unity3D',
+      'Java',
+      'Sonata',
+      'Pascal',
+      'Cobol',
+    ]);
+  });
+
+  test('un conocimiento sin prioridad o con una desconocida se ordena como Media', () => {
+    const curriculum = {
+      conocimiento: [
+        { id: '1', titulo: 'Zeta' },
+        conocimiento('2', 'Baja', ConocimientoPrioridad.BAJA),
+        { id: '3', titulo: 'Rara', prioridad: 'Otra' },
+        conocimiento('4', 'Media'),
+        conocimiento('5', 'Alta', ConocimientoPrioridad.ALTA),
+      ],
+    } as unknown as Curriculum;
+
+    expect(
+      ordenarCurriculum(curriculum).conocimientosOrdenados.map((c) => c.titulo),
+    ).toEqual(['Alta', 'Media', 'Rara', 'Zeta', 'Baja']);
   });
 
   test('las fechas ausentes o invalidas cuentan como 0 y van al final', () => {

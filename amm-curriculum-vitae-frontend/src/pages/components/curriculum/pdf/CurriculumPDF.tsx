@@ -21,7 +21,10 @@ import {
 } from '../../../../helpers/metasCurriculum';
 import { rangoFechas } from '../../../../helpers/rangoFechas';
 import { tecnologiasFilter } from '../../../../helpers/tecnologiasFilter';
-import { Conocimiento } from '../../../../interfaces/conocimiento.interface';
+import {
+  Conocimiento,
+  ConocimientoPrioridad,
+} from '../../../../interfaces/conocimiento.interface';
 import { Experiencia } from '../../../../interfaces/experiencia.interface';
 import { Formacion } from '../../../../interfaces/formacion.interface';
 import { FormacionComplementaria } from '../../../../interfaces/formacionComplementaria.interface';
@@ -312,12 +315,14 @@ const Competencias = ({ conocimiento }: { conocimiento: Conocimiento[] }) => {
       <Text style={styles.tituloLateral} minPresenceAhead={40}>
         Competencias
       </Text>
-      {conocimiento.map(({ id, titulo }) => (
-        <View key={id} style={styles.competencia} wrap={false}>
-          <Text style={styles.vineta}>•</Text>
-          <Text style={styles.competenciaTexto}>{titulo}</Text>
-        </View>
-      ))}
+      {conocimiento
+        .filter((c) => c.prioridad !== ConocimientoPrioridad.MUY_BAJA)
+        .map(({ id, titulo }) => (
+          <View key={id} style={styles.competencia} wrap={false}>
+            <Text style={styles.vineta}>•</Text>
+            <Text style={styles.competenciaTexto}>{titulo}</Text>
+          </View>
+        ))}
     </View>
   );
 };

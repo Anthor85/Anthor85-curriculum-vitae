@@ -31,7 +31,9 @@ const actualizarConocimiento = async (req, res) => {
   }
 
   conocimiento.titulo = req.body.titulo;
-  conocimiento.nivel = req.body.nivel;
+  if (req.body.prioridad !== undefined) {
+    conocimiento.prioridad = req.body.prioridad;
+  }
 
   await conocimiento.save();
 

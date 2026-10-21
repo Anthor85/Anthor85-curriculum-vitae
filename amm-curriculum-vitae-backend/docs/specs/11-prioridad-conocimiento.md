@@ -1,6 +1,6 @@
 # SPEC 11 — `prioridad` en Conocimiento en lugar de `nivel`
 
-> **Estado:** Aprobado
+> **Estado:** Implementada
 > **Depende de:** SPEC 03 (`03-editar-conocimiento.md`, Implementada), que fija el `PUT /api/conocimiento/:id`; SPEC 09 (`09-tests-backend-vitest.md`), que fija `test/api/conocimiento.test.js` y `crearConocimientoEnBd`
 > **Fecha:** 2026-10-21
 > **Objetivo:** Sustituir en el modelo `Conocimiento` el campo `nivel` (`Básico`/`Intermedio`/`Avanzado`) por `prioridad` (`Muy alta`/`Alta`/`Media`/`Baja`/`Muy baja`, por defecto `Media`), que `POST` y `PUT /api/conocimiento` guardan, y migrar todos los conocimientos existentes a `Media` borrando `nivel`.

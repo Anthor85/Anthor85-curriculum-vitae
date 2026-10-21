@@ -8,10 +8,11 @@ const ConocimientoSchema = Schema({
     required: true,
     trim: true,
   },
-  nivel: {
+  prioridad: {
     type: String,
     required: true,
-    enum: ['Básico', 'Intermedio', 'Avanzado'],
+    enum: ['Muy alta', 'Alta', 'Media', 'Baja', 'Muy baja'],
+    default: 'Media',
   },
 });
 

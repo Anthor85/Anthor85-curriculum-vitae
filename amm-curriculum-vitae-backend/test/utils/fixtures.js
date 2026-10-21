@@ -25,7 +25,7 @@ const crearUsuarioEnBd = async (datos = {}) => {
 const crearConocimientoEnBd = (datos = {}) =>
   Conocimiento.create({
     titulo: 'React',
-    nivel: 'Avanzado',
+    prioridad: 'Media',
     ...datos,
   });
 

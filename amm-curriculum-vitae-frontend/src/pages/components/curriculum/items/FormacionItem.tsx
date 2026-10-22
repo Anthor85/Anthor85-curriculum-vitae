@@ -10,7 +10,7 @@ interface Props {
 export const FormacionItem = ({ formacion }: Props) => {
   return (
     <div className={styles.Item}>
-      <h2 className={styles.titulo}>{formacion.titulo}</h2>
+      <h3 className={styles.titulo}>{formacion.titulo}</h3>
       <span className={styles.subtitulo}>{formacion.institucion}</span>
       <span className={styles.fechas}>{anioFecha(formacion.fechaFin)}</span>
       {formacion.descripcion && (

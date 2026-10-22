@@ -8,8 +8,8 @@ interface Props {
 
 export const ConocimientoItem = ({ conocimiento }: Props) => {
   return (
-    <div className={styles.Item}>
-      <h2 className={styles.titulo}>{conocimiento.titulo}</h2>
-    </div>
+    <li className={styles.Item}>
+      <span className={styles.titulo}>{conocimiento.titulo}</span>
+    </li>
   );
 };

@@ -27,15 +27,18 @@ export const ExperienciaItem = ({
     <div className={clases}>
       <Expandable
         cabecera={
-          <div className={styles.cabecera}>
-            <h2 className={styles.titulo}>{experiencia.empresa}</h2>
-            <p className={styles.descripcion}>{experiencia.descripcion}</p>
+          <span className={styles.cabecera}>
+            <span className={styles.titulo}>{experiencia.empresa}</span>
+            <span className={styles.descripcion}>
+              {experiencia.descripcion}
+            </span>
             <span className={styles.fechas}>
               {rangoFechas(experiencia.fechaInicio, experiencia.fechaFin)}
             </span>
-          </div>
+          </span>
         }
         desactivado={!expandible}
+        encabezado="h3"
       >
         <div className={styles.items}>
           {tecnologias.length > 0 && (

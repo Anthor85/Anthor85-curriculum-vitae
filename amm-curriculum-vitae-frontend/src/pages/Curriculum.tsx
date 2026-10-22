@@ -97,11 +97,11 @@ export const Curriculum = () => {
       id: 'conocimientos',
       titulo: 'Conocimientos',
       contenido: conocimientosOrdenados.length ? (
-        <div className={styles.conocimientos}>
+        <ul className={styles.conocimientos}>
           {conocimientosOrdenados.map((item) => (
             <ConocimientoItem key={item.id} conocimiento={item} />
           ))}
-        </div>
+        </ul>
       ) : (
         vacio('Sin conocimientos registrados')
       ),
@@ -128,16 +128,16 @@ export const Curriculum = () => {
     <Spinner />
   ) : (
     <>
-      <div id="mainPage" className={styles.MainPage}>
-        <div className={styles.header}>
+      <main id="mainPage" className={styles.MainPage}>
+        <header className={styles.header}>
           {perfil && (
             <div className={styles.name}>
-              <span>
+              <h1>
                 {perfil.nombre} {perfil.apellidos}
-              </span>
+              </h1>
             </div>
           )}
-        </div>
+        </header>
         <div className={styles.basicInformation}>
           <div className={styles.column}>
             <div className={styles.identidad}>
@@ -161,7 +161,7 @@ export const Curriculum = () => {
             <Tabs tabs={tabs} />
           </div>
         </div>
-      </div>
+      </main>
     </>
   );
 };

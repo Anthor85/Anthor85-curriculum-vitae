@@ -172,16 +172,17 @@ describe('CurriculumPDF', () => {
     );
   });
 
-  test('competencias: todos los conocimientos en el orden recibido, sin rótulos', () => {
+  test('competencias: conocimientos en el orden recibido, sin los de prioridad muy baja ni rótulos', () => {
     renderPDF();
 
     expect(screen.getByText('Competencias')).toBeInTheDocument();
-    // Las tecnologías del puesto van en una sola línea y no casan aquí
+    // Las tecnologías del puesto van en una sola línea y no casan aquí;
+    // React (muy baja) no sale como competencia
     expect(
       screen
         .getAllByText(/^(Angular|Docker|Node|React)$/)
         .map((el) => el.textContent),
-    ).toEqual(['Angular', 'Docker', 'Node', 'React']);
+    ).toEqual(['Angular', 'Docker', 'Node']);
     [
       'Competencias clave',
       'Avanzado',
@@ -234,8 +235,8 @@ describe('CurriculumPDF', () => {
     const { container } = renderPDF();
 
     const sinPartir = container.querySelectorAll('[data-wrap="no"]');
-    // cabecera del puesto + 2 hitos + 4 competencias
-    expect(sinPartir).toHaveLength(7);
+    // cabecera del puesto + 2 hitos + 3 competencias (sin la de muy baja)
+    expect(sinPartir).toHaveLength(6);
   });
 
   test('formaciones: título e (institución - fecha), omitido si no hay datos', () => {

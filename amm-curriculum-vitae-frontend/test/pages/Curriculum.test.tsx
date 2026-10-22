@@ -7,6 +7,7 @@ import {
   type Conocimiento,
 } from '../../src/interfaces/conocimiento.interface';
 import type { Curriculum as ICurriculum } from '../../src/interfaces/curriculum.interface';
+import type { Perfil } from '../../src/interfaces/perfil.interface';
 
 const exportToPDFMock = vi.hoisted(() => vi.fn(() => Promise.resolve()));
 
@@ -57,9 +58,19 @@ const ORDEN_ESPERADO = [
   'Cobol',
 ];
 
-const renderCurriculum = () =>
+const PERFIL: Perfil = {
+  id: 'p1',
+  nombre: 'Antonio',
+  apellidos: 'Menéndez',
+  email: 'antonio@menendez.com',
+  telefono: '+34 666 555 444',
+  direccion: 'Calle Mayor 5, Alicante',
+  descripcion: 'Técnico en informática',
+};
+
+const renderCurriculum = (curriculum: ICurriculum = CURRICULUM) =>
   renderConStore(<Curriculum />, {
-    curriculum: { curriculum: CURRICULUM, loading: false, error: null },
+    curriculum: { curriculum, loading: false, error: null },
   });
 
 describe('<Curriculum />', () => {
@@ -76,8 +87,8 @@ describe('<Curriculum />', () => {
 
     expect(
       within(panel)
-        .getAllByRole('heading')
-        .map((h) => h.textContent),
+        .getAllByRole('listitem')
+        .map((li) => li.textContent),
     ).toEqual(ORDEN_ESPERADO);
     Object.values(ConocimientoPrioridad).forEach((texto) =>
       expect(within(panel).queryByText(texto)).not.toBeInTheDocument(),
@@ -107,5 +118,30 @@ describe('<Curriculum />', () => {
       { conocimiento: Conocimiento[] },
     ];
     expect(datos.conocimiento.map((c) => c.titulo)).toEqual(ORDEN_ESPERADO);
+  });
+
+  test('hay un único h1 con nombre y apellidos del perfil', () => {
+    renderCurriculum({ ...CURRICULUM, perfil: PERFIL });
+
+    const h1 = screen.getAllByRole('heading', { level: 1 });
+    expect(h1).toHaveLength(1);
+    expect(h1[0]).toHaveTextContent('Antonio Menéndez');
+  });
+
+  test('expone los landmarks main y header', () => {
+    const { container } = renderCurriculum({ ...CURRICULUM, perfil: PERFIL });
+
+    expect(screen.getByRole('main')).toBeInTheDocument();
+    // Un <header> dentro de <main> no expone el rol banner: se busca por etiqueta
+    expect(container.querySelector('header')).toBeInTheDocument();
+  });
+
+  test('la pestaña Experiencia expone un h3 con el nombre de la empresa', () => {
+    renderCurriculum();
+
+    const panel = screen.getByRole('tabpanel');
+    expect(
+      within(panel).getByRole('heading', { level: 3, name: /Everis/ }),
+    ).toBeInTheDocument();
   });
 });

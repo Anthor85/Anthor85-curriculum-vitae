@@ -12,7 +12,7 @@ export const FormacionComplementariaItem = ({
 }: Props) => {
   return (
     <div className={styles.Item}>
-      <h2 className={styles.titulo}>{formacionComplementaria.titulo}</h2>
+      <h3 className={styles.titulo}>{formacionComplementaria.titulo}</h3>
       <span className={styles.subtitulo}>
         {formacionComplementaria.institucion}
       </span>

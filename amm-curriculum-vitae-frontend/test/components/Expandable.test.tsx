@@ -94,4 +94,40 @@ describe('<Expandable />', () => {
 
     expect(triangulo?.className).toMatch(/abierto/);
   });
+
+  it('sin la prop encabezado no hay ningún heading', () => {
+    render(
+      <Expandable cabecera="Cabecera">
+        <p>Contenido</p>
+      </Expandable>,
+    );
+
+    expect(screen.queryByRole('heading')).not.toBeInTheDocument();
+  });
+
+  it('con encabezado="h3" el heading de nivel 3 contiene el botón con aria-expanded', () => {
+    render(
+      <Expandable cabecera="Cabecera" encabezado="h3">
+        <p>Contenido</p>
+      </Expandable>,
+    );
+
+    const heading = screen.getByRole('heading', { level: 3 });
+    const boton = screen.getByRole('button', { name: 'Cabecera' });
+    expect(heading).toContainElement(boton);
+    expect(boton).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('con encabezado y desactivado el heading envuelve la cabecera y no hay botón', () => {
+    render(
+      <Expandable cabecera="Cabecera" encabezado="h3" desactivado={true}>
+        <p>Contenido</p>
+      </Expandable>,
+    );
+
+    expect(
+      screen.getByRole('heading', { level: 3, name: 'Cabecera' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
 });

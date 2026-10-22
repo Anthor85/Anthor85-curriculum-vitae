@@ -51,7 +51,7 @@ El único texto de presentación es "Desarrollador web especializado en Front-En
 
 Ese mismo texto debería alimentar la `meta description` (ahora 44 caracteres, se desaprovecha el snippet de Google y la tarjeta al compartir).
 
-### 1.4 Los hitos describen tareas, no resultados
+### 1.4 Los hitos describen tareas, no resultados - Cambiado
 
 Ejemplos actuales: "Creación de componentes en React + Typescript", "Mantenimiento de web con Plantillas Twig, CSS y Javascript", "Integración de funciones de IA a la web".
 

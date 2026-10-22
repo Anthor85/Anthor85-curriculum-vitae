@@ -50,7 +50,7 @@ export const ExperienciaItem = ({
           )}
           {experiencia.hitos?.length ? (
             <div className={styles.coleccion}>
-              <p className={styles.etiqueta}>Algunos Hitos:</p>
+              <p className={styles.etiqueta}>Algunas tareas destacadas:</p>
               <ul>
                 {experiencia.hitos.map((hito) => (
                   <li key={hito.id}>{hito.descripcion}</li>

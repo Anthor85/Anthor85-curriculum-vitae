@@ -76,14 +76,13 @@ export const styles = StyleSheet.create({
     color: COLOR_SECUNDARIO,
     marginTop: 5,
   },
-  seccion: { marginTop: 12 },
+  seccion: { marginTop: 6 },
   tituloSeccion: {
     fontFamily: 'Helvetica-Bold',
     fontSize: 13,
     color: COLOR_PRIMARIO,
     borderBottomWidth: 1.5,
     borderBottomColor: COLOR_PRIMARIO,
-    paddingBottom: 3,
     marginBottom: 4,
   },
 
@@ -107,12 +106,17 @@ export const styles = StyleSheet.create({
     fontFamily: 'Helvetica-Bold',
     color: COLOR_PRIMARIO_OSCURO,
   },
+  etiquetaHitos: {
+    fontFamily: 'Helvetica-Bold',
+    color: COLOR_PRIMARIO_OSCURO,
+    fontSize: 8.5,
+  },
   hitos: { marginTop: 5, gap: 2.5 },
   hito: { flexDirection: 'row' },
   vineta: { width: 9, color: COLOR_PRIMARIO },
   hitoTexto: { flex: 1, fontSize: 9, lineHeight: 1.3 },
 
-  formacion: { marginBottom: 3, fontSize: 9, lineHeight: 1.3 },
+  formacion: { marginBottom: 3, fontSize: 9, lineHeight: 1 },
   titulacion: { fontFamily: 'Helvetica-Bold' },
   detalleFormacion: { color: COLOR_SECUNDARIO },
 

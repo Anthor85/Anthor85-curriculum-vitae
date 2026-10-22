@@ -193,11 +193,11 @@ Código: `exportToPDF.ts` solo mantiene unido cada título con el elemento sigui
 
 ### 3.1 Estructura semántica
 
-- **No hay `<h1>`**: el nombre es un `<span>`.
-- Todos los ítems son `<h2>`, incluidas las 41 tecnologías; no existen títulos de sección.
-- No hay landmarks (`<main>`, `<header>`, `<section>`, `<footer>`).
+- ~~**No hay `<h1>`**: el nombre es un `<span>`.~~
+- ~~Todos los ítems son `<h2>`, incluidas las 41 tecnologías; no existen títulos de sección.~~
+- ~~No hay landmarks (`<main>`, `<header>`, `<section>`, `<footer>`).~~
 
-**Cambio:** nombre en `<h1>`, secciones en `<h2>`, ítems en `<h3>`; tecnologías como lista `<ul>/<li>`; envolver en `<main>`.
+~~**Cambio:** nombre en `<h1>`, secciones en `<h2>`, ítems en `<h3>`; tecnologías como lista `<ul>/<li>`; envolver en `<main>`.~~ Hecho (SPEC 21): nombre en `<h1>`, `<h2>` de sección oculto en cada pestaña, Idiomas en `<h2>`, ítems en `<h3>` (experiencia con patrón acordeón `h3 > button`), conocimientos como `<ul>/<li>`, landmarks `<main>` y `<header>`. `<footer>` pendiente (ver 3.6).
 
 ### 3.2 Datos estructurados y metadatos
 

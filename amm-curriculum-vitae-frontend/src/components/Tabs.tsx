@@ -140,6 +140,7 @@ export const Tabs = ({ tabs }: Props) => {
           tabIndex={0}
           hidden={tab.id !== activa}
         >
+          <h2 className={styles.tituloPanel}>{tab.titulo}</h2>
           {tab.contenido}
         </div>
       ))}

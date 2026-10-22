@@ -2,6 +2,12 @@
   width: 100%;
 }
 
+// Reset del encabezado que envuelve al botón para no alterar el aspecto
+.encabezado {
+  margin: 0;
+  font: inherit;
+}
+
 .cabecera {
   background: none;
   border: none;

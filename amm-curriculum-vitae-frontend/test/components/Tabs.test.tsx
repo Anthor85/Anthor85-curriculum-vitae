@@ -59,6 +59,25 @@ describe('<Tabs />', () => {
     expect(panel).toHaveTextContent('Contenido perfil');
   });
 
+  it('el panel activo tiene un heading de nivel 2 con el título de la pestaña', async () => {
+    const user = userEvent.setup();
+    render(<Tabs tabs={TABS} />);
+
+    expect(
+      within(screen.getByRole('tabpanel')).getByRole('heading', {
+        level: 2,
+        name: 'Perfil',
+      }),
+    ).toBeInTheDocument();
+
+    await user.click(tabEscritorio('Experiencia'));
+
+    const panel = screen.getByRole('tabpanel');
+    expect(
+      within(panel).getByRole('heading', { level: 2, name: 'Experiencia' }),
+    ).toBe(panel.firstElementChild);
+  });
+
   it('cada tab apunta con aria-controls a su propio panel, que existe en el DOM', () => {
     render(<Tabs tabs={TABS} />);
 

@@ -27,7 +27,9 @@ describe('<Contacto />', () => {
     unmount();
 
     renderContacto({ ...PERFIL, idiomas: [{ idioma: 'Inglés', nivel: 'B2' }] });
-    expect(screen.getByText('Idiomas')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Idiomas' }),
+    ).toBeInTheDocument();
     expect(screen.getByText('Inglés · B2')).toBeInTheDocument();
   });
 

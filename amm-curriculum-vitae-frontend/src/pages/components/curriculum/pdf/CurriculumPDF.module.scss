@@ -1,0 +1,9 @@
+// react-pdf no aplica CSS: los colores se exportan como strings para su StyleSheet
+:export {
+  colorPrimario: v.$color-primary;
+  colorPrimarioOscuro: v.$color-primary-dark;
+  colorPrimarioSuave: v.$color-primary-soft;
+  colorTexto: v.$color-gray-900;
+  colorTextoSuave: v.$color-gray-800;
+  colorSecundario: v.$color-gray-600;
+}

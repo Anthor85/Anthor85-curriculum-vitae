@@ -100,7 +100,10 @@ export const Contacto = ({ perfil, styles }: ContactoProps) => {
           </div>
           {perfil.idiomas && perfil.idiomas.length > 0 && (
             <div className={styles.contacto__idiomas}>
-              <h2>Idiomas</h2>
+              <h2>
+                <img src={getIcons('idiomas')} alt="" />
+                Idiomas
+              </h2>
               <ul>
                 {perfil.idiomas.map(({ idioma, nivel }) => (
                   <li key={idioma}>

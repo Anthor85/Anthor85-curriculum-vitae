@@ -5,6 +5,7 @@ export type IconName =
   | 'descarga'
   | 'spinner-arc'
   | 'github'
-  | 'linkedin';
+  | 'linkedin'
+  | 'idiomas';
 
 export const getIcons = (iconName: IconName) => `/icons/${iconName}.svg`;

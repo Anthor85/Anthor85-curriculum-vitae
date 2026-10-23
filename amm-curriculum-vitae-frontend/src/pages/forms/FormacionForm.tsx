@@ -14,8 +14,8 @@ import styles from './Form.module.scss';
 const FORMACION_VACIA: FormacionPayload = {
   titulo: '',
   institucion: '',
-  descripcion: '',
   fechaFin: '',
+  extras: [],
 };
 
 interface Props {
@@ -37,11 +37,38 @@ export const FormacionForm = ({
       ? {
           titulo: formacionEnEdicion.titulo,
           institucion: formacionEnEdicion.institucion,
-          descripcion: formacionEnEdicion.descripcion ?? '',
           fechaFin: formacionEnEdicion.fechaFin.slice(0, 10),
+          extras:
+            formacionEnEdicion.extras?.length > 0
+              ? formacionEnEdicion.extras.map(({ id, descripcion }) => ({
+                  id,
+                  descripcion,
+                }))
+              : [{ descripcion: '' }],
         }
       : FORMACION_VACIA,
   );
+
+  const anadirExtra = () =>
+    setFormacion((prev) => ({
+      ...prev,
+      extras: [...prev.extras, { descripcion: '' }],
+    }));
+
+  const borrarExtra = (indice: number) =>
+    setFormacion((prev) => ({
+      ...prev,
+      extras: prev.extras.filter((_, i) => i !== indice),
+    }));
+
+  const cambiarExtra = (indice: number, valor: string) =>
+    setFormacion((prev) => ({
+      ...prev,
+      extras: prev.extras.map((extra, i) =>
+        i === indice ? { ...extra, descripcion: valor } : extra,
+      ),
+    }));
+
   const limpiarFormulario = () => {
     setFormacion(FORMACION_VACIA);
     onLimpiar();
@@ -52,6 +79,9 @@ export const FormacionForm = ({
       ...formacion,
       titulo: formacion.titulo.trim(),
       institucion: formacion.institucion.trim(),
+      extras: formacion.extras.filter(
+        (extra) => extra.descripcion.trim() !== '',
+      ),
     };
 
     await onSubmitFormacion(payload);
@@ -87,18 +117,6 @@ export const FormacionForm = ({
         />
       </div>
       <div className={styles.field}>
-        <label htmlFor="descripcion">A tener en cuenta:</label>
-        <input
-          type="text"
-          id="descripcion"
-          name="descripcion"
-          value={formacion.descripcion}
-          onChange={(e) =>
-            setFormacion({ ...formacion, descripcion: e.target.value })
-          }
-        />
-      </div>
-      <div className={styles.field}>
         <label htmlFor="fechaFin">Fecha de Fin:</label>
         <input
           type="date"
@@ -110,6 +128,33 @@ export const FormacionForm = ({
           }
           required
         />
+      </div>
+      <div
+        className={styles.hitos}
+        role="group"
+        aria-labelledby="extras-titulo"
+      >
+        <span id="extras-titulo">Extra:</span>
+        {formacion.extras.map((extra, indice) => (
+          <div key={indice} className={styles.hitoFila}>
+            <input
+              type="text"
+              name="extras"
+              aria-label={`Extra ${indice + 1}`}
+              value={extra.descripcion}
+              onChange={(e) => cambiarExtra(indice, e.target.value)}
+            />
+            <button
+              type="button"
+              className={styles.hitoBoton}
+              aria-label={`Borrar extra ${indice + 1}`}
+              onClick={() => borrarExtra(indice)}
+            >
+              X
+            </button>
+          </div>
+        ))}
+        <Button type="button" onClick={anadirExtra} name="+ Añadir extra" />
       </div>
       <div className={styles.actions}>
         <Button

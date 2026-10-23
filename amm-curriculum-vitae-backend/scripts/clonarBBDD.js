@@ -6,6 +6,7 @@ const MODELOS = [
   'Conocimiento',
   'Perfil',
   'Formacion',
+  'Extra',
   'FormacionComplementaria',
   'Experiencia',
   'Hito',

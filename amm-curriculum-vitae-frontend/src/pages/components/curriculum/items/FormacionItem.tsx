@@ -13,9 +13,13 @@ export const FormacionItem = ({ formacion }: Props) => {
       <h3 className={styles.titulo}>{formacion.titulo}</h3>
       <span className={styles.subtitulo}>{formacion.institucion}</span>
       <span className={styles.fechas}>{anioFecha(formacion.fechaFin)}</span>
-      {formacion.descripcion && (
-        <p className={styles.descripcion}>{formacion.descripcion}</p>
-      )}
+      {formacion.extras?.length ? (
+        <ul className={styles.extras}>
+          {formacion.extras.map((extra) => (
+            <li key={extra.id}>{extra.descripcion}</li>
+          ))}
+        </ul>
+      ) : null}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { avanzarMensaje, flush, renderConStore, textoMensaje } from '../utils';
@@ -23,15 +23,17 @@ const FORMACIONES: IFormacion[] = [
     id: '1',
     titulo: 'Ingeniería Informática',
     institucion: 'Universidad de Valencia',
-    descripcion: 'Especialidad en software',
     fechaFin: '2015-06-30',
+    extras: [
+      { id: 'x1', descripcion: 'Especialidad en software', formacion: '1' },
+    ],
   },
   {
     id: '2',
     titulo: 'Grado Superior DAM',
     institucion: 'IES Camp de Morvedre',
-    descripcion: '',
     fechaFin: '2011-06-30',
+    extras: [],
   },
 ];
 
@@ -51,6 +53,13 @@ const configurarApi = () => {
     Promise.resolve({ data: { formacion: { id: url.split('/').pop() } } }),
   );
 };
+
+const inputsExtra = () =>
+  screen
+    .queryAllByRole('textbox')
+    .filter(
+      (input) => input.getAttribute('name') === 'extras',
+    ) as HTMLInputElement[];
 
 const renderPagina = async () => {
   const utils = renderConStore(<Formacion />);
@@ -90,8 +99,11 @@ describe('<Formacion />', () => {
 
     expect(screen.getByLabelText('Título:')).toBeInTheDocument();
     expect(screen.getByLabelText('Institución:')).toBeInTheDocument();
-    expect(screen.getByLabelText('A tener en cuenta:')).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Extra:' })).toBeInTheDocument();
     expect(screen.getByLabelText('Fecha de Fin:')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: '+ Añadir extra' }),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: 'Agregar Formación' }),
     ).toBeInTheDocument();
@@ -109,12 +121,12 @@ describe('<Formacion />', () => {
 
     const titulo = screen.getByLabelText('Título:');
     const institucion = screen.getByLabelText('Institución:');
-    const aTenerEnCuenta = screen.getByLabelText('A tener en cuenta:');
     const fechaFin = screen.getByLabelText('Fecha de Fin:');
 
     await user.type(titulo, 'Máster en IA');
     await user.type(institucion, 'UNED');
-    await user.type(aTenerEnCuenta, 'Especialización en Machine Learning');
+    await user.click(screen.getByRole('button', { name: '+ Añadir extra' }));
+    await user.type(inputsExtra()[0], 'Especialización en Machine Learning');
     escribirFecha(fechaFin, '2024-06-30');
     expect(titulo).toHaveValue('Máster en IA');
 
@@ -122,7 +134,7 @@ describe('<Formacion />', () => {
 
     expect(titulo).toHaveValue('');
     expect(institucion).toHaveValue('');
-    expect(aTenerEnCuenta).toHaveValue('');
+    expect(inputsExtra()).toHaveLength(0);
     expect(fechaFin).toHaveValue('');
   });
 
@@ -140,8 +152,8 @@ describe('<Formacion />', () => {
     expect(apiMock.post).toHaveBeenCalledWith('/formacion', {
       titulo: 'Máster en IA',
       institucion: 'UNED',
-      descripcion: '',
       fechaFin: '2024-06-30',
+      extras: [],
     });
     expect(screen.getByText('Máster en IA')).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: 'Editar' })).toHaveLength(3);
@@ -180,9 +192,8 @@ describe('<Formacion />', () => {
     expect(screen.getByLabelText('Institución:')).toHaveValue(
       'Universidad de Valencia',
     );
-    expect(screen.getByLabelText('A tener en cuenta:')).toHaveValue(
-      'Especialidad en software',
-    );
+    expect(inputsExtra()).toHaveLength(1);
+    expect(inputsExtra()[0]).toHaveValue('Especialidad en software');
     expect(screen.getByLabelText('Fecha de Fin:')).toHaveValue('2015-06-30');
     expect(
       screen.getByRole('heading', { name: 'Editar Formación' }),
@@ -201,7 +212,7 @@ describe('<Formacion />', () => {
 
     expect(screen.getByLabelText('Título:')).toHaveValue('');
     expect(screen.getByLabelText('Institución:')).toHaveValue('');
-    expect(screen.getByLabelText('A tener en cuenta:')).toHaveValue('');
+    expect(inputsExtra()).toHaveLength(0);
     expect(screen.getByLabelText('Fecha de Fin:')).toHaveValue('');
     expect(
       screen.getByRole('heading', { name: 'Crear Formación' }),
@@ -229,8 +240,8 @@ describe('<Formacion />', () => {
     expect(apiMock.put).toHaveBeenCalledWith('/formacion/1', {
       titulo: 'Ingeniería del Software',
       institucion: 'Universidad de Valencia',
-      descripcion: 'Especialidad en software',
       fechaFin: '2015-06-30',
+      extras: [{ id: 'x1', descripcion: 'Especialidad en software' }],
     });
     expect(screen.getByText('Ingeniería del Software')).toBeInTheDocument();
     expect(
@@ -239,6 +250,76 @@ describe('<Formacion />', () => {
 
     await avanzarMensaje();
     expect(textoMensaje()).toBe('Formación actualizada');
+  });
+
+  test('la Card pinta los extras de la formación y nada si no tiene', async () => {
+    await renderPagina();
+
+    // «Extra:» es un <span> en el form siempre y un <p> en la Card: solo la
+    // primera formación tiene extras, así que solo hay un <p>.
+    const titulosEnCards = screen
+      .getAllByText('Extra:')
+      .filter((el) => el.tagName === 'P');
+    expect(titulosEnCards).toHaveLength(1);
+    expect(screen.getByText('Especialidad en software')).toBeInTheDocument();
+  });
+
+  test('«+ Añadir extra» añade filas y el post recoge las descripciones', async () => {
+    const user = setupUser();
+    await renderPagina();
+
+    expect(inputsExtra()).toHaveLength(0);
+
+    await user.type(screen.getByLabelText('Título:'), 'Máster en IA');
+    await user.type(screen.getByLabelText('Institución:'), 'UNED');
+    escribirFecha(screen.getByLabelText('Fecha de Fin:'), '2024-06-30');
+    await user.click(screen.getByRole('button', { name: '+ Añadir extra' }));
+    await user.type(inputsExtra()[0], 'Primer extra');
+    await user.click(screen.getByRole('button', { name: '+ Añadir extra' }));
+    await user.type(inputsExtra()[1], 'Segundo extra');
+    await user.click(screen.getByRole('button', { name: '+ Añadir extra' }));
+    await user.type(inputsExtra()[2], '   ');
+    await user.click(screen.getByRole('button', { name: 'Agregar Formación' }));
+
+    await flush();
+
+    expect(apiMock.post).toHaveBeenCalledWith(
+      '/formacion',
+      expect.objectContaining({
+        extras: [
+          { descripcion: 'Primer extra' },
+          { descripcion: 'Segundo extra' },
+        ],
+      }),
+    );
+  });
+
+  test('la «X» de un extra borra solo esa fila', async () => {
+    const user = setupUser();
+    await renderPagina();
+
+    await user.click(screen.getByRole('button', { name: '+ Añadir extra' }));
+    await user.type(inputsExtra()[0], 'Primer extra');
+    await user.click(screen.getByRole('button', { name: '+ Añadir extra' }));
+    await user.type(inputsExtra()[1], 'Segundo extra');
+
+    const primeraFila = inputsExtra()[0].parentElement as HTMLElement;
+    await user.click(
+      within(primeraFila).getByRole('button', { name: 'Borrar extra 1' }),
+    );
+
+    expect(inputsExtra()).toHaveLength(1);
+    expect(inputsExtra()[0]).toHaveValue('Segundo extra');
+  });
+
+  test('«Editar» una formación sin extras deja una fila en blanco', async () => {
+    const user = setupUser();
+    await renderPagina();
+
+    await user.click(screen.getAllByRole('button', { name: 'Editar' })[1]);
+
+    expect(inputsExtra()).toHaveLength(1);
+    expect(inputsExtra()[0]).toHaveValue('');
   });
 
   test('«Eliminar» llama a api.delete y quita la Card del listado', async () => {

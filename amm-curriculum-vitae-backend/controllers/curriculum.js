@@ -15,7 +15,7 @@ const obtenerCurriculum = async (req, res) => {
   ] = await Promise.all([
     Conocimiento.find(),
     Experiencia.find().populate('hitos'),
-    Formacion.find(),
+    Formacion.find().populate('extras'),
     FormacionComplementaria.find(),
     Perfil.findOne(),
   ]);

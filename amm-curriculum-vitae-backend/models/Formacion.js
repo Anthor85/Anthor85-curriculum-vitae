@@ -1,27 +1,36 @@
 const { Schema, model } = require('mongoose');
 
 const toJSON = require('./plugins/toJSON');
-const FormacionSchema = Schema({
-  titulo: {
-    type: String,
-    required: true,
-    trim: true,
+const FormacionSchema = Schema(
+  {
+    titulo: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    institucion: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    fechaFin: {
+      type: Date,
+      required: true,
+    },
   },
-  institucion: {
-    type: String,
-    required: true,
-    trim: true,
+  {
+    toObject: { virtuals: true },
   },
-  fechaFin: {
-    type: Date,
-    required: true,
-  },
-  descripcion: {
-    type: String,
-    trim: true,
-  },
+);
+
+// Relación inversa: los extras guardan la referencia a la formación.
+// Solo aparece en el JSON si se ha hecho .populate("extras").
+FormacionSchema.virtual('extras', {
+  ref: 'Extra',
+  localField: '_id',
+  foreignField: 'formacion',
 });
 
-FormacionSchema.plugin(toJSON);
+FormacionSchema.plugin(toJSON, { virtuals: true });
 
 module.exports = model('Formacion', FormacionSchema);

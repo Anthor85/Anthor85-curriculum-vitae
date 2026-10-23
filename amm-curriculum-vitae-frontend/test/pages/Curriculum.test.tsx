@@ -144,4 +144,32 @@ describe('<Curriculum />', () => {
       within(panel).getByRole('heading', { level: 3, name: /Everis/ }),
     ).toBeInTheDocument();
   });
+
+  test('la pestaña Formación Académica lista los extras de cada formación', async () => {
+    const user = userEvent.setup();
+    renderCurriculum({
+      ...CURRICULUM,
+      formaciones: [
+        {
+          id: 'f1',
+          titulo: 'Ingeniería Informática',
+          institucion: 'UPV',
+          fechaFin: '2015-06-30',
+          extras: [
+            { id: 'x1', descripcion: 'Rama de software', formacion: 'f1' },
+            { id: 'x2', descripcion: 'Premio extraordinario', formacion: 'f1' },
+          ],
+        },
+      ],
+    });
+
+    await user.click(screen.getByRole('tab', { name: 'Formación Académica' }));
+    const panel = screen.getByRole('tabpanel');
+
+    expect(
+      within(panel)
+        .getAllByRole('listitem')
+        .map((li) => li.textContent),
+    ).toEqual(['Rama de software', 'Premio extraordinario']);
+  });
 });

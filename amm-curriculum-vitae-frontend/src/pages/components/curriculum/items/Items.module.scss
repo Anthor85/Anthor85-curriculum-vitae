@@ -66,6 +66,16 @@
     // color: v.$color-gray-600;
   }
 
+  // Extras de una formación: sangría con viñeta
+  .extras {
+    list-style: disc;
+    margin: 0;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
   // Cabecera: empresa + fechas en la misma línea, descripción debajo
   .cabecera {
     display: grid;

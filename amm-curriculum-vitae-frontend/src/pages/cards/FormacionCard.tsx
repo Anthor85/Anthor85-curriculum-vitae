@@ -16,7 +16,7 @@ export const FormacionCard = ({
   onEditar,
   enEdicion,
 }: Props) => {
-  const { titulo, institucion, fechaFin, descripcion } = formacion;
+  const { titulo, institucion, fechaFin, extras } = formacion;
 
   return (
     <div className={`${styles.Card} ${enEdicion ? styles.enEdicion : ''}`}>
@@ -28,11 +28,16 @@ export const FormacionCard = ({
         <div className={styles.subdata}>
           <b>Fecha:</b> {anioFecha(fechaFin)}
         </div>
-        {descripcion && (
-          <div className={styles.subdata}>
-            <b>A tener en cuenta:</b> {descripcion}
+        {extras?.length ? (
+          <div className={styles.coleccion}>
+            <p>Extra:</p>
+            <ul className={styles.colecciones}>
+              {extras.map((extra) => (
+                <li key={extra.id}>{extra.descripcion}</li>
+              ))}
+            </ul>
           </div>
-        )}
+        ) : null}
       </div>
       <div className={`${styles.actions} ${styles.actionsFila}`}>
         <Button onClick={() => onEditar(formacion)} name="Editar" />

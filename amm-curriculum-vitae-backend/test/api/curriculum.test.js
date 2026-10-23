@@ -7,6 +7,7 @@ const {
   crearExperienciaEnBd,
   crearFormacionComplementariaEnBd,
   crearFormacionEnBd,
+  crearExtraEnBd,
   crearHitoEnBd,
   crearPerfilEnBd,
 } = require('../utils/fixtures');
@@ -61,6 +62,21 @@ describe('/api/curriculum', () => {
       expect(body.experiencia[0].hitos[0]).toMatchObject({
         id: hito._id.toString(),
         descripcion: 'Migracion a React',
+      });
+    });
+
+    it('las formaciones llegan con sus extras poblados', async () => {
+      const formacion = await crearFormacionEnBd();
+      const extra = await crearExtraEnBd(formacion._id, {
+        descripcion: 'Premio extraordinario',
+      });
+
+      const { body } = await request(app).get('/api/curriculum').expect(200);
+
+      expect(body.formaciones[0].extras).toHaveLength(1);
+      expect(body.formaciones[0].extras[0]).toMatchObject({
+        id: extra._id.toString(),
+        descripcion: 'Premio extraordinario',
       });
     });
 

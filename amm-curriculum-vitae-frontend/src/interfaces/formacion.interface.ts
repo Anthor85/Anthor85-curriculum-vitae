@@ -1,9 +1,22 @@
+export interface Extra {
+  id: string;
+  descripcion: string;
+  formacion: string;
+}
+
+export interface ExtraPayload {
+  id?: string;
+  descripcion: string;
+}
+
 export interface Formacion {
   id: string;
   titulo: string;
   institucion: string;
-  descripcion?: string;
   fechaFin: string;
+  extras: Extra[];
 }
 
-export type FormacionPayload = Omit<Formacion, 'id'>;
+export interface FormacionPayload extends Omit<Formacion, 'id' | 'extras'> {
+  extras: ExtraPayload[];
+}

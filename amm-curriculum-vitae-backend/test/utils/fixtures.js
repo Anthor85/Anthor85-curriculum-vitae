@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 
 const Conocimiento = require('../../models/Conocimiento');
 const Experiencia = require('../../models/Experiencia');
+const Extra = require('../../models/Extra');
 const Formacion = require('../../models/Formacion');
 const FormacionComplementaria = require('../../models/FormacionComplementaria');
 const Hito = require('../../models/Hito');
@@ -54,6 +55,13 @@ const crearFormacionEnBd = (datos = {}) =>
     ...datos,
   });
 
+const crearExtraEnBd = (formacionId, datos = {}) =>
+  Extra.create({
+    descripcion: 'Extra de test',
+    ...datos,
+    formacion: formacionId,
+  });
+
 const crearFormacionComplementariaEnBd = (datos = {}) =>
   FormacionComplementaria.create({
     titulo: 'Curso de React',
@@ -78,6 +86,7 @@ module.exports = {
   crearExperienciaEnBd,
   crearHitoEnBd,
   crearFormacionEnBd,
+  crearExtraEnBd,
   crearFormacionComplementariaEnBd,
   crearPerfilEnBd,
 };

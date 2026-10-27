@@ -101,10 +101,7 @@ npm run dev             # http://localhost:5173
 
 Cada funcionalidad parte de una especificación escrita antes del código, en
 `docs/specs/` de cada proyecto (22 en el frontend, 12 en el backend): desde la edición de cada
-sección hasta el prerender, el PDF con texto real o la estructura semántica del CV. Las mejoras
-pendientes y ya aplicadas, a partir de una revisión de la web desde el punto de vista de un
-reclutador, están en [`CAMBIOS_Y_MEJORAS.md`](./CAMBIOS_Y_MEJORAS.md).
-
+sección hasta el prerender, el PDF con texto real o la estructura semántica del CV.
 ## Autor
 
 **Antonio Macián Martínez** — desarrollador front-end.

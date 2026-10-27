@@ -28,6 +28,8 @@
 }
 
 .triangulo {
+  align-self: flex-start;
+  margin-top: 8px;
   flex-shrink: 0;
   width: 0;
   height: 0;

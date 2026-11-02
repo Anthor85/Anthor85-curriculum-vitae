@@ -53,7 +53,7 @@ describe('/api/curriculum', () => {
     it('las experiencias llegan con sus hitos poblados', async () => {
       const experiencia = await crearExperienciaEnBd();
       const hito = await crearHitoEnBd(experiencia._id, {
-        descripcion: 'Migracion a React',
+        descripcion: { es: 'Migracion a React', en: 'React migration' },
       });
 
       const { body } = await request(app).get('/api/curriculum').expect(200);
@@ -68,7 +68,7 @@ describe('/api/curriculum', () => {
     it('las formaciones llegan con sus extras poblados', async () => {
       const formacion = await crearFormacionEnBd();
       const extra = await crearExtraEnBd(formacion._id, {
-        descripcion: 'Premio extraordinario',
+        descripcion: { es: 'Premio extraordinario', en: 'Outstanding award' },
       });
 
       const { body } = await request(app).get('/api/curriculum').expect(200);

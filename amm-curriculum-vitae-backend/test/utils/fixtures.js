@@ -26,14 +26,17 @@ const crearUsuarioEnBd = async (datos = {}) => {
 const crearConocimientoEnBd = (datos = {}) =>
   Conocimiento.create({
     titulo: 'React',
-    prioridad: 'Media',
+    prioridad: 'media',
     ...datos,
   });
 
 const crearExperienciaEnBd = (datos = {}) =>
   Experiencia.create({
     empresa: 'Empresa de test',
-    descripcion: 'Desarrollo de aplicaciones web',
+    descripcion: {
+      es: 'Desarrollo de aplicaciones web',
+      en: 'Web application development',
+    },
     fechaInicio: '2020-01-01',
     fechaFin: null,
     tecnologias: [],
@@ -42,30 +45,30 @@ const crearExperienciaEnBd = (datos = {}) =>
 
 const crearHitoEnBd = (experienciaId, datos = {}) =>
   Hito.create({
-    descripcion: 'Hito de test',
+    descripcion: { es: 'Hito de test', en: 'Test milestone' },
     ...datos,
     experiencia: experienciaId,
   });
 
 const crearFormacionEnBd = (datos = {}) =>
   Formacion.create({
-    titulo: 'Ingenieria Informatica',
-    institucion: 'Universidad de test',
+    titulo: { es: 'Ingenieria Informatica', en: 'Computer Engineering' },
+    institucion: { es: 'Universidad de test', en: 'Test University' },
     fechaFin: '2015-06-30',
     ...datos,
   });
 
 const crearExtraEnBd = (formacionId, datos = {}) =>
   Extra.create({
-    descripcion: 'Extra de test',
+    descripcion: { es: 'Extra de test', en: 'Test extra' },
     ...datos,
     formacion: formacionId,
   });
 
 const crearFormacionComplementariaEnBd = (datos = {}) =>
   FormacionComplementaria.create({
-    titulo: 'Curso de React',
-    institucion: 'Academia de test',
+    titulo: { es: 'Curso de React', en: 'React course' },
+    institucion: { es: 'Academia de test', en: 'Test academy' },
     ...datos,
   });
 
@@ -75,8 +78,8 @@ const crearPerfilEnBd = (datos = {}) =>
     apellidos: 'Macian Martinez',
     email: 'test@test.com',
     telefono: '600000000',
-    direccion: 'Calle de test, 1',
-    descripcion: 'Desarrollador full stack',
+    direccion: { es: 'Calle de test, 1', en: '1 Test Street' },
+    descripcion: { es: 'Desarrollador full stack', en: 'Full stack developer' },
     ...datos,
   });
 

@@ -115,6 +115,35 @@ describe('/api/formacion', () => {
       expect(extrasEnBd).toHaveLength(2);
     });
 
+    it('sin en en titulo e institucion guarda en vacio', async () => {
+      const { body } = await request(app)
+        .post('/api/formacion')
+        .set('x-token', token)
+        .send({
+          ...formacionValida,
+          titulo: { es: 'Grado en Informatica' },
+          institucion: { es: 'Universidad de Valencia' },
+        })
+        .expect(201);
+
+      expect(body.titulo).toEqual({ es: 'Grado en Informatica', en: '' });
+      expect(body.institucion).toEqual({
+        es: 'Universidad de Valencia',
+        en: '',
+      });
+    });
+
+    it('con un string en el titulo devuelve 500 y no crea nada', async () => {
+      const { body } = await request(app)
+        .post('/api/formacion')
+        .set('x-token', token)
+        .send({ ...formacionValida, titulo: 'Grado en Informatica' })
+        .expect(500);
+
+      expect(body).toEqual({ msg: 'Error al crear la formación' });
+      await expect(Formacion.countDocuments()).resolves.toBe(0);
+    });
+
     it('sin token devuelve 401 y no crea nada', async () => {
       const { body } = await request(app)
         .post('/api/formacion')
@@ -170,6 +199,28 @@ describe('/api/formacion', () => {
       const enBd = await Formacion.findById(formacion._id);
       expect(enBd.titulo.es).toBe('Master en Ingenieria del Software');
       expect(enBd.fechaFin.toISOString()).toBe('2018-09-15T00:00:00.000Z');
+    });
+
+    it('cambiando solo en del titulo conserva es', async () => {
+      const formacion = await crearFormacionEnBd();
+
+      const { body } = await request(app)
+        .put(`/api/formacion/${formacion._id}`)
+        .set('x-token', token)
+        .send({
+          titulo: { es: 'Ingenieria Informatica', en: 'BEng in Computing' },
+          institucion: { es: 'Universidad de test', en: 'Test University' },
+          fechaFin: '2015-06-30',
+        })
+        .expect(200);
+
+      expect(body.titulo).toEqual({
+        es: 'Ingenieria Informatica',
+        en: 'BEng in Computing',
+      });
+      const enBd = await Formacion.findById(formacion._id);
+      expect(enBd.titulo.es).toBe('Ingenieria Informatica');
+      expect(enBd.titulo.en).toBe('BEng in Computing');
     });
 
     it('reconcilia los extras: conserva el reenviado, crea el nuevo y borra el que ya no viene', async () => {

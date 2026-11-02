@@ -202,6 +202,35 @@ describe('/api/experiencia', () => {
       expect(enBd.fechaFin).toBeNull();
     });
 
+    it('sin en en la descripcion guarda en vacio', async () => {
+      const { body } = await request(app)
+        .post('/api/experiencia')
+        .set('x-token', token)
+        .send({
+          ...experienciaValida,
+          descripcion: { es: 'Desarrollo de aplicaciones web' },
+        })
+        .expect(201);
+
+      expect(body.descripcion).toEqual({
+        es: 'Desarrollo de aplicaciones web',
+        en: '',
+      });
+      const enBd = await Experiencia.findById(body.id);
+      expect(enBd.descripcion.en).toBe('');
+    });
+
+    it('con un string en la descripcion devuelve 500 y no crea nada', async () => {
+      const { body } = await request(app)
+        .post('/api/experiencia')
+        .set('x-token', token)
+        .send({ ...experienciaValida, descripcion: 'Desarrollo web' })
+        .expect(500);
+
+      expect(body).toEqual({ msg: 'Error al crear la experiencia' });
+      await expect(Experiencia.countDocuments()).resolves.toBe(0);
+    });
+
     it('sin token devuelve 401', async () => {
       const { body } = await request(app)
         .post('/api/experiencia')
@@ -214,6 +243,30 @@ describe('/api/experiencia', () => {
   });
 
   describe('PUT /api/experiencia/:id', () => {
+    it('cambiando solo en de la descripcion conserva es', async () => {
+      const experiencia = await crearExperienciaEnBd();
+
+      const { body } = await request(app)
+        .put(`/api/experiencia/${experiencia._id}`)
+        .set('x-token', token)
+        .send({
+          ...experienciaValida,
+          descripcion: {
+            es: 'Desarrollo de aplicaciones web',
+            en: 'Building web applications',
+          },
+        })
+        .expect(200);
+
+      expect(body.descripcion).toEqual({
+        es: 'Desarrollo de aplicaciones web',
+        en: 'Building web applications',
+      });
+      const enBd = await Experiencia.findById(experiencia._id);
+      expect(enBd.descripcion.es).toBe('Desarrollo de aplicaciones web');
+      expect(enBd.descripcion.en).toBe('Building web applications');
+    });
+
     it('reconcilia los hitos: conserva el reenviado, crea el nuevo y borra el que ya no viene', async () => {
       const experiencia = await crearExperienciaEnBd();
       const conservado = await crearHitoEnBd(experiencia._id, {

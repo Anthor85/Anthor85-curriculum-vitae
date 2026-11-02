@@ -30,14 +30,15 @@ npm run dev
 
 ## Variables de entorno
 
-| Variable             | Para qué sirve                                           |
-| -------------------- | -------------------------------------------------------- |
-| `PORT`               | Puerto del servidor en local (por defecto `4000`).       |
-| `DB_CONN`            | URI de conexión a MongoDB.                               |
-| `SECRET_JWT_SEED`    | Semilla con la que se firman y validan los tokens.       |
-| `SEED_USER_NOMBRE`   | Nombre del usuario que crea `npm run seed`.              |
-| `SEED_USER_EMAIL`    | Email de ese usuario.                                    |
-| `SEED_USER_PASSWORD` | Contraseña en claro de ese usuario (se guarda hasheada). |
+| Variable             | Para qué sirve                                                                    |
+| -------------------- | --------------------------------------------------------------------------------- |
+| `PORT`               | Puerto del servidor en local (por defecto `4000`).                                |
+| `DB_CONN`            | URI de conexión a MongoDB.                                                        |
+| `SECRET_JWT_SEED`    | Semilla con la que se firman y validan los tokens.                                |
+| `SEED_USER_NOMBRE`   | Nombre del usuario que crea `npm run seed`.                                       |
+| `SEED_USER_EMAIL`    | Email de ese usuario.                                                             |
+| `SEED_USER_PASSWORD` | Contraseña en claro de ese usuario (se guarda hasheada).                          |
+| `DEEPL_API_KEY`      | Clave de DeepL API Free (termina en `:fx`). Sin ella, `/traduccion` responde 503. |
 
 El seed no crea nada si falta alguna de las tres `SEED_USER_*` o si el email ya existe.
 
@@ -104,16 +105,17 @@ docs/specs/      especificaciones de cada funcionalidad
 
 Todas las rutas cuelgan de `/api`. Las de escritura exigen la cabecera `x-token`.
 
-| Método                | Ruta                       | Qué hace                                  |
-| --------------------- | -------------------------- | ----------------------------------------- |
-| `POST`                | `/auth`                    | Login; devuelve el token.                 |
-| `GET`                 | `/auth/renew`              | Revalida el token. 🔒                     |
-| `GET`                 | `/curriculum`              | Todo el CV en una sola respuesta.         |
-| `GET/POST/PUT/DELETE` | `/conocimiento`            | Conocimientos (`POST /multiple` en lote). |
-| `GET/POST/PUT/DELETE` | `/experiencia`             | Experiencias con sus hitos.               |
-| `GET/POST/PUT/DELETE` | `/formacion`               | Formación reglada.                        |
-| `GET/POST/PUT/DELETE` | `/formacionComplementaria` | Formación complementaria.                 |
-| `GET/POST/PUT`        | `/perfil`                  | Perfil (documento único).                 |
+| Método                | Ruta                       | Qué hace                                                                                    |
+| --------------------- | -------------------------- | ------------------------------------------------------------------------------------------- |
+| `POST`                | `/auth`                    | Login; devuelve el token.                                                                   |
+| `GET`                 | `/auth/renew`              | Revalida el token. 🔒                                                                       |
+| `GET`                 | `/curriculum`              | Todo el CV en una sola respuesta, en el idioma de `?lang=` (`es` o `en`; por defecto `es`). |
+| `GET/POST/PUT/DELETE` | `/conocimiento`            | Conocimientos (`POST /multiple` en lote).                                                   |
+| `GET/POST/PUT/DELETE` | `/experiencia`             | Experiencias con sus hitos.                                                                 |
+| `GET/POST/PUT/DELETE` | `/formacion`               | Formación reglada.                                                                          |
+| `GET/POST/PUT/DELETE` | `/formacionComplementaria` | Formación complementaria.                                                                   |
+| `GET/POST/PUT`        | `/perfil`                  | Perfil (documento único).                                                                   |
+| `POST`                | `/traduccion`              | Sugiere la traducción ES→EN de `textos` con DeepL. 🔒                                       |
 
 ## Despliegue
 

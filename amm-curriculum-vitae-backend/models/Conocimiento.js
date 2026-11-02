@@ -11,8 +11,8 @@ const ConocimientoSchema = Schema({
   prioridad: {
     type: String,
     required: true,
-    enum: ['Muy alta', 'Alta', 'Media', 'Baja', 'Muy baja'],
-    default: 'Media',
+    enum: ['muyAlta', 'alta', 'media', 'baja', 'muyBaja'],
+    default: 'media',
   },
 });
 

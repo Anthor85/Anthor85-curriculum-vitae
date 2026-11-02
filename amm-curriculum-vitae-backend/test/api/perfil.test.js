@@ -12,8 +12,8 @@ const perfilValido = {
   apellidos: 'Macian Martinez',
   email: 'nuevo@test.com',
   telefono: '611111111',
-  direccion: 'Avenida de test, 2',
-  descripcion: 'Desarrollador full stack',
+  direccion: { es: 'Avenida de test, 2', en: '2 Test Avenue' },
+  descripcion: { es: 'Desarrollador full stack', en: 'Full stack developer' },
 };
 
 const enlaces = {
@@ -46,8 +46,11 @@ describe('/api/perfil', () => {
         apellidos: 'Macian Martinez',
         email: 'test@test.com',
         telefono: '600000000',
-        direccion: 'Calle de test, 1',
-        descripcion: 'Desarrollador full stack',
+        direccion: { es: 'Calle de test, 1', en: '1 Test Street' },
+        descripcion: {
+          es: 'Desarrollador full stack',
+          en: 'Full stack developer',
+        },
         idiomas: [],
       });
       expect(body).not.toHaveProperty('_id');
@@ -90,7 +93,12 @@ describe('/api/perfil', () => {
     });
 
     it('con idiomas los guarda y los devuelve sin _id', async () => {
-      const idiomas = [{ idioma: 'Inglés', nivel: 'B2' }];
+      const idiomas = [
+        {
+          idioma: { es: 'Inglés', en: 'English' },
+          nivel: { es: 'B2', en: 'B2' },
+        },
+      ];
 
       const { body } = await request(app)
         .post('/api/perfil')
@@ -105,9 +113,46 @@ describe('/api/perfil', () => {
       await request(app)
         .post('/api/perfil')
         .set('x-token', token)
-        .send({ ...perfilValido, idiomas: [{ idioma: 'Inglés', nivel: '' }] })
+        .send({
+          ...perfilValido,
+          idiomas: [{ idioma: { es: 'Inglés' }, nivel: { es: '' } }],
+        })
         .expect(500);
 
+      await expect(Perfil.countDocuments()).resolves.toBe(0);
+    });
+
+    it('sin en en los campos localizados guarda en vacio', async () => {
+      const { body } = await request(app)
+        .post('/api/perfil')
+        .set('x-token', token)
+        .send({
+          ...perfilValido,
+          direccion: { es: 'Avenida de test, 2' },
+          descripcion: { es: 'Desarrollador full stack' },
+          disponibilidad: { es: 'Inmediata' },
+          idiomas: [{ idioma: { es: 'Inglés' }, nivel: { es: 'B2' } }],
+        })
+        .expect(201);
+
+      expect(body).toMatchObject({
+        direccion: { es: 'Avenida de test, 2', en: '' },
+        descripcion: { es: 'Desarrollador full stack', en: '' },
+        disponibilidad: { es: 'Inmediata', en: '' },
+        idiomas: [
+          { idioma: { es: 'Inglés', en: '' }, nivel: { es: 'B2', en: '' } },
+        ],
+      });
+    });
+
+    it('con un string en un campo localizado devuelve 500 y no crea nada', async () => {
+      const { body } = await request(app)
+        .post('/api/perfil')
+        .set('x-token', token)
+        .send({ ...perfilValido, descripcion: 'Desarrollador full stack' })
+        .expect(500);
+
+      expect(body).toEqual({ msg: 'Error al crear el perfil' });
       await expect(Perfil.countDocuments()).resolves.toBe(0);
     });
 
@@ -202,6 +247,40 @@ describe('/api/perfil', () => {
       const enBd = await Perfil.findById(perfil._id);
       expect(enBd.nombre).toBe('Antonio Manuel');
       expect(enBd.email).toBe('nuevo@test.com');
+    });
+
+    it('cambiando solo en conserva es en todos los campos localizados', async () => {
+      const perfil = await crearPerfilEnBd({
+        disponibilidad: { es: 'Inmediata', en: '' },
+        idiomas: [{ idioma: { es: 'Inglés' }, nivel: { es: 'B2' } }],
+      });
+
+      const { body } = await request(app)
+        .put('/api/perfil')
+        .set('x-token', token)
+        .send({
+          ...perfilValido,
+          disponibilidad: { es: 'Inmediata', en: 'Immediate' },
+          idiomas: [
+            {
+              idioma: { es: 'Inglés', en: 'English' },
+              nivel: { es: 'B2', en: 'Upper intermediate' },
+            },
+          ],
+        })
+        .expect(200);
+
+      expect(body.disponibilidad).toEqual({ es: 'Inmediata', en: 'Immediate' });
+      expect(body.idiomas).toEqual([
+        {
+          idioma: { es: 'Inglés', en: 'English' },
+          nivel: { es: 'B2', en: 'Upper intermediate' },
+        },
+      ]);
+      const enBd = await Perfil.findById(perfil._id);
+      expect(enBd.disponibilidad.es).toBe('Inmediata');
+      expect(enBd.disponibilidad.en).toBe('Immediate');
+      expect(enBd.idiomas[0].idioma.en).toBe('English');
     });
 
     it('sobre un perfil sin linkedinURL ni githubURL los anade', async () => {

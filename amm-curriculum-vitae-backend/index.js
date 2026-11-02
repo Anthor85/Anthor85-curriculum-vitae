@@ -30,6 +30,7 @@ app.use(
   require('./routes/formacionComplementaria'),
 );
 app.use('/api/perfil', require('./routes/perfil'));
+app.use('/api/traduccion', require('./routes/traduccion'));
 
 //Manejo centralizado de errores: debe ir después de las rutas
 app.use(manejarErrores);

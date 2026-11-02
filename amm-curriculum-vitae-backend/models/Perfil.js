@@ -1,6 +1,7 @@
 const { Schema, model } = require('mongoose');
 
 const toJSON = require('./plugins/toJSON');
+const { localizado } = require('./plugins/localizado');
 
 const PerfilSchema = Schema({
   nombre: {
@@ -24,16 +25,8 @@ const PerfilSchema = Schema({
     required: true,
     trim: true,
   },
-  direccion: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  descripcion: {
-    type: String,
-    required: true,
-    trim: true,
-  },
+  direccion: localizado({ required: true }),
+  descripcion: localizado({ required: true }),
   foto: {
     type: String,
     trim: true,
@@ -48,16 +41,13 @@ const PerfilSchema = Schema({
     trim: true,
     match: /^https?:\/\//i,
   },
-  disponibilidad: {
-    type: String,
-    trim: true,
-  },
+  disponibilidad: localizado(),
   idiomas: {
     type: [
       new Schema(
         {
-          idioma: { type: String, required: true, trim: true },
-          nivel: { type: String, required: true, trim: true },
+          idioma: localizado({ required: true }),
+          nivel: localizado({ required: true }),
         },
         { _id: false },
       ),

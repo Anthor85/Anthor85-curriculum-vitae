@@ -1,17 +1,10 @@
 const { Schema, model } = require('mongoose');
 
 const toJSON = require('./plugins/toJSON');
+const { localizado } = require('./plugins/localizado');
 const FormacionComplementariaSchema = Schema({
-  titulo: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  institucion: {
-    type: String,
-    required: true,
-    trim: true,
-  },
+  titulo: localizado({ required: true }),
+  institucion: localizado({ required: true }),
   fechaFin: {
     type: Date,
   },

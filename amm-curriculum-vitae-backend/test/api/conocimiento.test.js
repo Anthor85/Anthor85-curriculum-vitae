@@ -24,7 +24,7 @@ describe('/api/conocimiento', () => {
     it('devuelve los conocimientos sembrados con id y sin _id ni __v', async () => {
       const conocimiento = await crearConocimientoEnBd({
         titulo: 'Node',
-        prioridad: 'Baja',
+        prioridad: 'baja',
       });
 
       const { body } = await request(app).get('/api/conocimiento').expect(200);
@@ -33,7 +33,7 @@ describe('/api/conocimiento', () => {
       expect(body[0]).toEqual({
         id: conocimiento._id.toString(),
         titulo: 'Node',
-        prioridad: 'Baja',
+        prioridad: 'baja',
       });
       expect(body[0]).not.toHaveProperty('_id');
       expect(body[0]).not.toHaveProperty('__v');
@@ -45,13 +45,13 @@ describe('/api/conocimiento', () => {
       const { body } = await request(app)
         .post('/api/conocimiento')
         .set('x-token', token)
-        .send({ titulo: 'React', prioridad: 'Alta' })
+        .send({ titulo: 'React', prioridad: 'alta' })
         .expect(201);
 
       expect(body).toEqual({
         id: expect.any(String),
         titulo: 'React',
-        prioridad: 'Alta',
+        prioridad: 'alta',
       });
       await expect(Conocimiento.countDocuments()).resolves.toBe(1);
     });
@@ -59,7 +59,7 @@ describe('/api/conocimiento', () => {
     it('sin token devuelve 401 y no crea nada', async () => {
       const { body } = await request(app)
         .post('/api/conocimiento')
-        .send({ titulo: 'React', prioridad: 'Alta' })
+        .send({ titulo: 'React', prioridad: 'alta' })
         .expect(401);
 
       expect(body).toEqual({ msg: 'No hay token en la petición' });
@@ -77,17 +77,36 @@ describe('/api/conocimiento', () => {
       await expect(Conocimiento.countDocuments()).resolves.toBe(0);
     });
 
-    it('sin prioridad devuelve 201 con prioridad Media', async () => {
+    it('con una prioridad antigua en texto devuelve 500 y con su clave 201', async () => {
+      const antigua = await request(app)
+        .post('/api/conocimiento')
+        .set('x-token', token)
+        .send({ titulo: 'React', prioridad: 'Alta' })
+        .expect(500);
+
+      expect(antigua.body).toEqual({ msg: 'Error al crear el conocimiento' });
+      await expect(Conocimiento.countDocuments()).resolves.toBe(0);
+
+      const { body } = await request(app)
+        .post('/api/conocimiento')
+        .set('x-token', token)
+        .send({ titulo: 'React', prioridad: 'alta' })
+        .expect(201);
+
+      expect(body.prioridad).toBe('alta');
+    });
+
+    it('sin prioridad devuelve 201 con prioridad media', async () => {
       const { body } = await request(app)
         .post('/api/conocimiento')
         .set('x-token', token)
         .send({ titulo: 'React' })
         .expect(201);
 
-      expect(body.prioridad).toBe('Media');
+      expect(body.prioridad).toBe('media');
     });
 
-    it.each(['Muy alta', 'Alta', 'Media', 'Baja', 'Muy baja'])(
+    it.each(['muyAlta', 'alta', 'media', 'baja', 'muyBaja'])(
       'con prioridad %s devuelve 201 y la devuelve',
       async (prioridad) => {
         const { body } = await request(app)
@@ -119,8 +138,8 @@ describe('/api/conocimiento', () => {
         .post('/api/conocimiento/multiple')
         .set('x-token', token)
         .send([
-          { titulo: 'React', prioridad: 'Alta' },
-          { titulo: 'Node', prioridad: 'Baja' },
+          { titulo: 'React', prioridad: 'alta' },
+          { titulo: 'Node', prioridad: 'baja' },
         ])
         .expect(201);
 
@@ -129,7 +148,7 @@ describe('/api/conocimiento', () => {
       await expect(Conocimiento.countDocuments()).resolves.toBe(2);
     });
 
-    it('sin prioridad guarda Media en todos', async () => {
+    it('sin prioridad guarda media en todos', async () => {
       await request(app)
         .post('/api/conocimiento/multiple')
         .set('x-token', token)
@@ -138,8 +157,8 @@ describe('/api/conocimiento', () => {
 
       const enBd = await Conocimiento.find();
       expect(enBd.map(({ prioridad }) => prioridad)).toEqual([
-        'Media',
-        'Media',
+        'media',
+        'media',
       ]);
     });
   });
@@ -151,31 +170,31 @@ describe('/api/conocimiento', () => {
       const { body } = await request(app)
         .put(`/api/conocimiento/${conocimiento._id}`)
         .set('x-token', token)
-        .send({ titulo: 'Vue', prioridad: 'Muy baja' })
+        .send({ titulo: 'Vue', prioridad: 'muyBaja' })
         .expect(200);
 
       expect(body).toEqual({
         id: conocimiento._id.toString(),
         titulo: 'Vue',
-        prioridad: 'Muy baja',
+        prioridad: 'muyBaja',
       });
       const enBd = await Conocimiento.findById(conocimiento._id);
       expect(enBd.titulo).toBe('Vue');
-      expect(enBd.prioridad).toBe('Muy baja');
+      expect(enBd.prioridad).toBe('muyBaja');
     });
 
     it('con un id inexistente devuelve 404', async () => {
       const { body } = await request(app)
         .put(`/api/conocimiento/${new Types.ObjectId()}`)
         .set('x-token', token)
-        .send({ titulo: 'Vue', prioridad: 'Muy baja' })
+        .send({ titulo: 'Vue', prioridad: 'muyBaja' })
         .expect(404);
 
       expect(body).toEqual({ msg: 'Conocimiento no encontrado' });
     });
 
     it('sin prioridad conserva la actual', async () => {
-      const conocimiento = await crearConocimientoEnBd({ prioridad: 'Alta' });
+      const conocimiento = await crearConocimientoEnBd({ prioridad: 'alta' });
 
       const { body } = await request(app)
         .put(`/api/conocimiento/${conocimiento._id}`)
@@ -183,13 +202,13 @@ describe('/api/conocimiento', () => {
         .send({ titulo: 'Vue' })
         .expect(200);
 
-      expect(body.prioridad).toBe('Alta');
+      expect(body.prioridad).toBe('alta');
       const enBd = await Conocimiento.findById(conocimiento._id);
-      expect(enBd.prioridad).toBe('Alta');
+      expect(enBd.prioridad).toBe('alta');
     });
 
     it('con una prioridad fuera del enum devuelve 500 y conserva la anterior', async () => {
-      const conocimiento = await crearConocimientoEnBd({ prioridad: 'Alta' });
+      const conocimiento = await crearConocimientoEnBd({ prioridad: 'alta' });
 
       const { body } = await request(app)
         .put(`/api/conocimiento/${conocimiento._id}`)
@@ -200,7 +219,7 @@ describe('/api/conocimiento', () => {
       expect(body).toEqual({ msg: 'Error al actualizar el conocimiento' });
       const enBd = await Conocimiento.findById(conocimiento._id);
       expect(enBd.titulo).toBe('React');
-      expect(enBd.prioridad).toBe('Alta');
+      expect(enBd.prioridad).toBe('alta');
     });
 
     it('con nivel en el body lo ignora', async () => {

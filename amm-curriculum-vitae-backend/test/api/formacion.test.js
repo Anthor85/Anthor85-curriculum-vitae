@@ -9,8 +9,8 @@ const { crearExtraEnBd, crearFormacionEnBd } = require('../utils/fixtures');
 const { tokenValido } = require('../utils/token');
 
 const formacionValida = {
-  titulo: 'Grado en Informatica',
-  institucion: 'Universidad de Valencia',
+  titulo: { es: 'Grado en Informatica', en: 'BSc in Computer Science' },
+  institucion: { es: 'Universidad de Valencia', en: 'University of Valencia' },
   fechaFin: '2015-06-30',
 };
 
@@ -36,8 +36,8 @@ describe('/api/formacion', () => {
       expect(body).toHaveLength(1);
       expect(body[0]).toEqual({
         id: formacion._id.toString(),
-        titulo: 'Ingenieria Informatica',
-        institucion: 'Universidad de test',
+        titulo: { es: 'Ingenieria Informatica', en: 'Computer Engineering' },
+        institucion: { es: 'Universidad de test', en: 'Test University' },
         fechaFin: '2015-06-30T00:00:00.000Z',
         extras: [],
       });
@@ -48,7 +48,7 @@ describe('/api/formacion', () => {
     it('devuelve las formaciones con sus extras poblados', async () => {
       const formacion = await crearFormacionEnBd();
       const extra = await crearExtraEnBd(formacion._id, {
-        descripcion: 'Rama de software',
+        descripcion: { es: 'Rama de software', en: 'Software track' },
       });
 
       const { body } = await request(app).get('/api/formacion').expect(200);
@@ -56,7 +56,7 @@ describe('/api/formacion', () => {
       expect(body[0].extras).toHaveLength(1);
       expect(body[0].extras[0]).toMatchObject({
         id: extra._id.toString(),
-        descripcion: 'Rama de software',
+        descripcion: { es: 'Rama de software', en: 'Software track' },
       });
       expect(body[0].extras[0]).not.toHaveProperty('_id');
     });
@@ -72,8 +72,11 @@ describe('/api/formacion', () => {
 
       expect(body).toEqual({
         id: expect.any(String),
-        titulo: 'Grado en Informatica',
-        institucion: 'Universidad de Valencia',
+        titulo: { es: 'Grado en Informatica', en: 'BSc in Computer Science' },
+        institucion: {
+          es: 'Universidad de Valencia',
+          en: 'University of Valencia',
+        },
         fechaFin: '2015-06-30T00:00:00.000Z',
         extras: [],
       });
@@ -81,7 +84,7 @@ describe('/api/formacion', () => {
       await expect(Extra.countDocuments()).resolves.toBe(0);
     });
 
-    it('crea un Extra por cada descripcion no vacia, ignorando los id recibidos', async () => {
+    it('crea un Extra por cada descripcion con es no vacio, ignorando los id recibidos', async () => {
       const idInventado = new Types.ObjectId().toString();
 
       const { body } = await request(app)
@@ -90,17 +93,22 @@ describe('/api/formacion', () => {
         .send({
           ...formacionValida,
           extras: [
-            { id: idInventado, descripcion: 'Rama de software' },
-            { descripcion: 'Premio extraordinario' },
-            { descripcion: '   ' },
+            {
+              id: idInventado,
+              descripcion: { es: 'Rama de software', en: 'Software track' },
+            },
+            { descripcion: { es: 'Premio extraordinario' } },
+            { descripcion: { es: '   ', en: 'Only English' } },
           ],
         })
         .expect(201);
 
-      expect(body.extras.map(({ descripcion }) => descripcion).sort()).toEqual([
-        'Premio extraordinario',
-        'Rama de software',
-      ]);
+      expect(body.extras.map(({ descripcion }) => descripcion)).toEqual(
+        expect.arrayContaining([
+          { es: 'Rama de software', en: 'Software track' },
+          { es: 'Premio extraordinario', en: '' },
+        ]),
+      );
       expect(body.extras.map(({ id }) => id)).not.toContain(idInventado);
 
       const extrasEnBd = await Extra.find({ formacion: body.id });
@@ -122,8 +130,8 @@ describe('/api/formacion', () => {
         .post('/api/formacion')
         .set('x-token', token)
         .send({
-          titulo: 'Grado en Informatica',
-          institucion: 'Universidad de Valencia',
+          titulo: formacionValida.titulo,
+          institucion: formacionValida.institucion,
         })
         .expect(500);
 
@@ -140,31 +148,37 @@ describe('/api/formacion', () => {
         .put(`/api/formacion/${formacion._id}`)
         .set('x-token', token)
         .send({
-          titulo: 'Master en Ingenieria del Software',
-          institucion: 'Universidad Politecnica',
+          titulo: {
+            es: 'Master en Ingenieria del Software',
+            en: 'MSc in Software Engineering',
+          },
+          institucion: { es: 'Universidad Politecnica', en: '' },
           fechaFin: '2018-09-15',
         })
         .expect(200);
 
       expect(body).toEqual({
         id: formacion._id.toString(),
-        titulo: 'Master en Ingenieria del Software',
-        institucion: 'Universidad Politecnica',
+        titulo: {
+          es: 'Master en Ingenieria del Software',
+          en: 'MSc in Software Engineering',
+        },
+        institucion: { es: 'Universidad Politecnica', en: '' },
         fechaFin: '2018-09-15T00:00:00.000Z',
         extras: [],
       });
       const enBd = await Formacion.findById(formacion._id);
-      expect(enBd.titulo).toBe('Master en Ingenieria del Software');
+      expect(enBd.titulo.es).toBe('Master en Ingenieria del Software');
       expect(enBd.fechaFin.toISOString()).toBe('2018-09-15T00:00:00.000Z');
     });
 
     it('reconcilia los extras: conserva el reenviado, crea el nuevo y borra el que ya no viene', async () => {
       const formacion = await crearFormacionEnBd();
       const seQueda = await crearExtraEnBd(formacion._id, {
-        descripcion: 'Original',
+        descripcion: { es: 'Original', en: '' },
       });
       const seVa = await crearExtraEnBd(formacion._id, {
-        descripcion: 'Sobra',
+        descripcion: { es: 'Sobra', en: '' },
       });
 
       const { body } = await request(app)
@@ -173,8 +187,11 @@ describe('/api/formacion', () => {
         .send({
           ...formacionValida,
           extras: [
-            { id: seQueda._id.toString(), descripcion: 'Editado' },
-            { descripcion: 'Nuevo' },
+            {
+              id: seQueda._id.toString(),
+              descripcion: { es: 'Editado', en: 'Edited' },
+            },
+            { descripcion: { es: 'Nuevo', en: '' } },
           ],
         })
         .expect(200);
@@ -183,33 +200,37 @@ describe('/api/formacion', () => {
       expect(body.extras).toContainEqual(
         expect.objectContaining({
           id: seQueda._id.toString(),
-          descripcion: 'Editado',
+          descripcion: { es: 'Editado', en: 'Edited' },
         }),
       );
       expect(body.extras).toContainEqual(
-        expect.objectContaining({ descripcion: 'Nuevo' }),
+        expect.objectContaining({ descripcion: { es: 'Nuevo', en: '' } }),
       );
       await expect(Extra.findById(seVa._id)).resolves.toBeNull();
     });
 
     it('descarta el id de un extra de otra formacion y crea uno nuevo', async () => {
       const formacion = await crearFormacionEnBd();
-      const otra = await crearFormacionEnBd({ titulo: 'Otra' });
-      const ajeno = await crearExtraEnBd(otra._id, { descripcion: 'Ajeno' });
+      const otra = await crearFormacionEnBd({ titulo: { es: 'Otra' } });
+      const ajeno = await crearExtraEnBd(otra._id, {
+        descripcion: { es: 'Ajeno', en: '' },
+      });
 
       const { body } = await request(app)
         .put(`/api/formacion/${formacion._id}`)
         .set('x-token', token)
         .send({
           ...formacionValida,
-          extras: [{ id: ajeno._id.toString(), descripcion: 'Robado' }],
+          extras: [
+            { id: ajeno._id.toString(), descripcion: { es: 'Robado', en: '' } },
+          ],
         })
         .expect(200);
 
       expect(body.extras).toHaveLength(1);
       expect(body.extras[0].id).not.toBe(ajeno._id.toString());
       const ajenoEnBd = await Extra.findById(ajeno._id);
-      expect(ajenoEnBd.descripcion).toBe('Ajeno');
+      expect(ajenoEnBd.descripcion.es).toBe('Ajeno');
       expect(ajenoEnBd.formacion.toString()).toBe(otra._id.toString());
     });
 
@@ -217,11 +238,7 @@ describe('/api/formacion', () => {
       const { body } = await request(app)
         .put(`/api/formacion/${new Types.ObjectId()}`)
         .set('x-token', token)
-        .send({
-          titulo: 'Master',
-          institucion: 'Universidad Politecnica',
-          fechaFin: '2018-09-15',
-        })
+        .send(formacionValida)
         .expect(404);
 
       expect(body).toEqual({ msg: 'Formación no encontrada' });
@@ -251,7 +268,7 @@ describe('/api/formacion', () => {
 
     it('borra en cascada sus extras sin tocar los de otra formacion', async () => {
       const formacion = await crearFormacionEnBd();
-      const otra = await crearFormacionEnBd({ titulo: 'Otra' });
+      const otra = await crearFormacionEnBd({ titulo: { es: 'Otra' } });
       await crearExtraEnBd(formacion._id);
       await crearExtraEnBd(formacion._id);
       await crearExtraEnBd(otra._id);

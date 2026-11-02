@@ -10,7 +10,10 @@ const { tokenValido } = require('../utils/token');
 
 const experienciaValida = {
   empresa: 'Empresa nueva',
-  descripcion: 'Desarrollo de aplicaciones web',
+  descripcion: {
+    es: 'Desarrollo de aplicaciones web',
+    en: 'Web application development',
+  },
   fechaInicio: '2020-01-01',
   fechaFin: '2022-12-31',
 };
@@ -32,7 +35,7 @@ describe('/api/experiencia', () => {
     it('devuelve las experiencias con sus hitos poblados', async () => {
       const experiencia = await crearExperienciaEnBd();
       const hito = await crearHitoEnBd(experiencia._id, {
-        descripcion: 'Migracion a React',
+        descripcion: { es: 'Migracion a React', en: 'React migration' },
       });
 
       const { body } = await request(app).get('/api/experiencia').expect(200);
@@ -44,7 +47,7 @@ describe('/api/experiencia', () => {
       expect(body[0].hitos).toHaveLength(1);
       expect(body[0].hitos[0]).toMatchObject({
         id: hito._id.toString(),
-        descripcion: 'Migracion a React',
+        descripcion: { es: 'Migracion a React', en: 'React migration' },
       });
       expect(body[0].hitos[0]).not.toHaveProperty('_id');
     });
@@ -61,7 +64,10 @@ describe('/api/experiencia', () => {
       expect(body).toMatchObject({
         id: expect.any(String),
         empresa: 'Empresa nueva',
-        descripcion: 'Desarrollo de aplicaciones web',
+        descripcion: {
+          es: 'Desarrollo de aplicaciones web',
+          en: 'Web application development',
+        },
         hitos: [],
         tecnologias: [],
       });
@@ -71,7 +77,7 @@ describe('/api/experiencia', () => {
       await expect(Hito.countDocuments()).resolves.toBe(0);
     });
 
-    it('con hitos como array de cadenas crea un Hito por cada una', async () => {
+    it('con hitos como array de cadenas crea un Hito por cada una con en vacio', async () => {
       const { body } = await request(app)
         .post('/api/experiencia')
         .set('x-token', token)
@@ -79,10 +85,12 @@ describe('/api/experiencia', () => {
         .expect(201);
 
       expect(body.hitos).toHaveLength(2);
-      expect(body.hitos.map(({ descripcion }) => descripcion).sort()).toEqual([
-        'Primero',
-        'Segundo',
-      ]);
+      expect(
+        body.hitos.map(({ descripcion }) => descripcion.es).sort(),
+      ).toEqual(['Primero', 'Segundo']);
+      body.hitos.forEach(({ descripcion }) => {
+        expect(descripcion.en).toBe('');
+      });
 
       const hitosEnBd = await Hito.find({ experiencia: body.id });
       expect(hitosEnBd).toHaveLength(2);
@@ -99,28 +107,65 @@ describe('/api/experiencia', () => {
         .set('x-token', token)
         .send({
           ...experienciaValida,
-          hitos: [{ id: idInventado, descripcion: 'Con id previo' }],
+          hitos: [
+            {
+              id: idInventado,
+              descripcion: { es: 'Con id previo', en: 'With previous id' },
+            },
+          ],
         })
         .expect(201);
 
       expect(body.hitos).toHaveLength(1);
-      expect(body.hitos[0].descripcion).toBe('Con id previo');
+      expect(body.hitos[0].descripcion).toEqual({
+        es: 'Con id previo',
+        en: 'With previous id',
+      });
       expect(body.hitos[0].id).not.toBe(idInventado);
       await expect(Hito.findById(idInventado)).resolves.toBeNull();
     });
 
-    it('descarta las descripciones de hito vacias o de solo espacios', async () => {
+    it('trima es y en, y trata una descripcion string como el texto en es', async () => {
       const { body } = await request(app)
         .post('/api/experiencia')
         .set('x-token', token)
         .send({
           ...experienciaValida,
-          hitos: ['Valido', '', '   ', { descripcion: '  ' }],
+          hitos: [
+            { descripcion: { es: '  Con espacios  ', en: '  With spaces  ' } },
+            { descripcion: 'Texto suelto' },
+          ],
+        })
+        .expect(201);
+
+      expect(body.hitos.map(({ descripcion }) => descripcion)).toEqual(
+        expect.arrayContaining([
+          { es: 'Con espacios', en: 'With spaces' },
+          { es: 'Texto suelto', en: '' },
+        ]),
+      );
+      await expect(Hito.countDocuments()).resolves.toBe(2);
+    });
+
+    it('descarta los hitos con es vacio o de solo espacios aunque tengan en', async () => {
+      const { body } = await request(app)
+        .post('/api/experiencia')
+        .set('x-token', token)
+        .send({
+          ...experienciaValida,
+          hitos: [
+            'Valido',
+            '',
+            '   ',
+            { descripcion: '  ' },
+            { descripcion: { es: '  ', en: 'Only English' } },
+            { descripcion: { en: 'Without es' } },
+          ],
         })
         .expect(201);
 
       expect(body.hitos).toHaveLength(1);
-      expect(body.hitos[0].descripcion).toBe('Valido');
+      expect(body.hitos[0].descripcion).toEqual({ es: 'Valido', en: '' });
       await expect(Hito.countDocuments()).resolves.toBe(1);
     });
 
@@ -172,10 +217,10 @@ describe('/api/experiencia', () => {
     it('reconcilia los hitos: conserva el reenviado, crea el nuevo y borra el que ya no viene', async () => {
       const experiencia = await crearExperienciaEnBd();
       const conservado = await crearHitoEnBd(experiencia._id, {
-        descripcion: 'Se queda',
+        descripcion: { es: 'Se queda', en: '' },
       });
       const borrado = await crearHitoEnBd(experiencia._id, {
-        descripcion: 'Se va',
+        descripcion: { es: 'Se va', en: '' },
       });
 
       const { body } = await request(app)
@@ -184,8 +229,11 @@ describe('/api/experiencia', () => {
         .send({
           ...experienciaValida,
           hitos: [
-            { id: conservado._id.toString(), descripcion: 'Se queda editado' },
-            { descripcion: 'Recien creado' },
+            {
+              id: conservado._id.toString(),
+              descripcion: { es: 'Se queda', en: 'Stays' },
+            },
+            { descripcion: { es: 'Recien creado' } },
           ],
         })
         .expect(200);
@@ -198,12 +246,14 @@ describe('/api/experiencia', () => {
       const conservadoEnBd = enBd.find(
         (hito) => String(hito._id) === String(conservado._id),
       );
-      expect(conservadoEnBd.descripcion).toBe('Se queda editado');
+      expect(conservadoEnBd.descripcion.es).toBe('Se queda');
+      expect(conservadoEnBd.descripcion.en).toBe('Stays');
 
       const creadoEnBd = enBd.find(
         (hito) => String(hito._id) !== String(conservado._id),
       );
-      expect(creadoEnBd.descripcion).toBe('Recien creado');
+      expect(creadoEnBd.descripcion.es).toBe('Recien creado');
+      expect(creadoEnBd.descripcion.en).toBe('');
 
       await expect(Hito.findById(borrado._id)).resolves.toBeNull();
     });
@@ -214,7 +264,7 @@ describe('/api/experiencia', () => {
         empresa: 'Otra empresa',
       });
       const hitoAjeno = await crearHitoEnBd(otraExperiencia._id, {
-        descripcion: 'De otra experiencia',
+        descripcion: { es: 'De otra experiencia', en: '' },
       });
 
       const { body } = await request(app)
@@ -222,16 +272,21 @@ describe('/api/experiencia', () => {
         .set('x-token', token)
         .send({
           ...experienciaValida,
-          hitos: [{ id: hitoAjeno._id.toString(), descripcion: 'Reasignado' }],
+          hitos: [
+            {
+              id: hitoAjeno._id.toString(),
+              descripcion: { es: 'Reasignado', en: '' },
+            },
+          ],
         })
         .expect(200);
 
       expect(body.hitos).toHaveLength(1);
       expect(body.hitos[0].id).not.toBe(hitoAjeno._id.toString());
-      expect(body.hitos[0].descripcion).toBe('Reasignado');
+      expect(body.hitos[0].descripcion).toEqual({ es: 'Reasignado', en: '' });
 
       const ajenoEnBd = await Hito.findById(hitoAjeno._id);
-      expect(ajenoEnBd.descripcion).toBe('De otra experiencia');
+      expect(ajenoEnBd.descripcion.es).toBe('De otra experiencia');
       expect(ajenoEnBd.experiencia.toString()).toBe(
         otraExperiencia._id.toString(),
       );
@@ -241,15 +296,13 @@ describe('/api/experiencia', () => {
   describe('DELETE /api/experiencia/:id', () => {
     it('borra en cascada sus hitos sin tocar los de otra experiencia, y devuelve 404 con un id inexistente', async () => {
       const experiencia = await crearExperienciaEnBd();
-      await crearHitoEnBd(experiencia._id, { descripcion: 'Uno' });
-      await crearHitoEnBd(experiencia._id, { descripcion: 'Dos' });
+      await crearHitoEnBd(experiencia._id);
+      await crearHitoEnBd(experiencia._id);
 
       const otraExperiencia = await crearExperienciaEnBd({
         empresa: 'Otra empresa',
       });
-      const hitoAjeno = await crearHitoEnBd(otraExperiencia._id, {
-        descripcion: 'Intacto',
-      });
+      const hitoAjeno = await crearHitoEnBd(otraExperiencia._id);
 
       const { body } = await request(app)
         .delete(`/api/experiencia/${experiencia._id}`)

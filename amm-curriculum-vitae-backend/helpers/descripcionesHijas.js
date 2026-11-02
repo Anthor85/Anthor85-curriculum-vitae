@@ -1,22 +1,31 @@
 // Utilidades para las colecciones "hijas" que solo guardan un texto y la
 // referencia a su padre (Hito → Experiencia, Extra → Formacion).
 
+// La descripción es { es, en }; un string suelto (formato antiguo) es el texto
+// en español.
+const normalizarDescripcion = (descripcion) =>
+  typeof descripcion === 'string'
+    ? { es: descripcion.trim(), en: '' }
+    : {
+        es: String(descripcion?.es ?? '').trim(),
+        en: String(descripcion?.en ?? '').trim(),
+      };
+
 // Acepta ["texto", ...] (formato antiguo del form) y [{ id?, descripcion }, ...]
-// (formato nuevo). Devuelve siempre [{ id, descripcion }] sin descripciones vacías.
-// No se parte por comas: el texto libre puede contenerlas.
+// (formato nuevo). Devuelve siempre [{ id, descripcion: { es, en } }] sin las
+// que tienen `es` vacío. No se parte por comas: el texto libre puede contenerlas.
 const normalizarDescripciones = (items) =>
   []
     .concat(items ?? [])
     .map((item) =>
       typeof item === 'string'
-        ? { id: undefined, descripcion: item }
-        : { id: item?.id, descripcion: item?.descripcion ?? '' },
+        ? { id: undefined, descripcion: normalizarDescripcion(item) }
+        : {
+            id: item?.id,
+            descripcion: normalizarDescripcion(item?.descripcion),
+          },
     )
-    .map(({ id, descripcion }) => ({
-      id,
-      descripcion: String(descripcion).trim(),
-    }))
-    .filter(({ descripcion }) => descripcion !== '');
+    .filter(({ descripcion }) => descripcion.es !== '');
 
 // Al crear el padre todos los hijos son nuevos: se descarta cualquier id recibido.
 const crearDescripciones = async (Modelo, campoPadre, padreId, items) => {

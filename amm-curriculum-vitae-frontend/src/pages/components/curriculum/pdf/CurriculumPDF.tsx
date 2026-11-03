@@ -37,7 +37,7 @@ export interface DatosCurriculumPDF {
   experiencia: Experiencia<string>[];
   formaciones: Formacion<string>[];
   formacionesComplementarias: FormacionComplementaria<string>[];
-  conocimiento: Conocimiento[];
+  conocimiento: Conocimiento<string>[];
   idioma: Idioma;
   // i18n.getFixedT(idioma): el PDF no importa el singleton de i18n
   t: TFunction;
@@ -189,7 +189,7 @@ const Competencias = ({
   conocimiento,
   t,
 }: {
-  conocimiento: Conocimiento[];
+  conocimiento: Conocimiento<string>[];
   t: TFunction;
 }) => {
   if (!conocimiento.length) return null;
@@ -217,7 +217,7 @@ const Puesto = ({
   t,
 }: {
   experiencia: Experiencia<string>;
-  conocimiento: Conocimiento[];
+  conocimiento: Conocimiento<string>[];
   t: TFunction;
 }) => {
   const tecnologias = tecnologiasFilter(experiencia.tecnologias, conocimiento);

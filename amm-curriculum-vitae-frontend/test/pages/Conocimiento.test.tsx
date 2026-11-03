@@ -21,9 +21,11 @@ vi.mock('../../src/api/api', () => ({
 
 import { Conocimiento } from '../../src/pages/Conocimiento';
 
+const loc = (es: string, en = '') => ({ es, en });
+
 const CONOCIMIENTOS: IConocimiento[] = [
-  { id: '1', titulo: 'React', prioridad: ConocimientoPrioridad.ALTA },
-  { id: '2', titulo: 'Sass', prioridad: ConocimientoPrioridad.BAJA },
+  { id: '1', titulo: loc('React'), prioridad: ConocimientoPrioridad.ALTA },
+  { id: '2', titulo: loc('Sass'), prioridad: ConocimientoPrioridad.BAJA },
 ];
 
 const configurarApi = () => {
@@ -88,7 +90,7 @@ describe('<Conocimiento />', () => {
   test('pinta el formulario con sus campos y sus botones', async () => {
     await renderPagina();
 
-    expect(screen.getByLabelText('Título:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Título (ES)')).toBeInTheDocument();
     expect(screen.getByLabelText('Prioridad:')).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: 'Agregar Conocimiento' }),
@@ -124,7 +126,7 @@ describe('<Conocimiento />', () => {
     const user = setupUser();
     await renderPagina();
 
-    await user.type(screen.getByLabelText('Título:'), 'TypeScript');
+    await user.type(screen.getByLabelText('Título (ES)'), 'TypeScript');
     await user.click(
       screen.getByRole('button', { name: 'Agregar Conocimiento' }),
     );
@@ -133,7 +135,7 @@ describe('<Conocimiento />', () => {
 
     const [, payload] = apiMock.post.mock.calls[0];
     expect(payload).toEqual({
-      titulo: 'TypeScript',
+      titulo: loc('TypeScript'),
       prioridad: ConocimientoPrioridad.MEDIA,
     });
     expect(payload).not.toHaveProperty('nivel');
@@ -143,7 +145,7 @@ describe('<Conocimiento />', () => {
     const user = setupUser();
     await renderPagina();
 
-    const titulo = screen.getByLabelText('Título:');
+    const titulo = screen.getByLabelText('Título (ES)');
     const prioridad = screen.getByLabelText('Prioridad:');
 
     await user.type(titulo, 'TypeScript');
@@ -160,7 +162,7 @@ describe('<Conocimiento />', () => {
     const user = setupUser();
     await renderPagina();
 
-    await user.type(screen.getByLabelText('Título:'), 'TypeScript');
+    await user.type(screen.getByLabelText('Título (ES)'), 'TypeScript');
     await user.selectOptions(
       screen.getByLabelText('Prioridad:'),
       ConocimientoPrioridad.ALTA,
@@ -172,7 +174,7 @@ describe('<Conocimiento />', () => {
     await flush();
 
     expect(apiMock.post).toHaveBeenCalledWith('/conocimiento', {
-      titulo: 'TypeScript',
+      titulo: loc('TypeScript'),
       prioridad: ConocimientoPrioridad.ALTA,
     });
     expect(screen.getByText('TypeScript')).toBeInTheDocument();
@@ -186,7 +188,7 @@ describe('<Conocimiento />', () => {
     const user = setupUser();
     await renderPagina();
 
-    const titulo = screen.getByLabelText('Título:');
+    const titulo = screen.getByLabelText('Título (ES)');
     expect(titulo).toHaveValue('');
 
     await user.click(
@@ -207,7 +209,7 @@ describe('<Conocimiento />', () => {
 
     await user.click(screen.getAllByRole('button', { name: 'Editar' })[0]);
 
-    expect(screen.getByLabelText('Título:')).toHaveValue('React');
+    expect(screen.getByLabelText('Título (ES)')).toHaveValue('React');
     expect(screen.getByLabelText('Prioridad:')).toHaveValue(
       ConocimientoPrioridad.ALTA,
     );
@@ -226,7 +228,7 @@ describe('<Conocimiento />', () => {
     await user.click(screen.getAllByRole('button', { name: 'Editar' })[0]);
     await user.click(screen.getByRole('button', { name: 'Borrar formulario' }));
 
-    expect(screen.getByLabelText('Título:')).toHaveValue('');
+    expect(screen.getByLabelText('Título (ES)')).toHaveValue('');
     expect(screen.getByLabelText('Prioridad:')).toHaveValue(
       ConocimientoPrioridad.MEDIA,
     );
@@ -244,7 +246,7 @@ describe('<Conocimiento />', () => {
 
     await user.click(screen.getAllByRole('button', { name: 'Editar' })[0]);
 
-    const titulo = screen.getByLabelText('Título:');
+    const titulo = screen.getByLabelText('Título (ES)');
     await user.clear(titulo);
     await user.type(titulo, 'React 19');
     await user.click(
@@ -254,7 +256,7 @@ describe('<Conocimiento />', () => {
     await flush();
 
     expect(apiMock.put).toHaveBeenCalledWith('/conocimiento/1', {
-      titulo: 'React 19',
+      titulo: loc('React 19'),
       prioridad: ConocimientoPrioridad.ALTA,
     });
     expect(screen.getByText('React 19')).toBeInTheDocument();
@@ -284,7 +286,7 @@ describe('<Conocimiento />', () => {
     apiMock.post.mockRejectedValue(new Error('boom'));
     await renderPagina();
 
-    await user.type(screen.getByLabelText('Título:'), 'TypeScript');
+    await user.type(screen.getByLabelText('Título (ES)'), 'TypeScript');
     await user.click(
       screen.getByRole('button', { name: 'Agregar Conocimiento' }),
     );
@@ -306,7 +308,7 @@ describe('<Conocimiento />', () => {
 
     await user.click(screen.getAllByRole('button', { name: 'Editar' })[0]);
 
-    const titulo = screen.getByLabelText('Título:');
+    const titulo = screen.getByLabelText('Título (ES)');
     await user.clear(titulo);
     await user.type(titulo, 'React 19');
     await user.click(
@@ -358,8 +360,102 @@ describe('<Conocimiento />', () => {
     expect(
       screen.getByRole('img', { name: 'Cargando...' }),
     ).toBeInTheDocument();
-    expect(screen.queryByLabelText('Título:')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Título (ES)')).not.toBeInTheDocument();
 
     await flush();
+  });
+
+  test('«Editar» carga el título en los dos idiomas y actualizar envía { es, en }', async () => {
+    const user = setupUser();
+    apiMock.get.mockResolvedValue({
+      data: [
+        {
+          id: '1',
+          titulo: loc('Pruebas unitarias', 'Unit tests'),
+          prioridad: ConocimientoPrioridad.ALTA,
+        },
+      ],
+    });
+    await renderPagina();
+
+    await user.click(screen.getByRole('button', { name: 'Editar' }));
+
+    expect(screen.getByLabelText('Título (ES)')).toHaveValue(
+      'Pruebas unitarias',
+    );
+    const en = screen.getByLabelText('Título (EN)');
+    expect(en).toHaveValue('Unit tests');
+
+    await user.clear(en);
+    await user.type(en, ' Unit testing ');
+    await user.click(
+      screen.getByRole('button', { name: 'Actualizar Conocimiento' }),
+    );
+    await flush();
+
+    expect(apiMock.put).toHaveBeenCalledWith('/conocimiento/1', {
+      titulo: loc('Pruebas unitarias', 'Unit testing'),
+      prioridad: ConocimientoPrioridad.ALTA,
+    });
+  });
+
+  test('«Sugerir EN» rellena el título EN y viaja en el payload', async () => {
+    const user = setupUser();
+    await renderPagina();
+    apiMock.post.mockImplementation((url: string, payload: unknown) =>
+      Promise.resolve({
+        data:
+          url === '/traduccion'
+            ? { textos: ['Agile methodologies'] }
+            : { id: '3', ...(payload as object) },
+      }),
+    );
+
+    await user.type(
+      screen.getByLabelText('Título (ES)'),
+      'Metodologías ágiles',
+    );
+    await user.click(screen.getByRole('button', { name: 'Sugerir EN' }));
+    await flush();
+
+    expect(apiMock.post).toHaveBeenCalledWith('/traduccion', {
+      textos: ['Metodologías ágiles'],
+    });
+    expect(screen.getByLabelText('Título (EN)')).toHaveValue(
+      'Agile methodologies',
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'Agregar Conocimiento' }),
+    );
+    await flush();
+
+    expect(apiMock.post).toHaveBeenLastCalledWith('/conocimiento', {
+      titulo: loc('Metodologías ágiles', 'Agile methodologies'),
+      prioridad: ConocimientoPrioridad.MEDIA,
+    });
+  });
+
+  test('la Card muestra el título en español y no marca «Sin EN»', async () => {
+    apiMock.get.mockResolvedValue({
+      data: [
+        {
+          id: '1',
+          titulo: loc('Pruebas unitarias', 'Unit testing'),
+          prioridad: ConocimientoPrioridad.ALTA,
+        },
+        {
+          id: '2',
+          titulo: loc('Metodologías ágiles'),
+          prioridad: ConocimientoPrioridad.MEDIA,
+        },
+      ],
+    });
+    await renderPagina();
+
+    expect(screen.getByText('Pruebas unitarias')).toBeInTheDocument();
+    expect(screen.queryByText('Unit testing')).not.toBeInTheDocument();
+    expect(screen.getByText('Metodologías ágiles')).toBeInTheDocument();
+    expect(screen.queryByText('Sin EN')).not.toBeInTheDocument();
   });
 });

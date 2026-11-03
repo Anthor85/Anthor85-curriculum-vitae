@@ -20,7 +20,7 @@ const indicePrioridad = (prioridad?: ConocimientoPrioridad) => {
 };
 
 interface CurriculumOrdenado {
-  conocimientosOrdenados: Conocimiento[];
+  conocimientosOrdenados: Conocimiento<string>[];
   experienciaOrdenada: Experiencia<string>[];
   formacionesOrdenadas: Formacion<string>[];
   complementariasOrdenadas: FormacionComplementaria<string>[];

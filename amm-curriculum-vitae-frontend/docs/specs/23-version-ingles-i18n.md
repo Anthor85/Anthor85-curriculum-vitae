@@ -1,6 +1,6 @@
 # SPEC 23 — Versión en inglés: i18next, rutas `/` y `/en`, `hreflang` y formularios bilingües
 
-> **Estado:** Aprobada
+> **Estado:** Implementada
 > **Depende de:** SPEC 13 backend (`13-contenido-bilingue.md`), que fija `{ es, en }`, `GET /api/curriculum?lang=` y `POST /api/traduccion`; SPEC 17 (`17-prerender-y-metadatos.md`), cuyo prerender se duplica por idioma; SPEC 20 (`20-prioridad-conocimiento-frontend.md`), cuyo enum cambia a claves
 > **Fecha:** 2026-11-02
 > **Enmienda:** 2026-11-03 — `Conocimiento.titulo` bilingüe, a la par que la enmienda de la SPEC 13 (ver «Enmiendas»)

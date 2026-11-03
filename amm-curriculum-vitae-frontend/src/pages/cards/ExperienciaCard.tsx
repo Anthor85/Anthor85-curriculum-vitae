@@ -49,7 +49,9 @@ export const ExperienciaCard = ({
             <ul className={styles.colecciones}>
               {conocimiento &&
                 tecnologiasFilter(experiencia.tecnologias, conocimiento).map(
-                  (tech: Conocimiento) => <li key={tech.id}>{tech.titulo}</li>,
+                  (tech: Conocimiento) => (
+                    <li key={tech.id}>{tech.titulo.es}</li>
+                  ),
                 )}
             </ul>
           </div>

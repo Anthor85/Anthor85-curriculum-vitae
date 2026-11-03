@@ -74,9 +74,10 @@ const configurarApi = () => {
   );
 };
 
+// t1 lleva un `en` distinto para comprobar que el admin pinta siempre el ES
 const CONOCIMIENTO = [
-  { id: 't1', titulo: 'React', prioridad: 'Alta' },
-  { id: 't2', titulo: 'TypeScript', prioridad: 'Media' },
+  { id: 't1', titulo: loc('React', 'React (EN)'), prioridad: 'alta' },
+  { id: 't2', titulo: loc('TypeScript'), prioridad: 'media' },
 ];
 
 // Variante de configurarApi con tecnologias: el form pinta el MultiSelect y la
@@ -437,6 +438,18 @@ describe('<Experiencia />', () => {
     const listas = screen.getAllByRole('list');
     expect(within(listas[0]).getByText('React')).toBeInTheDocument();
     expect(within(listas[0]).queryByText('TypeScript')).not.toBeInTheDocument();
+    expect(screen.queryByText('React (EN)')).not.toBeInTheDocument();
+  });
+
+  test('el MultiSelect de tecnologías ofrece los títulos en español', async () => {
+    const user = setupUser();
+    await renderPaginaConTecnologias();
+
+    await user.click(screen.getByRole('combobox'));
+
+    expect(
+      screen.getAllByRole('option').map((opcion) => opcion.textContent),
+    ).toEqual(['React', 'TypeScript']);
   });
 
   test('la Card con tecnologías que no están en el store no pinta títulos', async () => {

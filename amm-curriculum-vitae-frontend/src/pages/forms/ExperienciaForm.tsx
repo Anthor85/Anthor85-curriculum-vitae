@@ -180,7 +180,7 @@ export const ExperienciaForm = ({
             ariaLabelledBy="tecnologias-titulo"
             options={conocimiento.map((tecnologia: Conocimiento) => ({
               id: tecnologia.id,
-              label: tecnologia.titulo,
+              label: tecnologia.titulo.es,
             }))}
             selected={experiencia.tecnologias}
             onChange={(selectedTecnologias) =>

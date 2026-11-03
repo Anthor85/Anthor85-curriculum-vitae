@@ -24,7 +24,7 @@ export const ConocimientoCard = ({
   return (
     <div className={`${styles.Card} ${enEdicion ? styles.enEdicion : ''}`}>
       <div className={styles.data}>
-        <div className={styles.title}>{titulo}</div>
+        <div className={styles.title}>{titulo.es}</div>
         {prioridad && (
           <div className={styles.subdata}>
             <b>Prioridad:</b> {ETIQUETAS_PRIORIDAD[prioridad] ?? prioridad}

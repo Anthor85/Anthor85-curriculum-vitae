@@ -1,6 +1,6 @@
 # SPEC 13 — Contenido bilingüe (ES/EN) y sugerencia de traducción
 
-> **Estado:** Aprobada
+> **Estado:** Implementada
 > **Depende de:** SPEC 11 (`11-prioridad-conocimiento.md`), cuyo `enum` se cambia a claves; SPEC 12 (`12-extras-formacion.md`), cuyo helper `descripcionesHijas.js` se adapta
 > **Fecha:** 2026-11-02
 > **Enmienda:** 2026-11-03 — `Conocimiento.titulo` pasa a `{ es, en }` (ver «Enmiendas»)

@@ -8,13 +8,15 @@ import {
 } from '../../interfaces/conocimiento.interface';
 
 import { Button } from '../../components/Button';
+import { CampoLocalizado } from '../../components/CampoLocalizado';
+import { TEXTO_VACIO, trimLocalizado } from '../../helpers/textoLocalizado';
 import { MensajeAccion } from '../../components/MensajeAccion';
 import type { MensajeAccion as MensajeAccionType } from '../../interfaces/mensajeAccion.interface';
 
 import styles from './Form.module.scss';
 
 const CONOCIMIENTO_VACIO: ConocimientoPayload = {
-  titulo: '',
+  titulo: TEXTO_VACIO,
   prioridad: ConocimientoPrioridad.MEDIA,
 };
 
@@ -48,7 +50,7 @@ export const ConocimientoForm = ({
   const { isPending, enviar } = useEnvioFormulario(async () => {
     const payload: ConocimientoPayload = {
       ...conocimiento,
-      titulo: conocimiento.titulo.trim(),
+      titulo: trimLocalizado(conocimiento.titulo),
     };
 
     await onAddConocimiento(payload);
@@ -57,19 +59,13 @@ export const ConocimientoForm = ({
 
   return (
     <form onSubmit={enviar} className={styles.Form}>
-      <div className={styles.field}>
-        <label htmlFor="titulo">Título:</label>
-        <input
-          type="text"
-          id="titulo"
-          name="titulo"
-          value={conocimiento.titulo}
-          onChange={(e) =>
-            setConocimiento({ ...conocimiento, titulo: e.target.value })
-          }
-          required
-        />
-      </div>
+      <CampoLocalizado
+        id="titulo"
+        etiqueta="Título"
+        valor={conocimiento.titulo}
+        onChange={(titulo) => setConocimiento((prev) => ({ ...prev, titulo }))}
+        required
+      />
       <div className={styles.field}>
         <label htmlFor="prioridad">Prioridad:</label>
         <select

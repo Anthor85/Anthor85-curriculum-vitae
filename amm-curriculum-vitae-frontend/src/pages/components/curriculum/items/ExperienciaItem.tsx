@@ -10,7 +10,7 @@ import styles from './Items.module.scss';
 
 interface Props {
   experiencia: Experiencia<string>;
-  conocimiento: Conocimiento[];
+  conocimiento: Conocimiento<string>[];
   expandible?: boolean;
 }
 

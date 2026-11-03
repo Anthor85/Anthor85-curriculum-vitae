@@ -6,7 +6,7 @@ import { Perfil } from './perfil.interface';
 
 // Lo que devuelve /curriculum?lang=: los textos ya vienen resueltos.
 export interface Curriculum {
-  conocimiento: Conocimiento[];
+  conocimiento: Conocimiento<string>[];
   experiencia: Experiencia<string>[];
   formaciones: Formacion<string>[];
   formacionesComplementarias: FormacionComplementaria<string>[];

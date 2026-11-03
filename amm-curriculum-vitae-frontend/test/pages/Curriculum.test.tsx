@@ -27,7 +27,7 @@ const conocimiento = (
   id: string,
   titulo: string,
   prioridad?: ConocimientoPrioridad,
-): Conocimiento => ({ id, titulo, prioridad }) as Conocimiento;
+): Conocimiento<string> => ({ id, titulo, prioridad }) as Conocimiento<string>;
 
 const CURRICULUM: ICurriculum = {
   perfil: null,

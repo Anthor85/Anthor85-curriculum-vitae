@@ -12,7 +12,7 @@ const conocimiento = (
   id: string,
   titulo: string,
   prioridad: ConocimientoPrioridad = ConocimientoPrioridad.MEDIA,
-): Conocimiento => ({
+): Conocimiento<string> => ({
   id,
   titulo,
   prioridad,

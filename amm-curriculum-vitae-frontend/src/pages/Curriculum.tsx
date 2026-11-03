@@ -6,7 +6,7 @@ import { ordenarCurriculum } from '../helpers/ordenarCurriculum';
 import { Button } from '../components/Button';
 import { Resumen } from '../components/Resumen';
 import { Tabs } from '../components/Tabs';
-import { useCurriculumStore } from '../hooks';
+import { useCurriculumStore, useIdioma } from '../hooks';
 import {
   ConocimientoItem,
   Contacto,
@@ -14,14 +14,24 @@ import {
   FormacionComplementariaItem,
   FormacionItem,
 } from './components/curriculum/items';
+import { SelectorIdioma } from './components/curriculum/selectorIdioma';
 
 import styles from './Curriculum.module.scss';
 import { Spinner } from '../components/Spinner';
 
 export const Curriculum = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const idioma = useIdioma();
   const [preparandoPDF, setPreparandoPDF] = useState(false);
-  const { curriculum, getCurriculum, loading, error } = useCurriculumStore();
+  const { curriculum, getCurriculum, loading, error } =
+    useCurriculumStore(idioma);
+
+  // index.tsx y entry-server.tsx ya fijan el idioma antes del primer render;
+  // esto cubre el cambio de idioma al navegar con el selector.
+  useEffect(() => {
+    i18n.changeLanguage(idioma);
+    document.documentElement.lang = idioma;
+  }, [i18n, idioma]);
 
   useEffect(() => {
     if (!curriculum) getCurriculum();
@@ -148,11 +158,14 @@ export const Curriculum = () => {
             {perfil?.disponibilidad && (
               <p className={styles.disponibilidad}>{perfil.disponibilidad}</p>
             )}
-            <Button
-              onClick={() => setPreparandoPDF(true)}
-              name={t('curriculum.descargarPDF')}
-              icon="descarga"
-            />
+            <div className={styles.acciones}>
+              <Button
+                onClick={() => setPreparandoPDF(true)}
+                name={t('curriculum.descargarPDF')}
+                icon="descarga"
+              />
+              <SelectorIdioma />
+            </div>
           </div>
           <div className={styles.information}>
             {perfil?.descripcion && (

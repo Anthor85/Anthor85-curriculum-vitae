@@ -33,6 +33,9 @@
     "mensaje": "Se ha producido un error inesperado. Prueba a recargar la página.",
     "recargar": "Recargar"
   },
+  "idioma": {
+    "selector": "Idioma"
+  },
   "spinner": {
     "cargando": "Cargando..."
   }

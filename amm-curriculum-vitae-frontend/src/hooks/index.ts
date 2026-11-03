@@ -7,3 +7,4 @@ export * from './useAuthStore';
 export * from './useEnvioFormulario';
 export * from './useMensajeAccion';
 export * from './usePerfilStore';
+export * from './useIdioma';

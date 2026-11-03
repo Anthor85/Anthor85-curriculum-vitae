@@ -33,6 +33,9 @@
     "mensaje": "An unexpected error occurred. Try reloading the page.",
     "recargar": "Reload"
   },
+  "idioma": {
+    "selector": "Language"
+  },
   "spinner": {
     "cargando": "Loading..."
   }

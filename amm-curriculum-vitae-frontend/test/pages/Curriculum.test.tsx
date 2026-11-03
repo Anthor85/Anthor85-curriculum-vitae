@@ -1,5 +1,6 @@
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 
 import { renderConStore } from '../utils';
 import {
@@ -58,7 +59,7 @@ const ORDEN_ESPERADO = [
   'Cobol',
 ];
 
-const PERFIL: Perfil = {
+const PERFIL: Perfil<string> = {
   id: 'p1',
   nombre: 'Antonio',
   apellidos: 'Menéndez',
@@ -69,9 +70,18 @@ const PERFIL: Perfil = {
 };
 
 const renderCurriculum = (curriculum: ICurriculum = CURRICULUM) =>
-  renderConStore(<Curriculum />, {
-    curriculum: { curriculum, loading: false, error: null },
-  });
+  renderConStore(
+    <MemoryRouter initialEntries={['/']}>
+      <Curriculum />
+    </MemoryRouter>,
+    {
+      curriculum: {
+        curriculums: { es: curriculum, en: null },
+        loading: false,
+        error: null,
+      },
+    },
+  );
 
 describe('<Curriculum />', () => {
   beforeEach(() => {

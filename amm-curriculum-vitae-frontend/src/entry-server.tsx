@@ -14,7 +14,7 @@ export { metasCurriculum } from './helpers/metasCurriculum';
 // Mismo árbol que index.tsx, con el store ya cargado y el router fijo en "/".
 // El store es un singleton: un solo render por proceso.
 export const render = (curriculum: Curriculum): string => {
-  store.dispatch(setCurriculum(curriculum));
+  store.dispatch(setCurriculum({ idioma: 'es', curriculum }));
 
   return renderToString(
     <ErrorBoundary>

@@ -41,6 +41,7 @@ export const Router = () => {
     <Suspense fallback={<Spinner />}>
       <Routes>
         <Route path="/" element={<Curriculum />} />
+        <Route path="/en" element={<Curriculum />} />
         <Route
           path="/login"
           element={

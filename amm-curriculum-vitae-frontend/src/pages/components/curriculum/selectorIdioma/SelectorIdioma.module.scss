@@ -1,0 +1,25 @@
+.SelectorIdioma {
+  display: inline-flex;
+  border: 1px solid v.$color-primary-dark;
+  border-radius: 5px;
+  overflow: hidden;
+
+  .opcion {
+    padding: 10px 14px;
+    color: v.$color-primary-dark;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+
+    &:hover {
+      background-color: v.$color-primary-soft;
+    }
+
+    &[aria-current='page'] {
+      background-color: v.$color-primary-dark;
+      color: v.$color-white;
+    }
+
+    @include v.foco-visible(-2px);
+  }
+}

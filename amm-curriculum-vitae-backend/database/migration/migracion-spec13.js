@@ -1,16 +1,16 @@
 // SPEC 13 — Migración a contenido bilingüe { es, en } y prioridades por clave.
 // Incluye la enmienda 2026-11-03 (Conocimiento.titulo).
-// Usa el .env (DB_CONN) y los node_modules del backend, desde cualquier carpeta:
-//   node migracion-spec13.js
-// Hacer antes la copia: node backup-crudo.js <sufijo>
+// Desde amm-curriculum-vitae-backend (DB_CONN del .env o del entorno):
+//   node database/migration/migracion-spec13.js
+// Hacer antes la copia: node database/migration/backup-crudo.js <sufijo>
 // Idempotente: se puede ejecutar más de una vez sin cambiar el resultado.
 const path = require('path');
-const backend = path.join(__dirname, 'amm-curriculum-vitae-backend');
-require(path.join(backend, 'node_modules/dotenv')).config({
-  path: path.join(backend, '.env'),
+// DB_CONN del entorno manda sobre el .env (dotenv no sobrescribe).
+require('dotenv').config({
+  path: path.join(__dirname, '../../.env'),
   quiet: true,
 });
-const mongoose = require(path.join(backend, 'node_modules/mongoose'));
+const mongoose = require('mongoose');
 
 const colecciones = [
   'experiencias',
@@ -26,7 +26,12 @@ const claves = ['muyAlta', 'alta', 'media', 'baja', 'muyBaja'];
 const loc = (campo) => ({ es: { $ifNull: [`$${campo}`, ''] }, en: '' });
 
 const huellaIds = async (db, c) =>
-  (await db.collection(c).find({}, { projection: { _id: 1 } }).toArray())
+  (
+    await db
+      .collection(c)
+      .find({}, { projection: { _id: 1 } })
+      .toArray()
+  )
     .map((d) => String(d._id))
     .sort()
     .join();
@@ -116,10 +121,9 @@ const huellaIds = async (db, c) =>
   // Enmienda 2026-11-03: Conocimiento.titulo pasa a { es, en }.
   resultado(
     'conocimientos (titulo)',
-    await col('conocimientos').updateMany(
-      { 'titulo.es': { $exists: false } },
-      [{ $set: { titulo: loc('titulo') } }],
-    ),
+    await col('conocimientos').updateMany({ 'titulo.es': { $exists: false } }, [
+      { $set: { titulo: loc('titulo') } },
+    ]),
   );
   // Filtro añadido respecto a la spec ({}): sin él, una segunda ejecución
   // convertiría 'muyAlta', 'alta', 'baja' y 'muyBaja' en 'media' por el default.
@@ -148,11 +152,15 @@ const huellaIds = async (db, c) =>
   console.log('\nVerificación (todo debe dar 0):');
   const esString = { $type: 'string' };
   const verificaciones = {
-    experiencias: await col('experiencias').countDocuments({ descripcion: esString }),
+    experiencias: await col('experiencias').countDocuments({
+      descripcion: esString,
+    }),
     hitos: await col('hitos').countDocuments({ descripcion: esString }),
     extras: await col('extras').countDocuments({ descripcion: esString }),
     formacions: await col('formacions').countDocuments({ titulo: esString }),
-    formacioncomplementarias: await col('formacioncomplementarias').countDocuments({
+    formacioncomplementarias: await col(
+      'formacioncomplementarias',
+    ).countDocuments({
       titulo: esString,
     }),
     perfils: await col('perfils').countDocuments({ descripcion: esString }),
@@ -163,7 +171,9 @@ const huellaIds = async (db, c) =>
       prioridad: { $nin: claves },
     }),
   };
-  Object.entries(verificaciones).forEach(([c, n]) => console.log(`  ${c}: ${n}`));
+  Object.entries(verificaciones).forEach(([c, n]) =>
+    console.log(`  ${c}: ${n}`),
+  );
 
   const idsCambiados = [];
   for (const c of colecciones) {
@@ -178,7 +188,9 @@ const huellaIds = async (db, c) =>
   const ok =
     Object.values(verificaciones).every((n) => n === 0) &&
     idsCambiados.length === 0;
-  console.log(ok ? '\nOK: migración correcta' : '\nERROR: revisar la migración');
+  console.log(
+    ok ? '\nOK: migración correcta' : '\nERROR: revisar la migración',
+  );
   if (!ok) process.exitCode = 1;
   await conexion.close();
 })().catch((e) => {

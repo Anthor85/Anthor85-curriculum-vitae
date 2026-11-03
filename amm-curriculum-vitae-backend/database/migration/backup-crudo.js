@@ -1,17 +1,19 @@
 // Copia en crudo (sin schemas) de todas las colecciones de la base de DB_CONN
 // a <base>_backup_spec13[_<sufijo>] en el mismo cluster. Aborta si el destino no
-// está vacío. Usa el .env y los node_modules del backend, desde cualquier carpeta:
-//   node backup-crudo.js [sufijo]
+// está vacío. Desde amm-curriculum-vitae-backend (DB_CONN del .env o del entorno):
+//   node database/migration/backup-crudo.js [sufijo]
 const path = require('path');
-const backend = path.join(__dirname, 'amm-curriculum-vitae-backend');
-require(path.join(backend, 'node_modules/dotenv')).config({
-  path: path.join(backend, '.env'),
+// DB_CONN del entorno manda sobre el .env (dotenv no sobrescribe).
+require('dotenv').config({
+  path: path.join(__dirname, '../../.env'),
   quiet: true,
 });
-const mongoose = require(path.join(backend, 'node_modules/mongoose'));
+const mongoose = require('mongoose');
 
 (async () => {
-  const conexion = await mongoose.createConnection(process.env.DB_CONN).asPromise();
+  const conexion = await mongoose
+    .createConnection(process.env.DB_CONN)
+    .asPromise();
   const origen = conexion.db;
   const sufijo = process.argv[2] ? `_${process.argv[2]}` : '';
   const nombreDestino = `${origen.databaseName}_backup_spec13${sufijo}`;
@@ -22,12 +24,16 @@ const mongoose = require(path.join(backend, 'node_modules/mongoose'));
 
   const yaHay = await destino.listCollections().toArray();
   if (yaHay.length > 0) {
-    console.error(`ABORTADO: ${nombreDestino} ya tiene colecciones: ${yaHay.map((c) => c.name).join(', ')}`);
+    console.error(
+      `ABORTADO: ${nombreDestino} ya tiene colecciones: ${yaHay.map((c) => c.name).join(', ')}`,
+    );
     process.exitCode = 1;
     return conexion.close();
   }
 
-  const colecciones = (await origen.listCollections({ type: 'collection' }).toArray())
+  const colecciones = (
+    await origen.listCollections({ type: 'collection' }).toArray()
+  )
     .map((c) => c.name)
     .filter((n) => !n.startsWith('system.'))
     .sort();
@@ -39,7 +45,9 @@ const mongoose = require(path.join(backend, 'node_modules/mongoose'));
     const total = await destino.collection(nombre).countDocuments();
     const cuadra = total === docs.length;
     ok &&= cuadra;
-    console.log(`  ${nombre.padEnd(26)} ${String(docs.length).padStart(4)} -> ${String(total).padStart(4)} ${cuadra ? 'OK' : 'DESCUADRE'}`);
+    console.log(
+      `  ${nombre.padEnd(26)} ${String(docs.length).padStart(4)} -> ${String(total).padStart(4)} ${cuadra ? 'OK' : 'DESCUADRE'}`,
+    );
   }
 
   console.log(ok ? '\nCopia completada' : '\nERROR: algún recuento no cuadra');

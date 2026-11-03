@@ -1,13 +1,10 @@
 const { Schema, model } = require('mongoose');
 
 const toJSON = require('./plugins/toJSON');
+const { localizado } = require('./plugins/localizado');
 
 const ConocimientoSchema = Schema({
-  titulo: {
-    type: String,
-    required: true,
-    trim: true,
-  },
+  titulo: localizado({ required: true }),
   prioridad: {
     type: String,
     required: true,

@@ -107,10 +107,16 @@ describe('<Conocimiento />', () => {
     const prioridad = screen.getByLabelText('Prioridad:');
     const opciones = Array.from(
       (prioridad as HTMLSelectElement).options,
-      (o) => o.value,
+      (o) => [o.value, o.textContent],
     );
 
-    expect(opciones).toEqual(['Muy alta', 'Alta', 'Media', 'Baja', 'Muy baja']);
+    expect(opciones).toEqual([
+      ['muyAlta', 'Muy alta'],
+      ['alta', 'Alta'],
+      ['media', 'Media'],
+      ['baja', 'Baja'],
+      ['muyBaja', 'Muy baja'],
+    ]);
     expect(prioridad).toHaveValue(ConocimientoPrioridad.MEDIA);
   });
 

@@ -1,0 +1,58 @@
+// Mismo aspecto que `.field` de Form.module.scss, con una fila por idioma
+.CampoLocalizado {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .fila {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.5rem;
+
+    label {
+      width: 150px;
+    }
+
+    input {
+      flex: 1;
+      height: 2rem;
+      max-width: 50vw;
+    }
+
+    textarea {
+      flex: 1;
+      max-width: 50vw;
+      font: inherit;
+      resize: vertical;
+    }
+
+    button {
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+  }
+
+  .error {
+    margin: 0;
+    color: v.$color-error;
+    font-weight: 600;
+  }
+}
+
+@media (max-width: 768px) {
+  .CampoLocalizado .fila {
+    flex-direction: column;
+    gap: 0.25rem;
+
+    label {
+      width: auto;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      max-width: none;
+    }
+  }
+}

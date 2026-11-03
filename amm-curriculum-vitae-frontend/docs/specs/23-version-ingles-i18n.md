@@ -132,10 +132,10 @@ export default i18n;
 
 `scripts/prerender.mjs` renderiza los dos idiomas:
 
-| Idioma | Petición | Salida |
-| ------ | -------- | ------ |
-| `es` | `GET /curriculum?lang=es` | `dist/index.html` |
-| `en` | `GET /curriculum?lang=en` | `dist/en/index.html` |
+| Idioma | Petición                  | Salida               |
+| ------ | ------------------------- | -------------------- |
+| `es`   | `GET /curriculum?lang=es` | `dist/index.html`    |
+| `en`   | `GET /curriculum?lang=en` | `dist/en/index.html` |
 
 - `render(curriculum, idioma)` en `entry-server.tsx`: `changeLanguage(idioma)`, `setCurriculum({ idioma, curriculum })` y `StaticRouter location={idioma === 'en' ? '/en' : '/'}`. Los dos renders van seguidos en el mismo proceso, y como `renderToString` es síncrono, el singleton del store no molesta.
 - Nuevo marcador `html: /<html lang="[^"]*">/`, que se sustituye por el idioma de la página.
@@ -163,12 +163,12 @@ Nuevo componente `components/CampoLocalizado.tsx`:
 
 ```tsx
 interface Props {
-  id: string;                    // "titulo" → inputs "titulo-es" y "titulo-en"
-  etiqueta: string;              // "Título"
+  id: string; // "titulo" → inputs "titulo-es" y "titulo-en"
+  etiqueta: string; // "Título"
   valor: TextoLocalizado;
   onChange: (valor: TextoLocalizado) => void;
-  multilinea?: boolean;          // textarea en vez de input
-  required?: boolean;            // solo afecta a ES
+  multilinea?: boolean; // textarea en vez de input
+  required?: boolean; // solo afecta a ES
 }
 ```
 
@@ -179,12 +179,12 @@ interface Props {
 
 Uso por formulario:
 
-| Form | Campos con `CampoLocalizado` |
-| ---- | ---------------------------- |
-| `ExperienciaForm` | `descripcion` (multilínea) |
-| `FormacionForm` | `titulo`, `institucion` |
-| `FormacionComplementariaForm` | `titulo`, `institucion` |
-| `PerfilForm` | `descripcion` (multilínea), `direccion`, `disponibilidad` |
+| Form                          | Campos con `CampoLocalizado`                              |
+| ----------------------------- | --------------------------------------------------------- |
+| `ExperienciaForm`             | `descripcion` (multilínea)                                |
+| `FormacionForm`               | `titulo`, `institucion`                                   |
+| `FormacionComplementariaForm` | `titulo`, `institucion`                                   |
+| `PerfilForm`                  | `descripcion` (multilínea), `direccion`, `disponibilidad` |
 
 Listas (hitos, extras, idiomas del perfil): cada fila tiene un input ES y otro EN (`aria-label` «Hito N (ES)» / «Hito N (EN)»). Debajo del grupo, un botón «Sugerir EN de los vacíos» traduce **en una sola petición** todas las filas con ES relleno y EN vacío.
 
@@ -247,11 +247,11 @@ Listas (hitos, extras, idiomas del perfil): cada fila tiene un input ES y otro E
 
 ## Riesgos
 
-| Riesgo | Mitigación |
-| ------ | ---------- |
-| La hidratación no cuadra si el idioma de i18n no está fijado antes del primer render | `changeLanguage` en `index.tsx`/`entry-server.tsx` antes de renderizar; prueba con `npm run preview` en `/` y `/en` |
-| Vercel sirve `spa.html` en `/en` por la regla comodín | Rewrite explícito `/en` → `/en/index.html` antes del comodín; comprobarlo con `curl` tras desplegar |
-| `vite preview` no lee `vercel.json` | `index.tsx` comprueba la ruta y el idioma precargado antes de hidratar, como hoy |
-| Una clave de i18n en `en.json` pero no en `es.json` (o al revés) | Tipado de claves y test de paridad |
-| Traducir las cadenas del PDF descuadra el maquetado (el inglés es más corto o más largo) | Revisión visual del PDF en los dos idiomas en el paso 4 |
-| Despliegue desfasado con el backend | Desplegar justo después de la SPEC 13; el fallback a `es` del backend cubre los datos aún sin traducir |
+| Riesgo                                                                                   | Mitigación                                                                                                          |
+| ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| La hidratación no cuadra si el idioma de i18n no está fijado antes del primer render     | `changeLanguage` en `index.tsx`/`entry-server.tsx` antes de renderizar; prueba con `npm run preview` en `/` y `/en` |
+| Vercel sirve `spa.html` en `/en` por la regla comodín                                    | Rewrite explícito `/en` → `/en/index.html` antes del comodín; comprobarlo con `curl` tras desplegar                 |
+| `vite preview` no lee `vercel.json`                                                      | `index.tsx` comprueba la ruta y el idioma precargado antes de hidratar, como hoy                                    |
+| Una clave de i18n en `en.json` pero no en `es.json` (o al revés)                         | Tipado de claves y test de paridad                                                                                  |
+| Traducir las cadenas del PDF descuadra el maquetado (el inglés es más corto o más largo) | Revisión visual del PDF en los dos idiomas en el paso 4                                                             |
+| Despliegue desfasado con el backend                                                      | Desplegar justo después de la SPEC 13; el fallback a `es` del backend cubre los datos aún sin traducir              |

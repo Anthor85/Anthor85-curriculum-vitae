@@ -6,14 +6,18 @@ import type {
 } from '../../interfaces/formacion.interface';
 
 import { Button } from '../../components/Button';
+import { CampoLocalizado } from '../../components/CampoLocalizado';
+import { SugerirVacios } from '../../components/SugerirVacios';
+import type { Traduccion } from '../../components/SugerirVacios';
+import { TEXTO_VACIO, trimLocalizado } from '../../helpers/textoLocalizado';
 import { MensajeAccion } from '../../components/MensajeAccion';
 import type { MensajeAccion as MensajeAccionType } from '../../interfaces/mensajeAccion.interface';
 
 import styles from './Form.module.scss';
 
 const FORMACION_VACIA: FormacionPayload = {
-  titulo: '',
-  institucion: '',
+  titulo: TEXTO_VACIO,
+  institucion: TEXTO_VACIO,
   fechaFin: '',
   extras: [],
 };
@@ -44,7 +48,7 @@ export const FormacionForm = ({
                   id,
                   descripcion,
                 }))
-              : [{ descripcion: '' }],
+              : [{ descripcion: TEXTO_VACIO }],
         }
       : FORMACION_VACIA,
   );
@@ -52,7 +56,7 @@ export const FormacionForm = ({
   const anadirExtra = () =>
     setFormacion((prev) => ({
       ...prev,
-      extras: [...prev.extras, { descripcion: '' }],
+      extras: [...prev.extras, { descripcion: TEXTO_VACIO }],
     }));
 
   const borrarExtra = (indice: number) =>
@@ -61,12 +65,28 @@ export const FormacionForm = ({
       extras: prev.extras.filter((_, i) => i !== indice),
     }));
 
-  const cambiarExtra = (indice: number, valor: string) =>
+  const cambiarExtra = (indice: number, idioma: 'es' | 'en', valor: string) =>
     setFormacion((prev) => ({
       ...prev,
       extras: prev.extras.map((extra, i) =>
-        i === indice ? { ...extra, descripcion: valor } : extra,
+        i === indice
+          ? { ...extra, descripcion: { ...extra.descripcion, [idioma]: valor } }
+          : extra,
       ),
+    }));
+
+  const aplicarTraducciones = (traducciones: Traduccion[]) =>
+    setFormacion((prev) => ({
+      ...prev,
+      extras: prev.extras.map((extra, i) => {
+        const traduccion = traducciones.find(({ indice }) => indice === i);
+        return traduccion
+          ? {
+              ...extra,
+              descripcion: { ...extra.descripcion, en: traduccion.en },
+            }
+          : extra;
+      }),
     }));
 
   const limpiarFormulario = () => {
@@ -77,11 +97,14 @@ export const FormacionForm = ({
   const { isPending, enviar } = useEnvioFormulario(async () => {
     const payload: FormacionPayload = {
       ...formacion,
-      titulo: formacion.titulo.trim(),
-      institucion: formacion.institucion.trim(),
-      extras: formacion.extras.filter(
-        (extra) => extra.descripcion.trim() !== '',
-      ),
+      titulo: trimLocalizado(formacion.titulo),
+      institucion: trimLocalizado(formacion.institucion),
+      extras: formacion.extras
+        .map((extra) => ({
+          ...extra,
+          descripcion: trimLocalizado(extra.descripcion),
+        }))
+        .filter((extra) => extra.descripcion.es !== ''),
     };
 
     await onSubmitFormacion(payload);
@@ -90,32 +113,22 @@ export const FormacionForm = ({
 
   return (
     <form onSubmit={enviar} className={styles.Form}>
-      <div className={styles.field}>
-        <label htmlFor="titulo">Título:</label>
-        <input
-          type="text"
-          id="titulo"
-          name="titulo"
-          value={formacion.titulo}
-          onChange={(e) =>
-            setFormacion({ ...formacion, titulo: e.target.value })
-          }
-          required
-        />
-      </div>
-      <div className={styles.field}>
-        <label htmlFor="institucion">Institución:</label>
-        <input
-          type="text"
-          id="institucion"
-          name="institucion"
-          value={formacion.institucion}
-          onChange={(e) =>
-            setFormacion({ ...formacion, institucion: e.target.value })
-          }
-          required
-        />
-      </div>
+      <CampoLocalizado
+        id="titulo"
+        etiqueta="Título"
+        valor={formacion.titulo}
+        onChange={(titulo) => setFormacion((prev) => ({ ...prev, titulo }))}
+        required
+      />
+      <CampoLocalizado
+        id="institucion"
+        etiqueta="Institución"
+        valor={formacion.institucion}
+        onChange={(institucion) =>
+          setFormacion((prev) => ({ ...prev, institucion }))
+        }
+        required
+      />
       <div className={styles.field}>
         <label htmlFor="fechaFin">Fecha de Fin:</label>
         <input
@@ -139,10 +152,17 @@ export const FormacionForm = ({
           <div key={indice} className={styles.hitoFila}>
             <input
               type="text"
-              name="extras"
-              aria-label={`Extra ${indice + 1}`}
-              value={extra.descripcion}
-              onChange={(e) => cambiarExtra(indice, e.target.value)}
+              name="extras-es"
+              aria-label={`Extra ${indice + 1} (ES)`}
+              value={extra.descripcion.es}
+              onChange={(e) => cambiarExtra(indice, 'es', e.target.value)}
+            />
+            <input
+              type="text"
+              name="extras-en"
+              aria-label={`Extra ${indice + 1} (EN)`}
+              value={extra.descripcion.en}
+              onChange={(e) => cambiarExtra(indice, 'en', e.target.value)}
             />
             <button
               type="button"
@@ -155,6 +175,10 @@ export const FormacionForm = ({
           </div>
         ))}
         <Button type="button" onClick={anadirExtra} name="+ Añadir extra" />
+        <SugerirVacios
+          valores={formacion.extras.map(({ descripcion }) => descripcion)}
+          onTraducidos={aplicarTraducciones}
+        />
       </div>
       <div className={styles.actions}>
         <Button

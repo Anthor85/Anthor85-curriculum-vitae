@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useConocimientoStore, useEnvioFormulario } from '../../hooks';
+import { CampoLocalizado } from '../../components/CampoLocalizado';
 import { MultiSelect } from '../../components/MultiSelect';
+import { SugerirVacios } from '../../components/SugerirVacios';
+import type { Traduccion } from '../../components/SugerirVacios';
+import { TEXTO_VACIO, trimLocalizado } from '../../helpers/textoLocalizado';
 import type { Conocimiento } from '../../interfaces/conocimiento.interface';
 import type {
   Experiencia,
@@ -15,7 +19,7 @@ import styles from './Form.module.scss';
 
 const EXPERIENCIA_VACIA: ExperienciaPayload = {
   empresa: '',
-  descripcion: '',
+  descripcion: TEXTO_VACIO,
   fechaInicio: '',
   fechaFin: '',
   tecnologias: [],
@@ -52,7 +56,7 @@ export const ExperienciaForm = ({
                   id,
                   descripcion,
                 }))
-              : [{ descripcion: '' }],
+              : [{ descripcion: TEXTO_VACIO }],
         }
       : EXPERIENCIA_VACIA,
   );
@@ -65,7 +69,7 @@ export const ExperienciaForm = ({
   const anadirHito = () =>
     setExperiencia((prev) => ({
       ...prev,
-      hitos: [...(prev.hitos || []), { descripcion: '' }],
+      hitos: [...(prev.hitos || []), { descripcion: TEXTO_VACIO }],
     }));
 
   const borrarHito = (indice: number) =>
@@ -74,13 +78,26 @@ export const ExperienciaForm = ({
       hitos: prev.hitos?.filter((_, i) => i !== indice) || [],
     }));
 
-  const cambiarHito = (indice: number, valor: string) =>
+  const cambiarHito = (indice: number, idioma: 'es' | 'en', valor: string) =>
     setExperiencia((prev) => ({
       ...prev,
       hitos:
         prev.hitos?.map((hito, i) =>
-          i === indice ? { ...hito, descripcion: valor } : hito,
+          i === indice
+            ? { ...hito, descripcion: { ...hito.descripcion, [idioma]: valor } }
+            : hito,
         ) || [],
+    }));
+
+  const aplicarTraducciones = (traducciones: Traduccion[]) =>
+    setExperiencia((prev) => ({
+      ...prev,
+      hitos: prev.hitos.map((hito, i) => {
+        const traduccion = traducciones.find(({ indice }) => indice === i);
+        return traduccion
+          ? { ...hito, descripcion: { ...hito.descripcion, en: traduccion.en } }
+          : hito;
+      }),
     }));
 
   const limpiarFormulario = () => {
@@ -91,8 +108,14 @@ export const ExperienciaForm = ({
   const { isPending, enviar } = useEnvioFormulario(async () => {
     const payload: ExperienciaPayload = {
       ...experiencia,
+      descripcion: trimLocalizado(experiencia.descripcion),
       fechaFin: experiencia.fechaFin ?? '',
-      hitos: experiencia.hitos.filter((hito) => hito.descripcion.trim() !== ''),
+      hitos: experiencia.hitos
+        .map((hito) => ({
+          ...hito,
+          descripcion: trimLocalizado(hito.descripcion),
+        }))
+        .filter((hito) => hito.descripcion.es !== ''),
     };
 
     await onAddExperiencia(payload);
@@ -114,19 +137,16 @@ export const ExperienciaForm = ({
           required
         />
       </div>
-      <div className={styles.field}>
-        <label htmlFor="descripcion">Posición:</label>
-        <input
-          type="text"
-          id="descripcion"
-          name="descripcion"
-          value={experiencia.descripcion}
-          onChange={(e) =>
-            setExperiencia({ ...experiencia, descripcion: e.target.value })
-          }
-          required
-        />
-      </div>
+      <CampoLocalizado
+        id="descripcion"
+        etiqueta="Posición"
+        valor={experiencia.descripcion}
+        onChange={(descripcion) =>
+          setExperiencia((prev) => ({ ...prev, descripcion }))
+        }
+        multilinea
+        required
+      />
       <div className={styles.field}>
         <label htmlFor="fechaInicio">Fecha inicio:</label>
         <input
@@ -182,10 +202,17 @@ export const ExperienciaForm = ({
             <div key={indice} className={styles.hitoFila}>
               <input
                 type="text"
-                name="hitos"
-                aria-label={`Hito ${indice + 1}`}
-                value={hito.descripcion}
-                onChange={(e) => cambiarHito(indice, e.target.value)}
+                name="hitos-es"
+                aria-label={`Hito ${indice + 1} (ES)`}
+                value={hito.descripcion.es}
+                onChange={(e) => cambiarHito(indice, 'es', e.target.value)}
+              />
+              <input
+                type="text"
+                name="hitos-en"
+                aria-label={`Hito ${indice + 1} (EN)`}
+                value={hito.descripcion.en}
+                onChange={(e) => cambiarHito(indice, 'en', e.target.value)}
               />
               <button
                 type="button"
@@ -202,6 +229,10 @@ export const ExperienciaForm = ({
           // className={styles.hitoBoton}
           onClick={anadirHito}
           name="+ Añadir hito"
+        />
+        <SugerirVacios
+          valores={experiencia.hitos.map(({ descripcion }) => descripcion)}
+          onTraducidos={aplicarTraducciones}
         />
       </div>
       <div className={styles.actions}>

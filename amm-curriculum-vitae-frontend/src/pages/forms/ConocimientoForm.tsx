@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useEnvioFormulario } from '../../hooks';
 import {
   ConocimientoPrioridad,
+  ETIQUETAS_PRIORIDAD,
   type Conocimiento,
   type ConocimientoPayload,
 } from '../../interfaces/conocimiento.interface';
@@ -85,7 +86,7 @@ export const ConocimientoForm = ({
         >
           {Object.values(ConocimientoPrioridad).map((valor) => (
             <option key={valor} value={valor}>
-              {valor}
+              {ETIQUETAS_PRIORIDAD[valor]}
             </option>
           ))}
         </select>

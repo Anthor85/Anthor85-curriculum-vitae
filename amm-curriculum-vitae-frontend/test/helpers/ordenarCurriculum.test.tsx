@@ -182,4 +182,22 @@ describe('ordenarCurriculum', () => {
     expect(ids(experiencias)).toEqual(['a', 'b']);
     expect(experienciaOrdenada).not.toBe(experiencias);
   });
+
+  test('ordena con las claves de prioridad tal como llegan de la API', () => {
+    const curriculum = {
+      conocimiento: [
+        { id: '1', titulo: 'Cobol', prioridad: 'muyBaja' },
+        { id: '2', titulo: 'Java', prioridad: 'media' },
+        { id: '3', titulo: 'React', prioridad: 'muyAlta' },
+        { id: '4', titulo: 'Pascal', prioridad: 'baja' },
+        { id: '5', titulo: 'Node', prioridad: 'alta' },
+        // Las etiquetas antiguas ya no son claves válidas: cuentan como media
+        { id: '6', titulo: 'Angular', prioridad: 'Muy alta' },
+      ],
+    } as unknown as Curriculum;
+
+    expect(
+      ordenarCurriculum(curriculum).conocimientosOrdenados.map((c) => c.titulo),
+    ).toEqual(['React', 'Node', 'Angular', 'Java', 'Pascal', 'Cobol']);
+  });
 });

@@ -304,4 +304,41 @@ describe('CurriculumPDF', () => {
       'Curriculum Vitae',
     );
   });
+
+  test('competencias filtra la clave muyBaja tal como llega de la API', () => {
+    renderPDF({
+      conocimiento: [
+        { id: 'c1', titulo: 'Angular', prioridad: 'muyAlta' },
+        { id: 'c4', titulo: 'React', prioridad: 'muyBaja' },
+      ] as DatosCurriculumPDF['conocimiento'],
+    });
+
+    expect(
+      screen.getAllByText(/^(Angular|React)$/).map((el) => el.textContent),
+    ).toEqual(['Angular']);
+  });
+
+  test('en inglés traduce rótulos, fechas, pie e idioma del documento', () => {
+    renderPDF({
+      idioma: 'en',
+      t: i18n.getFixedT('en'),
+      experiencia: [{ ...datos.experiencia[0], fechaFin: undefined }],
+      perfil: { ...datos.perfil!, disponibilidad: 'Immediate' },
+    });
+
+    ['Skills', 'Experience', 'Education', 'Additional Training'].forEach(
+      (texto) => expect(screen.getByText(texto)).toBeInTheDocument(),
+    );
+    ['Address', 'Phone', 'Availability'].forEach((texto) =>
+      expect(screen.getByText(texto)).toBeInTheDocument(),
+    );
+    expect(screen.getByText('Key achievements:')).toBeInTheDocument();
+    expect(screen.getByText(/- Present$/)).toBeInTheDocument();
+    expect(screen.getByText('Ana Pérez · Page 1 of 2')).toBeInTheDocument();
+    expect(screen.getByTestId('documento')).toHaveAttribute(
+      'data-language',
+      'en',
+    );
+    expect(screen.queryByText('Competencias')).not.toBeInTheDocument();
+  });
 });

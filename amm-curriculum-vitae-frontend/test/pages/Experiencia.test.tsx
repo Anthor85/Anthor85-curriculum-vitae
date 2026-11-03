@@ -1,7 +1,13 @@
 import { fireEvent, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { avanzarMensaje, flush, renderConStore, textoMensaje } from '../utils';
+import {
+  avanzarMensaje,
+  errorAxios,
+  flush,
+  renderConStore,
+  textoMensaje,
+} from '../utils';
 import { Experiencia as IExperiencia } from '../../src/interfaces/experiencia.interface';
 
 const apiMock = vi.hoisted(() => ({
@@ -18,22 +24,28 @@ vi.mock('../../src/api/api', () => ({
 
 import { Experiencia } from '../../src/pages/Experiencia';
 
+const loc = (es: string, en = '') => ({ es, en });
+
 const EXPERIENCIAS: IExperiencia[] = [
   {
     id: '1',
     empresa: 'Acme',
-    descripcion: 'Frontend Developer',
+    descripcion: loc('Frontend Developer', 'Frontend Developer EN'),
     fechaInicio: '2020-01-15',
     fechaFin: '2022-06-30',
     tecnologias: ['t1'],
     hitos: [
-      { id: 'h1', descripcion: 'Migración a React 19', experiencia: '1' },
+      {
+        id: 'h1',
+        descripcion: loc('Migración a React 19', 'Migration to React 19'),
+        experiencia: '1',
+      },
     ],
   },
   {
     id: '2',
     empresa: 'Globex',
-    descripcion: 'Fullstack Developer',
+    descripcion: loc('Fullstack Developer'),
     fechaInicio: '2022-07-01',
     fechaFin: '',
     tecnologias: [],
@@ -92,7 +104,14 @@ const inputsHito = () =>
   screen
     .queryAllByRole('textbox')
     .filter(
-      (input) => input.getAttribute('name') === 'hitos',
+      (input) => input.getAttribute('name') === 'hitos-es',
+    ) as HTMLInputElement[];
+
+const inputsHitoEn = () =>
+  screen
+    .queryAllByRole('textbox')
+    .filter(
+      (input) => input.getAttribute('name') === 'hitos-en',
     ) as HTMLInputElement[];
 
 // Deja la promesa de la api en vuelo para poder assertar el estado pendiente
@@ -136,7 +155,7 @@ describe('<Experiencia />', () => {
     await renderPagina();
 
     expect(screen.getByLabelText('Empresa:')).toBeInTheDocument();
-    expect(screen.getByLabelText('Posición:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Posición (ES)')).toBeInTheDocument();
     expect(screen.getByLabelText('Fecha inicio:')).toBeInTheDocument();
     expect(screen.getByLabelText('Fecha fin:')).toBeInTheDocument();
     expect(
@@ -158,7 +177,7 @@ describe('<Experiencia />', () => {
     await renderPagina();
 
     const empresa = screen.getByLabelText('Empresa:');
-    const posicion = screen.getByLabelText('Posición:');
+    const posicion = screen.getByLabelText('Posición (ES)');
     const fechaInicio = screen.getByLabelText('Fecha inicio:');
 
     await user.type(empresa, 'Initech');
@@ -179,7 +198,7 @@ describe('<Experiencia />', () => {
     await renderPagina();
 
     await user.type(screen.getByLabelText('Empresa:'), 'Initech');
-    await user.type(screen.getByLabelText('Posición:'), 'Tech Lead');
+    await user.type(screen.getByLabelText('Posición (ES)'), 'Tech Lead');
     escribirFecha(screen.getByLabelText('Fecha inicio:'), '2023-02-01');
     await user.click(
       screen.getByRole('button', { name: 'Agregar Experiencia' }),
@@ -189,7 +208,7 @@ describe('<Experiencia />', () => {
 
     expect(apiMock.post).toHaveBeenCalledWith('/experiencia', {
       empresa: 'Initech',
-      descripcion: 'Tech Lead',
+      descripcion: { es: 'Tech Lead', en: '' },
       fechaInicio: '2023-02-01',
       fechaFin: '',
       tecnologias: [],
@@ -208,7 +227,7 @@ describe('<Experiencia />', () => {
 
     const empresa = screen.getByLabelText('Empresa:');
 
-    await user.type(screen.getByLabelText('Posición:'), 'Tech Lead');
+    await user.type(screen.getByLabelText('Posición (ES)'), 'Tech Lead');
     escribirFecha(screen.getByLabelText('Fecha inicio:'), '2023-02-01');
     await user.click(
       screen.getByRole('button', { name: 'Agregar Experiencia' }),
@@ -229,8 +248,11 @@ describe('<Experiencia />', () => {
     await user.click(screen.getAllByRole('button', { name: 'Editar' })[0]);
 
     expect(screen.getByLabelText('Empresa:')).toHaveValue('Acme');
-    expect(screen.getByLabelText('Posición:')).toHaveValue(
+    expect(screen.getByLabelText('Posición (ES)')).toHaveValue(
       'Frontend Developer',
+    );
+    expect(screen.getByLabelText('Posición (EN)')).toHaveValue(
+      'Frontend Developer EN',
     );
     expect(screen.getByLabelText('Fecha inicio:')).toHaveValue('2020-01-15');
     expect(screen.getByLabelText('Fecha fin:')).toHaveValue('2022-06-30');
@@ -250,7 +272,7 @@ describe('<Experiencia />', () => {
     await user.click(screen.getByRole('button', { name: 'Borrar formulario' }));
 
     expect(screen.getByLabelText('Empresa:')).toHaveValue('');
-    expect(screen.getByLabelText('Posición:')).toHaveValue('');
+    expect(screen.getByLabelText('Posición (ES)')).toHaveValue('');
     expect(screen.getByLabelText('Fecha inicio:')).toHaveValue('');
     expect(screen.getByLabelText('Fecha fin:')).toHaveValue('');
     expect(
@@ -279,11 +301,16 @@ describe('<Experiencia />', () => {
     expect(apiMock.put).toHaveBeenCalledWith('/experiencia/1', {
       id: '1',
       empresa: 'Acme Corp',
-      descripcion: 'Frontend Developer',
+      descripcion: loc('Frontend Developer', 'Frontend Developer EN'),
       fechaInicio: '2020-01-15',
       fechaFin: '2022-06-30',
       tecnologias: ['t1'],
-      hitos: [{ id: 'h1', descripcion: 'Migración a React 19' }],
+      hitos: [
+        {
+          id: 'h1',
+          descripcion: loc('Migración a React 19', 'Migration to React 19'),
+        },
+      ],
     });
     expect(screen.getByText('Acme Corp')).toBeInTheDocument();
     expect(screen.queryByText('Acme')).not.toBeInTheDocument();
@@ -313,7 +340,7 @@ describe('<Experiencia />', () => {
     await renderPagina();
 
     await user.type(screen.getByLabelText('Empresa:'), 'Initech');
-    await user.type(screen.getByLabelText('Posición:'), 'Tech Lead');
+    await user.type(screen.getByLabelText('Posición (ES)'), 'Tech Lead');
     escribirFecha(screen.getByLabelText('Fecha inicio:'), '2023-02-01');
     await user.click(
       screen.getByRole('button', { name: 'Agregar Experiencia' }),
@@ -433,7 +460,7 @@ describe('<Experiencia />', () => {
     await renderPaginaConTecnologias();
 
     await user.type(screen.getByLabelText('Empresa:'), 'Initech');
-    await user.type(screen.getByLabelText('Posición:'), 'Tech Lead');
+    await user.type(screen.getByLabelText('Posición (ES)'), 'Tech Lead');
     escribirFecha(screen.getByLabelText('Fecha inicio:'), '2023-02-01');
     escribirFecha(screen.getByLabelText('Fecha fin:'), '2024-03-15');
 
@@ -466,7 +493,7 @@ describe('<Experiencia />', () => {
     await user.type(inputsHito()[1], 'Segundo hito');
 
     await user.type(screen.getByLabelText('Empresa:'), 'Initech');
-    await user.type(screen.getByLabelText('Posición:'), 'Tech Lead');
+    await user.type(screen.getByLabelText('Posición (ES)'), 'Tech Lead');
     escribirFecha(screen.getByLabelText('Fecha inicio:'), '2023-02-01');
 
     await user.click(
@@ -478,8 +505,8 @@ describe('<Experiencia />', () => {
       '/experiencia',
       expect.objectContaining({
         hitos: [
-          { descripcion: 'Primer hito' },
-          { descripcion: 'Segundo hito' },
+          { descripcion: { es: 'Primer hito', en: '' } },
+          { descripcion: { es: 'Segundo hito', en: '' } },
         ],
       }),
     );
@@ -511,7 +538,7 @@ describe('<Experiencia />', () => {
     await user.type(inputsHito()[0], '   ');
 
     await user.type(screen.getByLabelText('Empresa:'), 'Initech');
-    await user.type(screen.getByLabelText('Posición:'), 'Tech Lead');
+    await user.type(screen.getByLabelText('Posición (ES)'), 'Tech Lead');
     escribirFecha(screen.getByLabelText('Fecha inicio:'), '2023-02-01');
 
     await user.click(
@@ -533,6 +560,7 @@ describe('<Experiencia />', () => {
 
     expect(inputsHito()).toHaveLength(1);
     expect(inputsHito()[0]).toHaveValue('Migración a React 19');
+    expect(inputsHitoEn()[0]).toHaveValue('Migration to React 19');
     expect(
       screen.getByRole('button', { name: 'Quitar React' }),
     ).toBeInTheDocument();
@@ -555,7 +583,7 @@ describe('<Experiencia />', () => {
     await renderPagina();
 
     await user.type(screen.getByLabelText('Empresa:'), 'Initech');
-    await user.type(screen.getByLabelText('Posición:'), 'Tech Lead');
+    await user.type(screen.getByLabelText('Posición (ES)'), 'Tech Lead');
     escribirFecha(screen.getByLabelText('Fecha inicio:'), '2023-02-01');
     await user.click(
       screen.getByRole('button', { name: 'Agregar Experiencia' }),
@@ -592,5 +620,133 @@ describe('<Experiencia />', () => {
     expect(
       screen.getByRole('button', { name: 'Agregar Experiencia' }),
     ).toBeEnabled();
+  });
+
+  test('el payload lleva los dos idiomas trimados de la posición y los hitos', async () => {
+    const user = setupUser();
+    await renderPagina();
+
+    await user.type(screen.getByLabelText('Empresa:'), 'Initech');
+    await user.type(screen.getByLabelText('Posición (ES)'), ' Jefe técnico ');
+    await user.type(screen.getByLabelText('Posición (EN)'), ' Tech Lead ');
+    escribirFecha(screen.getByLabelText('Fecha inicio:'), '2023-02-01');
+    await user.click(screen.getByRole('button', { name: '+ Añadir hito' }));
+    await user.type(screen.getByLabelText('Hito 1 (ES)'), ' Hito ');
+    await user.type(screen.getByLabelText('Hito 1 (EN)'), ' Milestone ');
+    // Fila con solo EN: se descarta porque le falta el español
+    await user.click(screen.getByRole('button', { name: '+ Añadir hito' }));
+    await user.type(screen.getByLabelText('Hito 2 (EN)'), 'Solo inglés');
+
+    await user.click(
+      screen.getByRole('button', { name: 'Agregar Experiencia' }),
+    );
+    await flush();
+
+    expect(apiMock.post).toHaveBeenCalledWith(
+      '/experiencia',
+      expect.objectContaining({
+        descripcion: { es: 'Jefe técnico', en: 'Tech Lead' },
+        hitos: [{ descripcion: { es: 'Hito', en: 'Milestone' } }],
+      }),
+    );
+  });
+
+  test('«Sugerir EN de los vacíos» manda una sola petición con los hitos sin EN', async () => {
+    const user = setupUser();
+    apiMock.post.mockImplementation((url: string, payload: unknown) =>
+      Promise.resolve({
+        data:
+          url === '/traduccion'
+            ? { textos: ['First', 'Third'] }
+            : { id: '3', ...(payload as object) },
+      }),
+    );
+    await renderPagina();
+
+    for (let i = 0; i < 3; i++) {
+      await user.click(screen.getByRole('button', { name: '+ Añadir hito' }));
+    }
+    await user.type(screen.getByLabelText('Hito 1 (ES)'), 'Primero');
+    await user.type(screen.getByLabelText('Hito 2 (ES)'), 'Segundo');
+    await user.type(screen.getByLabelText('Hito 2 (EN)'), 'Ya traducido');
+    await user.type(screen.getByLabelText('Hito 3 (ES)'), 'Tercero');
+
+    await user.click(
+      screen.getByRole('button', { name: 'Sugerir EN de los vacíos' }),
+    );
+    await flush();
+
+    const llamadas = apiMock.post.mock.calls.filter(
+      ([url]) => url === '/traduccion',
+    );
+    expect(llamadas).toEqual([
+      ['/traduccion', { textos: ['Primero', 'Tercero'] }],
+    ]);
+    expect(screen.getByLabelText('Hito 1 (EN)')).toHaveValue('First');
+    expect(screen.getByLabelText('Hito 2 (EN)')).toHaveValue('Ya traducido');
+    expect(screen.getByLabelText('Hito 3 (EN)')).toHaveValue('Third');
+  });
+
+  test('«Sugerir EN de los vacíos» está deshabilitado si no hay nada que traducir', async () => {
+    const user = setupUser();
+    await renderPagina();
+
+    await user.click(screen.getByRole('button', { name: '+ Añadir hito' }));
+
+    expect(
+      screen.getByRole('button', { name: 'Sugerir EN de los vacíos' }),
+    ).toBeDisabled();
+  });
+
+  test('si la traducción de los hitos falla muestra el error en línea', async () => {
+    const user = setupUser();
+    apiMock.post.mockRejectedValue(errorAxios(503));
+    await renderPagina();
+
+    await user.click(screen.getByRole('button', { name: '+ Añadir hito' }));
+    await user.type(screen.getByLabelText('Hito 1 (ES)'), 'Primero');
+    await user.click(
+      screen.getByRole('button', { name: 'Sugerir EN de los vacíos' }),
+    );
+    await flush();
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Traducción no disponible',
+    );
+    expect(screen.getByLabelText('Hito 1 (EN)')).toHaveValue('');
+  });
+
+  test('la Card marca «Sin EN» solo si falta alguna traducción', async () => {
+    await renderPagina();
+
+    // Acme está traducida entera; Globex no tiene la posición en inglés
+    const marcas = screen.getAllByText('Sin EN');
+    expect(marcas).toHaveLength(1);
+    expect(marcas[0].closest('div')?.parentElement).toHaveTextContent('Globex');
+  });
+
+  test('la Card marca «Sin EN» si solo falta la traducción de un hito', async () => {
+    apiMock.get.mockImplementation((url: string) =>
+      Promise.resolve({
+        data:
+          url === '/experiencia'
+            ? [
+                {
+                  ...EXPERIENCIAS[0],
+                  hitos: [
+                    {
+                      id: 'h1',
+                      descripcion: loc('Sin traducir'),
+                      experiencia: '1',
+                    },
+                  ],
+                },
+              ]
+            : [],
+      }),
+    );
+    await renderPagina();
+
+    expect(screen.getByText('Sin EN')).toBeInTheDocument();
   });
 });

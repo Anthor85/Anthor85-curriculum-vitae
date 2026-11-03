@@ -95,4 +95,47 @@ describe('useCurriculumStore', () => {
 
     consoleError.mockRestore();
   });
+
+  test('guarda cada idioma por separado y conserva el que ya tenía', async () => {
+    const CURRICULUM_EN = { ...CURRICULUM, perfil: null, conocimiento: [] };
+    apiMock.get.mockResolvedValue({ data: CURRICULUM_EN });
+    const { result, store } = renderHookConStore(
+      () => useCurriculumStore('en'),
+      {
+        curriculum: {
+          curriculums: { es: CURRICULUM, en: null },
+          loading: false,
+          error: null,
+        },
+      },
+    );
+
+    expect(result.current.curriculum).toBeNull();
+
+    await act(async () => {
+      await result.current.getCurriculum();
+    });
+
+    expect(apiMock.get).toHaveBeenCalledWith('/curriculum', {
+      params: { lang: 'en' },
+    });
+    expect(estado(store).curriculums).toEqual({
+      es: CURRICULUM,
+      en: CURRICULUM_EN,
+    });
+    expect(result.current.curriculum).toBe(estado(store).curriculums.en);
+  });
+
+  test('el idioma ya cargado se expone sin pedirlo otra vez', () => {
+    const { result } = renderHookConStore(() => useCurriculumStore('en'), {
+      curriculum: {
+        curriculums: { es: null, en: CURRICULUM },
+        loading: false,
+        error: null,
+      },
+    });
+
+    expect(result.current.curriculum).toEqual(CURRICULUM);
+    expect(apiMock.get).not.toHaveBeenCalled();
+  });
 });

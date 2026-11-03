@@ -39,10 +39,8 @@ export const ExperienciaCard = ({
       key={experiencia.id}
     >
       <div className={styles.data}>
-        <h2>
-          {experiencia.empresa}
-          {sinEn && <MarcaSinEn />}
-        </h2>
+        <h2>{experiencia.empresa}</h2>
+        {sinEn && <MarcaSinEn />}
         <p>{experiencia.descripcion.es}</p>
         <p>{rangoFechas(tEs, experiencia.fechaInicio, experiencia.fechaFin)}</p>
         {experiencia.tecnologias.length > 0 && (

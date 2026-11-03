@@ -29,10 +29,8 @@ export const FormacionCard = ({
   return (
     <div className={`${styles.Card} ${enEdicion ? styles.enEdicion : ''}`}>
       <div className={styles.data}>
-        <div className={styles.title}>
-          {titulo.es}
-          {sinEn && <MarcaSinEn />}
-        </div>
+        <div className={styles.title}>{titulo.es}</div>
+        {sinEn && <MarcaSinEn />}
         <div className={styles.subdata}>
           <b>Institución:</b> {institucion.es}
         </div>

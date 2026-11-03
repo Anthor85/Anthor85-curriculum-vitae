@@ -23,14 +23,17 @@ vi.mock('../../src/api/api', () => ({
 
 import { Perfil } from '../../src/pages/Perfil';
 
+const loc = (es: string, en = '') => ({ es, en });
+const VACIO = loc('');
+
 const PERFIL: IPerfil = {
   id: '1',
   nombre: 'Antonio',
   apellidos: 'Menéndez',
   email: 'antonio@menendez.com',
   telefono: '666555444',
-  direccion: 'Alicante',
-  descripcion: 'Técnico en informática',
+  direccion: loc('Alicante', 'Alicante'),
+  descripcion: loc('Técnico en informática', 'IT technician'),
   foto: 'www.mifoto.com/foto.jpg',
   linkedinURL: 'https://www.linkedin.com/in/antonio',
   githubURL: 'https://github.com/antonio',
@@ -81,9 +84,9 @@ describe('<Perfil />', () => {
     expect(screen.getByLabelText('Apellidos:')).toBeInTheDocument();
     expect(screen.getByLabelText('Email:')).toBeInTheDocument();
     expect(screen.getByLabelText('Teléfono:')).toBeInTheDocument();
-    expect(screen.getByLabelText('Dirección:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Dirección (ES)')).toBeInTheDocument();
     expect(screen.queryByLabelText('Fecha de Nacimiento:')).toBeNull();
-    expect(screen.getByLabelText('Descripción:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Descripción (ES)')).toBeInTheDocument();
     expect(screen.getByLabelText('Foto:')).toBeInTheDocument();
     expect(screen.getByLabelText('LinkedIn:')).toBeInTheDocument();
     expect(screen.getByLabelText('GitHub:')).toBeInTheDocument();
@@ -114,9 +117,9 @@ describe('<Perfil />', () => {
     await user.type(screen.getByLabelText('Apellidos:'), 'Menéndez');
     await user.type(screen.getByLabelText('Email:'), 'antonio@menendez.com');
     await user.type(screen.getByLabelText('Teléfono:'), '666555444');
-    await user.type(screen.getByLabelText('Dirección:'), 'Alicante');
+    await user.type(screen.getByLabelText('Dirección (ES)'), 'Alicante');
     await user.type(
-      screen.getByLabelText('Descripción:'),
+      screen.getByLabelText('Descripción (ES)'),
       'Técnico en informática',
     );
     await user.click(screen.getByRole('button', { name: 'Crear Perfil' }));
@@ -128,12 +131,12 @@ describe('<Perfil />', () => {
       apellidos: 'Menéndez',
       email: 'antonio@menendez.com',
       telefono: '666555444',
-      direccion: 'Alicante',
-      descripcion: 'Técnico en informática',
+      direccion: loc('Alicante'),
+      descripcion: loc('Técnico en informática'),
       foto: '',
       linkedinURL: '',
       githubURL: '',
-      disponibilidad: '',
+      disponibilidad: VACIO,
       idiomas: [],
     });
     // Tras crear, el perfil ya existe en el store y el boton cambia.
@@ -168,10 +171,14 @@ describe('<Perfil />', () => {
     expect(screen.getByLabelText('Apellidos:')).toHaveValue('Menéndez');
     expect(screen.getByLabelText('Email:')).toHaveValue('antonio@menendez.com');
     expect(screen.getByLabelText('Teléfono:')).toHaveValue('666555444');
-    expect(screen.getByLabelText('Dirección:')).toHaveValue('Alicante');
-    expect(screen.getByLabelText('Descripción:')).toHaveValue(
+    expect(screen.getByLabelText('Dirección (ES)')).toHaveValue('Alicante');
+    expect(screen.getByLabelText('Descripción (ES)')).toHaveValue(
       'Técnico en informática',
     );
+    expect(screen.getByLabelText('Descripción (EN)')).toHaveValue(
+      'IT technician',
+    );
+    expect(screen.getByLabelText('Dirección (EN)')).toHaveValue('Alicante');
     expect(screen.getByLabelText('Foto:')).toHaveValue(
       'www.mifoto.com/foto.jpg',
     );
@@ -195,7 +202,7 @@ describe('<Perfil />', () => {
     await user.clear(nombre);
     await user.type(nombre, 'Antonio Manuel');
 
-    const direccion = screen.getByLabelText('Dirección:');
+    const direccion = screen.getByLabelText('Dirección (ES)');
     await user.clear(direccion);
     await user.type(direccion, 'Valencia');
 
@@ -210,12 +217,12 @@ describe('<Perfil />', () => {
       apellidos: 'Menéndez',
       email: 'antonio@menendez.com',
       telefono: '666555444',
-      direccion: 'Valencia',
-      descripcion: 'Técnico en informática',
+      direccion: loc('Valencia', 'Alicante'),
+      descripcion: loc('Técnico en informática', 'IT technician'),
       foto: 'www.mifoto.com/foto.jpg',
       linkedinURL: 'https://www.linkedin.com/in/antonio',
       githubURL: 'https://github.com/antonio',
-      disponibilidad: '',
+      disponibilidad: VACIO,
       idiomas: [],
     });
     expect(nombre).toHaveValue('Antonio Manuel');
@@ -285,16 +292,21 @@ describe('<Perfil />', () => {
     await renderPagina(PERFIL);
 
     await user.click(screen.getByRole('button', { name: '+ Añadir idioma' }));
-    await user.type(screen.getByLabelText('Idioma 1'), '  Inglés ');
-    await user.type(screen.getByLabelText('Nivel del idioma 1'), ' B2 ');
+    await user.type(screen.getByLabelText('Idioma 1 (ES)'), '  Inglés ');
+    await user.type(screen.getByLabelText('Idioma 1 (EN)'), ' English ');
+    await user.type(screen.getByLabelText('Nivel del idioma 1 (ES)'), ' B2 ');
     await user.click(screen.getByRole('button', { name: '+ Añadir idioma' }));
+    // Fila con solo EN: se descarta porque le falta el español
+    await user.type(screen.getByLabelText('Idioma 2 (EN)'), 'French');
 
     await user.click(screen.getByRole('button', { name: 'Actualizar Perfil' }));
     await flush();
 
     expect(apiMock.put).toHaveBeenCalledWith(
       '/perfil',
-      expect.objectContaining({ idiomas: [{ idioma: 'Inglés', nivel: 'B2' }] }),
+      expect.objectContaining({
+        idiomas: [{ idioma: loc('Inglés', 'English'), nivel: loc('B2') }],
+      }),
     );
   });
 
@@ -302,7 +314,7 @@ describe('<Perfil />', () => {
     const user = setupUser();
     await renderPagina({
       ...PERFIL,
-      idiomas: [{ idioma: 'Inglés', nivel: 'B2' }],
+      idiomas: [{ idioma: loc('Inglés', 'English'), nivel: loc('B2', 'B2') }],
     });
 
     await user.click(screen.getByRole('button', { name: 'Borrar idioma 1' }));
@@ -355,5 +367,95 @@ describe('<Perfil />', () => {
     expect(screen.queryByLabelText('Nombre:')).not.toBeInTheDocument();
 
     await flush();
+  });
+
+  test('con perfil existente precarga los dos idiomas de cada idioma hablado', async () => {
+    await renderPagina({
+      ...PERFIL,
+      disponibilidad: loc('Inmediata', 'Immediate'),
+      idiomas: [{ idioma: loc('Inglés', 'English'), nivel: loc('B2', 'B2') }],
+    });
+
+    expect(screen.getByLabelText('Disponibilidad (ES)')).toHaveValue(
+      'Inmediata',
+    );
+    expect(screen.getByLabelText('Disponibilidad (EN)')).toHaveValue(
+      'Immediate',
+    );
+    expect(screen.getByLabelText('Idioma 1 (ES)')).toHaveValue('Inglés');
+    expect(screen.getByLabelText('Idioma 1 (EN)')).toHaveValue('English');
+    expect(screen.getByLabelText('Nivel del idioma 1 (ES)')).toHaveValue('B2');
+    expect(screen.getByLabelText('Nivel del idioma 1 (EN)')).toHaveValue('B2');
+  });
+
+  test('«Sugerir EN de los vacíos» traduce idioma y nivel en una sola petición', async () => {
+    const user = setupUser();
+    await renderPagina(PERFIL);
+    apiMock.post.mockResolvedValue({
+      data: { textos: ['English', 'Native'] },
+    });
+
+    await user.click(screen.getByRole('button', { name: '+ Añadir idioma' }));
+    await user.type(screen.getByLabelText('Idioma 1 (ES)'), 'Inglés');
+    await user.type(screen.getByLabelText('Nivel del idioma 1 (ES)'), 'B2');
+    await user.type(screen.getByLabelText('Nivel del idioma 1 (EN)'), 'B2');
+    await user.click(screen.getByRole('button', { name: '+ Añadir idioma' }));
+    await user.type(screen.getByLabelText('Nivel del idioma 2 (ES)'), 'Nativo');
+    await user.click(
+      screen.getByRole('button', { name: 'Sugerir EN de los vacíos' }),
+    );
+    await flush();
+
+    expect(apiMock.post).toHaveBeenCalledTimes(1);
+    expect(apiMock.post).toHaveBeenCalledWith('/traduccion', {
+      textos: ['Inglés', 'Nativo'],
+    });
+    expect(screen.getByLabelText('Idioma 1 (EN)')).toHaveValue('English');
+    expect(screen.getByLabelText('Nivel del idioma 1 (EN)')).toHaveValue('B2');
+    expect(screen.getByLabelText('Idioma 2 (EN)')).toHaveValue('');
+    expect(screen.getByLabelText('Nivel del idioma 2 (EN)')).toHaveValue(
+      'Native',
+    );
+  });
+
+  test('«Sugerir EN» de la descripción sobrescribe el EN que ya había', async () => {
+    const user = setupUser();
+    await renderPagina(PERFIL);
+    apiMock.post.mockResolvedValue({ data: { textos: ['IT specialist'] } });
+
+    const sugerir = screen.getAllByRole('button', { name: 'Sugerir EN' });
+    // Orden de los campos: dirección, descripción, disponibilidad
+    await user.click(sugerir[1]);
+    await flush();
+
+    expect(apiMock.post).toHaveBeenCalledWith('/traduccion', {
+      textos: ['Técnico en informática'],
+    });
+    expect(screen.getByLabelText('Descripción (EN)')).toHaveValue(
+      'IT specialist',
+    );
+  });
+
+  test('el payload de disponibilidad lleva los dos idiomas trimados', async () => {
+    const user = setupUser();
+    await renderPagina(PERFIL);
+
+    await user.type(
+      screen.getByLabelText('Disponibilidad (ES)'),
+      ' Inmediata ',
+    );
+    await user.type(
+      screen.getByLabelText('Disponibilidad (EN)'),
+      ' Immediate ',
+    );
+    await user.click(screen.getByRole('button', { name: 'Actualizar Perfil' }));
+    await flush();
+
+    expect(apiMock.put).toHaveBeenCalledWith(
+      '/perfil',
+      expect.objectContaining({
+        disponibilidad: { es: 'Inmediata', en: 'Immediate' },
+      }),
+    );
   });
 });

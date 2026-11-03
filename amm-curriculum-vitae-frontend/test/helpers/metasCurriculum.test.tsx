@@ -98,3 +98,29 @@ describe('metasCurriculum', () => {
     });
   });
 });
+
+describe('metasCurriculum por idioma', () => {
+  const ALTERNATIVOS = [
+    { hreflang: 'es', href: 'https://cv.ejemplo.com/' },
+    { hreflang: 'en', href: 'https://cv.ejemplo.com/en' },
+    { hreflang: 'x-default', href: 'https://cv.ejemplo.com/' },
+  ];
+
+  test('en español: url /, locale es_ES y alternativo en_GB', () => {
+    const metas = metasCurriculum(PERFIL, SITE_URL, 'es');
+
+    expect(metas.url).toBe('https://cv.ejemplo.com/');
+    expect(metas.locale).toBe('es_ES');
+    expect(metas.localeAlternativo).toBe('en_GB');
+    expect(metas.alternativos).toEqual(ALTERNATIVOS);
+  });
+
+  test('en inglés: url /en, locale en_GB y alternativo es_ES', () => {
+    const metas = metasCurriculum(PERFIL, SITE_URL, 'en');
+
+    expect(metas.url).toBe('https://cv.ejemplo.com/en');
+    expect(metas.locale).toBe('en_GB');
+    expect(metas.localeAlternativo).toBe('es_ES');
+    expect(metas.alternativos).toEqual(ALTERNATIVOS);
+  });
+});

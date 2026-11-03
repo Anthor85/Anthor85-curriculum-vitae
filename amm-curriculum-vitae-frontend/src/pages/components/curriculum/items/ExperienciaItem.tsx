@@ -7,7 +7,7 @@ import { Experiencia } from '../../../../interfaces/experiencia.interface';
 import styles from './Items.module.scss';
 
 interface Props {
-  experiencia: Experiencia;
+  experiencia: Experiencia<string>;
   conocimiento: Conocimiento[];
   expandible?: boolean;
 }

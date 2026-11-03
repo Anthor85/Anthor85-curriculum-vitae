@@ -4,10 +4,11 @@ import { Formacion } from './formacion.interface';
 import { FormacionComplementaria } from './formacionComplementaria.interface';
 import { Perfil } from './perfil.interface';
 
+// Lo que devuelve /curriculum?lang=: los textos ya vienen resueltos.
 export interface Curriculum {
   conocimiento: Conocimiento[];
-  experiencia: Experiencia[];
-  formaciones: Formacion[];
-  formacionesComplementarias: FormacionComplementaria[];
-  perfil: Perfil | null;
+  experiencia: Experiencia<string>[];
+  formaciones: Formacion<string>[];
+  formacionesComplementarias: FormacionComplementaria<string>[];
+  perfil: Perfil<string> | null;
 }

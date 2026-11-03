@@ -8,7 +8,7 @@ import { urlFoto } from '../../../../helpers/urlFoto';
 import { Perfil } from '../../../../interfaces/perfil.interface';
 
 interface ContactoProps {
-  perfil: Perfil | null;
+  perfil: Perfil<string> | null;
   styles: CSSModuleClasses;
 }
 

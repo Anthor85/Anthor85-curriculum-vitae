@@ -31,10 +31,10 @@ import { Perfil } from '../../../../interfaces/perfil.interface';
 import { styles } from './CurriculumPDF.styles';
 
 export interface DatosCurriculumPDF {
-  perfil: Perfil | null;
-  experiencia: Experiencia[];
-  formaciones: Formacion[];
-  formacionesComplementarias: FormacionComplementaria[];
+  perfil: Perfil<string> | null;
+  experiencia: Experiencia<string>[];
+  formaciones: Formacion<string>[];
+  formacionesComplementarias: FormacionComplementaria<string>[];
   conocimiento: Conocimiento[];
 }
 
@@ -63,7 +63,7 @@ const enlaceExterno = (url: string) =>
 const detalleFormacion = ({
   institucion,
   fechaFin,
-}: Formacion | FormacionComplementaria) => {
+}: Formacion<string> | FormacionComplementaria<string>) => {
   const partes = [institucion, fechaFin ? anioFecha(fechaFin) : ''].filter(
     Boolean,
   );
@@ -99,7 +99,7 @@ const DatoContacto = ({
   </View>
 );
 
-const Contacto = ({ perfil }: { perfil: Perfil }) => {
+const Contacto = ({ perfil }: { perfil: Perfil<string> }) => {
   const {
     direccion,
     telefono,
@@ -204,7 +204,7 @@ const Puesto = ({
   experiencia,
   conocimiento,
 }: {
-  experiencia: Experiencia;
+  experiencia: Experiencia<string>;
   conocimiento: Conocimiento[];
 }) => {
   const tecnologias = tecnologiasFilter(experiencia.tecnologias, conocimiento);
@@ -250,7 +250,7 @@ const Formaciones = ({
   items,
 }: {
   titulo: string;
-  items: (Formacion | FormacionComplementaria)[];
+  items: (Formacion<string> | FormacionComplementaria<string>)[];
 }) => {
   if (!items.length) return null;
 

@@ -14,7 +14,7 @@ export interface MetasCurriculum {
 }
 
 type DatosPerfil = Pick<
-  Perfil,
+  Perfil<string>,
   'nombre' | 'apellidos' | 'descripcion' | 'foto'
 >;
 

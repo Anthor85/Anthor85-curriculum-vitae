@@ -1,8 +1,9 @@
-// Prerender de "/": pide el currículum a la API, lo pinta con el build SSR
-// (dist-server/) y reescribe dist/index.html con el contenido, el estado para
-// hidratar y los metadatos. dist/spa.html queda como carcasa vacía para el
-// resto de rutas. Cualquier fallo termina con código distinto de 0.
-import { copyFile, readFile, rm, writeFile } from 'node:fs/promises';
+// Prerender de "/" (es) y "/en" (en): pide el currículum de cada idioma a la
+// API, lo pinta con el build SSR (dist-server/) y escribe dist/index.html y
+// dist/en/index.html con el contenido, el estado para hidratar y los
+// metadatos. dist/spa.html queda como carcasa vacía para el resto de rutas.
+// Cualquier fallo termina con código distinto de 0.
+import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { loadEnv } from 'vite';
@@ -17,7 +18,13 @@ const SPA = path.join(raiz, 'dist', 'spa.html');
 const DIR_SERVIDOR = path.join(raiz, 'dist-server');
 const ENTRADA_SERVIDOR = path.join(DIR_SERVIDOR, 'entry-server.mjs');
 
+const PAGINAS = [
+  { idioma: 'es', salida: INDEX },
+  { idioma: 'en', salida: path.join(raiz, 'dist', 'en', 'index.html') },
+];
+
 const MARCADORES = {
+  html: /<html lang="[^"]*">/,
   titulo: /<title>[\s\S]*?<\/title>/,
   finHead: /[ \t]*<\/head>/,
   favicon: /<link id="favicon"[^>]*>/,
@@ -47,8 +54,8 @@ const leerVariables = () => {
   };
 };
 
-const pedirCurriculum = async (baseUrl) => {
-  const url = `${baseUrl}/curriculum`;
+const pedirCurriculum = async (baseUrl, idioma) => {
+  const url = `${baseUrl}/curriculum?lang=${idioma}`;
   let respuesta;
 
   try {
@@ -74,7 +81,8 @@ const etiquetasMeta = (metas) =>
   [
     metas.descripcion && ['name', 'description', metas.descripcion],
     ['property', 'og:type', 'website'],
-    ['property', 'og:locale', 'es_ES'],
+    ['property', 'og:locale', metas.locale],
+    ['property', 'og:locale:alternate', metas.localeAlternativo],
     ['property', 'og:title', metas.titulo],
     metas.descripcion && ['property', 'og:description', metas.descripcion],
     ['property', 'og:url', metas.url],
@@ -88,7 +96,17 @@ const etiquetasMeta = (metas) =>
     )
     .join('');
 
-const inyectar = (html, { contenido, curriculum, metas }) => {
+// canonical propio y hreflang cruzados: las dos páginas enlazan a las dos versiones
+const etiquetasEnlace = (metas) =>
+  [
+    `    <link rel="canonical" href="${escaparHtml(metas.url)}" />\n`,
+    ...metas.alternativos.map(
+      ({ hreflang, href }) =>
+        `    <link rel="alternate" hreflang="${hreflang}" href="${escaparHtml(href)}" />\n`,
+    ),
+  ].join('');
+
+const inyectar = (html, { idioma, contenido, curriculum, metas }) => {
   const ausentes = Object.entries(MARCADORES)
     .filter(([, patron]) => !patron.test(html))
     .map(([nombre]) => nombre);
@@ -100,15 +118,22 @@ const inyectar = (html, { contenido, curriculum, metas }) => {
   }
 
   // "<" escapado para que el JSON no pueda cerrar el <script>
-  const estado = JSON.stringify(curriculum).replace(/</g, '\\u003c');
+  const estado = JSON.stringify({ idioma, curriculum }).replace(
+    /</g,
+    '\\u003c',
+  );
 
   // Los reemplazos van como función: en una cadena, "$" tendría significado.
   let resultado = html
+    .replace(MARCADORES.html, () => `<html lang="${idioma}">`)
     .replace(
       MARCADORES.titulo,
       () => `<title>${escaparHtml(metas.titulo)}</title>`,
     )
-    .replace(MARCADORES.finHead, () => `${etiquetasMeta(metas)}  </head>`)
+    .replace(
+      MARCADORES.finHead,
+      () => `${etiquetasMeta(metas)}${etiquetasEnlace(metas)}  </head>`,
+    )
     // El script inline se ejecuta antes que el módulo de la app, que es diferido
     .replace(
       MARCADORES.root,
@@ -129,26 +154,38 @@ const inyectar = (html, { contenido, curriculum, metas }) => {
 
 const prerender = async () => {
   const { baseUrl, siteUrl } = leerVariables();
-  const curriculum = await pedirCurriculum(baseUrl);
+  const curriculums = await Promise.all(
+    PAGINAS.map(({ idioma }) => pedirCurriculum(baseUrl, idioma)),
+  );
 
   const { render, metasCurriculum } = await import(
     pathToFileURL(ENTRADA_SERVIDOR).href
   );
 
+  // La plantilla se lee antes de sobrescribir dist/index.html
   await copyFile(INDEX, SPA);
+  const plantilla = await readFile(INDEX, 'utf8');
 
-  const html = inyectar(await readFile(INDEX, 'utf8'), {
-    contenido: render(curriculum),
-    curriculum,
-    metas: metasCurriculum(curriculum.perfil, siteUrl),
-  });
+  // Renders seguidos y síncronos: el store singleton no mezcla los idiomas
+  for (const [indice, { idioma, salida }] of PAGINAS.entries()) {
+    const curriculum = curriculums[indice];
+    const html = inyectar(plantilla, {
+      idioma,
+      contenido: render(curriculum, idioma),
+      curriculum,
+      metas: metasCurriculum(curriculum.perfil, siteUrl, idioma),
+    });
 
-  await writeFile(INDEX, html);
+    await mkdir(path.dirname(salida), { recursive: true });
+    await writeFile(salida, html);
+  }
 };
 
 try {
   await prerender();
-  console.log('Prerender: dist/index.html y dist/spa.html generados.');
+  console.log(
+    'Prerender: dist/index.html, dist/en/index.html y dist/spa.html generados.',
+  );
 } catch (error) {
   console.error(`Prerender fallido: ${error.message}`);
   process.exitCode = 1;

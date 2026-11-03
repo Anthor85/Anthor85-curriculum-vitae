@@ -1,9 +1,23 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 
+// `vite preview` no lee vercel.json: sin esto, en "/en" serviría dist/index.html
+// (español) y no se podría probar la hidratación de dist/en/index.html.
+const rewriteIngles = () => ({
+  name: 'rewrite-en-preview',
+  configurePreviewServer(server) {
+    server.middlewares.use((req, _res, next) => {
+      if (req.url === '/en' || req.url?.startsWith('/en?')) {
+        req.url = req.url.replace('/en', '/en/index.html');
+      }
+      next();
+    });
+  },
+});
+
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), rewriteIngles()],
   css: {
     preprocessorOptions: {
       scss: {

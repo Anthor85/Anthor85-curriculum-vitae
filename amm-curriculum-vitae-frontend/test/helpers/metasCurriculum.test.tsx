@@ -33,7 +33,7 @@ describe('tituloCurriculum', () => {
 
 describe('metasCurriculum', () => {
   test('sin foto usa la tarjeta por defecto y deja el favicon SVG', () => {
-    expect(metasCurriculum(PERFIL, SITE_URL)).toEqual({
+    expect(metasCurriculum(PERFIL, SITE_URL, 'es')).toMatchObject({
       titulo: 'Ada Lovelace | Curriculum Vitae',
       descripcion: 'Desarrolladora de software',
       url: 'https://cv.ejemplo.com/',
@@ -45,7 +45,7 @@ describe('metasCurriculum', () => {
 
   test('con foto la usa como imagen y favicon, con tarjeta summary', () => {
     const foto = 'https://fotos.ejemplo.com/ada.jpg';
-    const metas = metasCurriculum({ ...PERFIL, foto }, SITE_URL);
+    const metas = metasCurriculum({ ...PERFIL, foto }, SITE_URL, 'es');
 
     expect(metas.imagen).toBe(foto);
     expect(metas.favicon).toBe(foto);
@@ -53,7 +53,7 @@ describe('metasCurriculum', () => {
   });
 
   test('una foto vacia se trata como sin foto', () => {
-    const metas = metasCurriculum({ ...PERFIL, foto: '' }, SITE_URL);
+    const metas = metasCurriculum({ ...PERFIL, foto: '' }, SITE_URL, 'es');
 
     expect(metas.imagen).toBe('https://cv.ejemplo.com/og-image.png');
     expect(metas.favicon).toBeNull();
@@ -64,6 +64,7 @@ describe('metasCurriculum', () => {
     const metas = metasCurriculum(
       { ...PERFIL, descripcion: '  Desarrolladora \n\n de   software\t' },
       SITE_URL,
+      'es',
     );
 
     expect(metas.descripcion).toBe('Desarrolladora de software');
@@ -73,6 +74,7 @@ describe('metasCurriculum', () => {
     const metas = metasCurriculum(
       { ...PERFIL, descripcion: 'a'.repeat(200) },
       SITE_URL,
+      'es',
     );
 
     expect(metas.descripcion).toBe('a'.repeat(160));
@@ -80,13 +82,13 @@ describe('metasCurriculum', () => {
 
   test('el recorte no deja un espacio al final', () => {
     const descripcion = `${'a'.repeat(159)} ${'b'.repeat(40)}`;
-    const metas = metasCurriculum({ ...PERFIL, descripcion }, SITE_URL);
+    const metas = metasCurriculum({ ...PERFIL, descripcion }, SITE_URL, 'es');
 
     expect(metas.descripcion).toBe('a'.repeat(159));
   });
 
   test('sin perfil devuelve titulo por defecto y descripcion vacia', () => {
-    expect(metasCurriculum(null, SITE_URL)).toEqual({
+    expect(metasCurriculum(null, SITE_URL, 'es')).toMatchObject({
       titulo: 'Curriculum Vitae',
       descripcion: '',
       url: 'https://cv.ejemplo.com/',

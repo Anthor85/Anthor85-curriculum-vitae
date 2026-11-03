@@ -296,7 +296,7 @@ export const CurriculumPDF = ({
     <Document
       title={tituloCurriculum(perfil)}
       author={nombreCompleto || undefined}
-      subject={metasCurriculum(perfil, '').descripcion || undefined}
+      subject={metasCurriculum(perfil, '', idioma).descripcion || undefined}
       language={idioma}
       creator="Curriculum Vitae"
       producer="Curriculum Vitae"

@@ -36,7 +36,7 @@ export const ExperienciaItem = ({
               {experiencia.descripcion}
             </span>
             <span className={styles.fechas}>
-              {rangoFechas(experiencia.fechaInicio, experiencia.fechaFin)}
+              {rangoFechas(t, experiencia.fechaInicio, experiencia.fechaFin)}
             </span>
           </span>
         }

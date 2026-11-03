@@ -48,6 +48,7 @@ import {
   CurriculumPDF,
   DatosCurriculumPDF,
 } from '../../src/pages/components/curriculum/pdf/CurriculumPDF';
+import i18n from '../../src/i18n';
 import { ConocimientoPrioridad } from '../../src/interfaces/conocimiento.interface';
 
 const datos: DatosCurriculumPDF = {
@@ -98,6 +99,8 @@ const datos: DatosCurriculumPDF = {
   formacionesComplementarias: [
     { id: 'fc1', titulo: 'Curso de React' },
   ] as DatosCurriculumPDF['formacionesComplementarias'],
+  idioma: 'es',
+  t: i18n.getFixedT('es'),
 };
 
 const renderPDF = (cambios: Partial<DatosCurriculumPDF> = {}) =>

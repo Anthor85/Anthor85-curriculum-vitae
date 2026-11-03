@@ -1,11 +1,15 @@
 import { Button } from '../../components/Button';
 import { rangoFechas } from '../../helpers/rangoFechas';
+import i18n from '../../i18n';
 import { tecnologiasFilter } from '../../helpers/tecnologiasFilter';
 import { useConocimientoStore } from '../../hooks';
 import { Conocimiento } from '../../interfaces/conocimiento.interface';
 import { Experiencia } from '../../interfaces/experiencia.interface';
 
 import styles from './Cards.module.scss';
+
+// El admin no se traduce: las fechas siempre en español.
+const tEs = i18n.getFixedT('es');
 
 interface Props {
   experiencia: Experiencia;
@@ -30,7 +34,7 @@ export const ExperienciaCard = ({
       <div className={styles.data}>
         <h2>{experiencia.empresa}</h2>
         <p>{experiencia.descripcion}</p>
-        <p>{rangoFechas(experiencia.fechaInicio, experiencia.fechaFin)}</p>
+        <p>{rangoFechas(tEs, experiencia.fechaInicio, experiencia.fechaFin)}</p>
         {experiencia.tecnologias.length > 0 && (
           <div className={styles.coleccion}>
             <p>Tecnologías:</p>

@@ -38,5 +38,24 @@
   },
   "spinner": {
     "cargando": "Loading..."
+  },
+  "fechas": {
+    "actualidad": "Present"
+  },
+  "pdf": {
+    "nombreFichero": "CV {{nombre}}",
+    "nombreFicheroSinNombre": "CV",
+    "direccion": "Address",
+    "telefono": "Phone",
+    "email": "Email",
+    "disponibilidad": "Availability",
+    "idiomas": "Languages",
+    "competencias": "Skills",
+    "tecnologias": "Technologies: ",
+    "hitos": "Key achievements:",
+    "experiencia": "Experience",
+    "formacion": "Education",
+    "formacionComplementaria": "Additional Training",
+    "pie": "{{nombre}} · Page {{pagina}} of {{total}}"
   }
 }

@@ -48,7 +48,9 @@ export const Curriculum = () => {
   const nombreFichero = [perfil?.nombre, perfil?.apellidos]
     .filter((parte) => parte?.trim())
     .join(' ');
-  const nombrePDF = nombreFichero ? `CV ${nombreFichero}` : 'CV';
+  const nombrePDF = nombreFichero
+    ? t('pdf.nombreFichero', { nombre: nombreFichero })
+    : t('pdf.nombreFicheroSinNombre');
 
   const titulo = tituloCurriculum(perfil);
 
@@ -130,10 +132,12 @@ export const Curriculum = () => {
         formaciones: ordenado.formacionesOrdenadas,
         formacionesComplementarias: ordenado.complementariasOrdenadas,
         conocimiento: ordenado.conocimientosOrdenados,
+        idioma,
+        t: i18n.getFixedT(idioma),
       },
       nombrePDF,
     ).finally(() => setPreparandoPDF(false));
-  }, [preparandoPDF, curriculum, nombrePDF]);
+  }, [preparandoPDF, curriculum, nombrePDF, idioma, i18n]);
   const cargando = loading || (!curriculum && !error);
 
   return cargando ? (

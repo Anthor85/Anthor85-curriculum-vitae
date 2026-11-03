@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import type { TFunction } from 'i18next';
 import {
   Document,
   Font,
@@ -27,6 +28,7 @@ import {
 import { Experiencia } from '../../../../interfaces/experiencia.interface';
 import { Formacion } from '../../../../interfaces/formacion.interface';
 import { FormacionComplementaria } from '../../../../interfaces/formacionComplementaria.interface';
+import type { Idioma } from '../../../../interfaces/idioma.interface';
 import { Perfil } from '../../../../interfaces/perfil.interface';
 import { styles } from './CurriculumPDF.styles';
 
@@ -36,6 +38,9 @@ export interface DatosCurriculumPDF {
   formaciones: Formacion<string>[];
   formacionesComplementarias: FormacionComplementaria<string>[];
   conocimiento: Conocimiento[];
+  idioma: Idioma;
+  // i18n.getFixedT(idioma): el PDF no importa el singleton de i18n
+  t: TFunction;
 }
 
 // La separacion silabica por defecto es inglesa y parte palabras en español
@@ -99,7 +104,7 @@ const DatoContacto = ({
   </View>
 );
 
-const Contacto = ({ perfil }: { perfil: Perfil<string> }) => {
+const Contacto = ({ perfil, t }: { perfil: Perfil<string>; t: TFunction }) => {
   const {
     direccion,
     telefono,
@@ -113,7 +118,7 @@ const Contacto = ({ perfil }: { perfil: Perfil<string> }) => {
   return (
     <View style={styles.contacto}>
       {direccion ? (
-        <DatoContacto etiqueta="Dirección">
+        <DatoContacto etiqueta={t('pdf.direccion')}>
           <Link
             src={enlaceMaps(direccion)}
             style={[styles.valorContacto, styles.enlace]}
@@ -123,7 +128,7 @@ const Contacto = ({ perfil }: { perfil: Perfil<string> }) => {
         </DatoContacto>
       ) : null}
       {telefono ? (
-        <DatoContacto etiqueta="Teléfono">
+        <DatoContacto etiqueta={t('pdf.telefono')}>
           <Link
             src={enlaceTelefono(telefono)}
             style={[styles.valorContacto, styles.enlace]}
@@ -133,7 +138,7 @@ const Contacto = ({ perfil }: { perfil: Perfil<string> }) => {
         </DatoContacto>
       ) : null}
       {email ? (
-        <DatoContacto etiqueta="Email">
+        <DatoContacto etiqueta={t('pdf.email')}>
           <Link
             src={enlaceEmail(email)}
             style={[styles.valorContacto, styles.enlace]}
@@ -163,12 +168,12 @@ const Contacto = ({ perfil }: { perfil: Perfil<string> }) => {
         </DatoContacto>
       ) : null}
       {disponibilidad ? (
-        <DatoContacto etiqueta="Disponibilidad">
+        <DatoContacto etiqueta={t('pdf.disponibilidad')}>
           <Text style={styles.valorContacto}>{disponibilidad}</Text>
         </DatoContacto>
       ) : null}
       {idiomas?.length ? (
-        <DatoContacto etiqueta="Idiomas">
+        <DatoContacto etiqueta={t('pdf.idiomas')}>
           {idiomas.map(({ idioma, nivel }) => (
             <Text key={idioma} style={styles.valorContacto}>
               {idioma} · {nivel}
@@ -180,13 +185,19 @@ const Contacto = ({ perfil }: { perfil: Perfil<string> }) => {
   );
 };
 
-const Competencias = ({ conocimiento }: { conocimiento: Conocimiento[] }) => {
+const Competencias = ({
+  conocimiento,
+  t,
+}: {
+  conocimiento: Conocimiento[];
+  t: TFunction;
+}) => {
   if (!conocimiento.length) return null;
 
   return (
     <View>
       <Text style={styles.tituloLateral} minPresenceAhead={40}>
-        Competencias
+        {t('pdf.competencias')}
       </Text>
       {conocimiento
         .filter((c) => c.prioridad !== ConocimientoPrioridad.MUY_BAJA)
@@ -203,9 +214,11 @@ const Competencias = ({ conocimiento }: { conocimiento: Conocimiento[] }) => {
 const Puesto = ({
   experiencia,
   conocimiento,
+  t,
 }: {
   experiencia: Experiencia<string>;
   conocimiento: Conocimiento[];
+  t: TFunction;
 }) => {
   const tecnologias = tecnologiasFilter(experiencia.tecnologias, conocimiento);
 
@@ -215,7 +228,7 @@ const Puesto = ({
         <View style={styles.puestoCabecera}>
           <Text style={styles.empresa}>{experiencia.empresa}</Text>
           <Text style={styles.fechas}>
-            {rangoFechas(experiencia.fechaInicio, experiencia.fechaFin)}
+            {rangoFechas(t, experiencia.fechaInicio, experiencia.fechaFin)}
           </Text>
         </View>
         {experiencia.descripcion ? (
@@ -223,14 +236,16 @@ const Puesto = ({
         ) : null}
         {tecnologias.length > 0 && (
           <Text style={styles.tecnologias}>
-            <Text style={styles.etiquetaTecnologias}>Tecnologías: </Text>
-            {tecnologias.map((t) => t.titulo).join(', ')}
+            <Text style={styles.etiquetaTecnologias}>
+              {t('pdf.tecnologias')}
+            </Text>
+            {tecnologias.map((tec) => tec.titulo).join(', ')}
           </Text>
         )}
       </View>
       {experiencia.hitos?.length ? (
         <View style={styles.hitos}>
-          <Text style={styles.etiquetaHitos}>Algunas tareas destacadas:</Text>
+          <Text style={styles.etiquetaHitos}>{t('pdf.hitos')}</Text>
           {experiencia.hitos.map((hito) => (
             <View key={hito.id} style={styles.hito} wrap={false}>
               <Text style={styles.vineta}>•</Text>
@@ -270,6 +285,8 @@ export const CurriculumPDF = ({
   formaciones,
   formacionesComplementarias,
   conocimiento,
+  idioma,
+  t,
 }: DatosCurriculumPDF) => {
   const nombreCompleto = perfil
     ? `${perfil.nombre} ${perfil.apellidos}`.trim()
@@ -280,7 +297,7 @@ export const CurriculumPDF = ({
       title={tituloCurriculum(perfil)}
       author={nombreCompleto || undefined}
       subject={metasCurriculum(perfil, '').descripcion || undefined}
-      language="es"
+      language={idioma}
       creator="Curriculum Vitae"
       producer="Curriculum Vitae"
     >
@@ -291,8 +308,8 @@ export const CurriculumPDF = ({
             {perfil?.foto ? (
               <Image src={perfil.foto} style={styles.foto} />
             ) : null}
-            {perfil && <Contacto perfil={perfil} />}
-            <Competencias conocimiento={conocimiento} />
+            {perfil && <Contacto perfil={perfil} t={t} />}
+            <Competencias conocimiento={conocimiento} t={t} />
           </View>
           <View style={styles.principal}>
             {perfil && (
@@ -304,19 +321,20 @@ export const CurriculumPDF = ({
               </View>
             )}
             {experiencia.length > 0 && (
-              <Seccion titulo="Experiencia">
+              <Seccion titulo={t('pdf.experiencia')}>
                 {experiencia.map((item) => (
                   <Puesto
                     key={item.id}
                     experiencia={item}
                     conocimiento={conocimiento}
+                    t={t}
                   />
                 ))}
               </Seccion>
             )}
-            <Formaciones titulo="Formación Académica" items={formaciones} />
+            <Formaciones titulo={t('pdf.formacion')} items={formaciones} />
             <Formaciones
-              titulo="Formación Complementaria"
+              titulo={t('pdf.formacionComplementaria')}
               items={formacionesComplementarias}
             />
           </View>
@@ -326,7 +344,11 @@ export const CurriculumPDF = ({
             style={styles.pie}
             fixed
             render={({ pageNumber, totalPages }) =>
-              `${nombreCompleto} · Página ${pageNumber} de ${totalPages}`
+              t('pdf.pie', {
+                nombre: nombreCompleto,
+                pagina: pageNumber,
+                total: totalPages,
+              })
             }
           />
         )}

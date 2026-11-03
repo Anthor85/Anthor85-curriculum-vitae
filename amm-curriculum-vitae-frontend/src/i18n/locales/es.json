@@ -38,5 +38,24 @@
   },
   "spinner": {
     "cargando": "Cargando..."
+  },
+  "fechas": {
+    "actualidad": "En la actualidad"
+  },
+  "pdf": {
+    "nombreFichero": "CV {{nombre}}",
+    "nombreFicheroSinNombre": "CV",
+    "direccion": "Dirección",
+    "telefono": "Teléfono",
+    "email": "Email",
+    "disponibilidad": "Disponibilidad",
+    "idiomas": "Idiomas",
+    "competencias": "Competencias",
+    "tecnologias": "Tecnologías: ",
+    "hitos": "Algunas tareas destacadas:",
+    "experiencia": "Experiencia",
+    "formacion": "Formación Académica",
+    "formacionComplementaria": "Formación Complementaria",
+    "pie": "{{nombre}} · Página {{pagina}} de {{total}}"
   }
 }

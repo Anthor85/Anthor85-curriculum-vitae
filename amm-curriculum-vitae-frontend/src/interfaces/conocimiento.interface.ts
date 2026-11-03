@@ -1,14 +1,25 @@
+import { TextoLocalizado } from './idioma.interface';
+
 export enum ConocimientoPrioridad {
-  MUY_ALTA = 'Muy alta',
-  ALTA = 'Alta',
-  MEDIA = 'Media',
-  BAJA = 'Baja',
-  MUY_BAJA = 'Muy baja',
+  MUY_ALTA = 'muyAlta',
+  ALTA = 'alta',
+  MEDIA = 'media',
+  BAJA = 'baja',
+  MUY_BAJA = 'muyBaja',
 }
 
-export interface Conocimiento {
+// Solo admin
+export const ETIQUETAS_PRIORIDAD: Record<ConocimientoPrioridad, string> = {
+  muyAlta: 'Muy alta',
+  alta: 'Alta',
+  media: 'Media',
+  baja: 'Baja',
+  muyBaja: 'Muy baja',
+};
+
+export interface Conocimiento<T = TextoLocalizado> {
   id: string;
-  titulo: string;
+  titulo: T;
   prioridad: ConocimientoPrioridad;
 }
 

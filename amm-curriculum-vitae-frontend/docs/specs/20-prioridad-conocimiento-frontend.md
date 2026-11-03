@@ -122,9 +122,9 @@ Ejemplo de orden resultante en `Curriculum` y PDF: `Ajax, C++, Visual Studio` (M
 
 ## Riesgos
 
-| Riesgo | Mitigación |
-| ------ | ---------- |
-| Desplegar el frontend antes que el backend: el `GET` trae `nivel` y no `prioridad` | Orden de despliegue: backend + migración primero. Si ocurre, todo se ordena como `Media` (alfabético) y la card no pinta la prioridad |
-| Con todos en `Media` tras la migración, el orden es idéntico al alfabético actual y no se nota el cambio | Esperado; reclasificar a mano desde `/conocimiento` (paso 8) |
+| Riesgo                                                                                                            | Mitigación                                                                                                                                  |
+| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Desplegar el frontend antes que el backend: el `GET` trae `nivel` y no `prioridad`                                | Orden de despliegue: backend + migración primero. Si ocurre, todo se ordena como `Media` (alfabético) y la card no pinta la prioridad       |
+| Con todos en `Media` tras la migración, el orden es idéntico al alfabético actual y no se nota el cambio          | Esperado; reclasificar a mano desde `/conocimiento` (paso 8)                                                                                |
 | Con todos los conocimientos, la sección `Competencias` alarga la barra lateral del PDF y puede pasar de 2 páginas | La barra lateral es `fixed` y la lista con viñetas fluye; comprobar el PDF real en el paso 8 y, si desborda, abrir spec aparte para filtrar |
-| `localeCompare` sin locale ordena distinto acentos o mayúsculas | Mismo comportamiento que hoy; fuera de alcance |
+| `localeCompare` sin locale ordena distinto acentos o mayúsculas                                                   | Mismo comportamiento que hoy; fuera de alcance                                                                                              |

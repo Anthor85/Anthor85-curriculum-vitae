@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { Contacto } from '../../src/pages/components/curriculum/items/Contacto';
 import type { Perfil } from '../../src/interfaces/perfil.interface';
 
-const PERFIL: Perfil = {
+const PERFIL: Perfil<string> = {
   id: '1',
   nombre: 'Antonio',
   apellidos: 'Menéndez',
@@ -17,7 +17,7 @@ const PERFIL: Perfil = {
 
 const STYLES = { contacto: 'contacto', contacto__linea: 'linea' };
 
-const renderContacto = (perfil: Perfil | null) =>
+const renderContacto = (perfil: Perfil<string> | null) =>
   render(<Contacto perfil={perfil} styles={STYLES} />);
 
 describe('<Contacto />', () => {

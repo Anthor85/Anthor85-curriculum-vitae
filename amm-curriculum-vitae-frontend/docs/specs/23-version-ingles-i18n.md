@@ -1,8 +1,9 @@
 # SPEC 23 — Versión en inglés: i18next, rutas `/` y `/en`, `hreflang` y formularios bilingües
 
-> **Estado:** Aprobada
+> **Estado:** Implementada
 > **Depende de:** SPEC 13 backend (`13-contenido-bilingue.md`), que fija `{ es, en }`, `GET /api/curriculum?lang=` y `POST /api/traduccion`; SPEC 17 (`17-prerender-y-metadatos.md`), cuyo prerender se duplica por idioma; SPEC 20 (`20-prioridad-conocimiento-frontend.md`), cuyo enum cambia a claves
 > **Fecha:** 2026-11-02
+> **Enmienda:** 2026-11-03 — `Conocimiento.titulo` bilingüe, a la par que la enmienda de la SPEC 13 (ver «Enmiendas»)
 > **Objetivo:** Publicar el CV en español (`/`) y en inglés (`/en`) con selector de idioma y `hreflang`. Los textos fijos van con i18next y el contenido viene de la API ya resuelto. Los formularios del admin editan cada campo en ES y EN, con un botón «Sugerir EN».
 
 ## Alcance
@@ -17,6 +18,7 @@
 - Prerender de `/` y `/en` con `<html lang>`, `hreflang` cruzados, `canonical`, `og:locale` y `og:url` propios. Regla en `vercel.json` para `/en`.
 - Admin: interfaces con `TextoLocalizado`, formularios con campos ES/EN y botón «Sugerir EN» que llama a `POST /traduccion`. Las cards muestran la versión ES y una marca «Sin EN» si falta la traducción.
 - `ConocimientoPrioridad` pasa a claves (`muyAlta`…) con etiquetas en español para el admin.
+- `Conocimiento.titulo` bilingüe (enmienda): tipo genérico, `CampoLocalizado` con «Sugerir EN» en `ConocimientoForm` y versión ES en el admin.
 
 **Fuera de alcance:**
 
@@ -58,9 +60,15 @@ export interface Experiencia<T = TextoLocalizado> {
   hitos: Hito<T>[];
 }
 
+export interface Conocimiento<T = TextoLocalizado> {
+  id: string;
+  titulo: T; // enmienda
+  prioridad: ConocimientoPrioridad;
+}
+
 // curriculum.interface.ts: lo que devuelve /curriculum?lang=
 export interface Curriculum {
-  conocimiento: Conocimiento[];
+  conocimiento: Conocimiento<string>[];
   experiencia: Experiencia<string>[];
   formaciones: Formacion<string>[];
   formacionesComplementarias: FormacionComplementaria<string>[];
@@ -68,7 +76,7 @@ export interface Curriculum {
 }
 ```
 
-Los campos parametrizados son los de la tabla de la SPEC 13: `Experiencia.descripcion`, `Hito.descripcion`, `Formacion.titulo/institucion`, `Extra.descripcion`, `FormacionComplementaria.titulo/institucion` y `Perfil.descripcion/direccion/disponibilidad/idiomas[].idioma/idiomas[].nivel`. Los payloads usan siempre `TextoLocalizado`.
+Los campos parametrizados son los de la tabla de la SPEC 13: `Experiencia.descripcion`, `Hito.descripcion`, `Formacion.titulo/institucion`, `Extra.descripcion`, `FormacionComplementaria.titulo/institucion` `Perfil.descripcion/direccion/disponibilidad/idiomas[].idioma/idiomas[].nivel` y, por la enmienda, `Conocimiento.titulo`. Los payloads usan siempre `TextoLocalizado`.
 
 ```ts
 export enum ConocimientoPrioridad {
@@ -132,10 +140,10 @@ export default i18n;
 
 `scripts/prerender.mjs` renderiza los dos idiomas:
 
-| Idioma | Petición | Salida |
-| ------ | -------- | ------ |
-| `es` | `GET /curriculum?lang=es` | `dist/index.html` |
-| `en` | `GET /curriculum?lang=en` | `dist/en/index.html` |
+| Idioma | Petición                  | Salida               |
+| ------ | ------------------------- | -------------------- |
+| `es`   | `GET /curriculum?lang=es` | `dist/index.html`    |
+| `en`   | `GET /curriculum?lang=en` | `dist/en/index.html` |
 
 - `render(curriculum, idioma)` en `entry-server.tsx`: `changeLanguage(idioma)`, `setCurriculum({ idioma, curriculum })` y `StaticRouter location={idioma === 'en' ? '/en' : '/'}`. Los dos renders van seguidos en el mismo proceso, y como `renderToString` es síncrono, el singleton del store no molesta.
 - Nuevo marcador `html: /<html lang="[^"]*">/`, que se sustituye por el idioma de la página.
@@ -163,12 +171,12 @@ Nuevo componente `components/CampoLocalizado.tsx`:
 
 ```tsx
 interface Props {
-  id: string;                    // "titulo" → inputs "titulo-es" y "titulo-en"
-  etiqueta: string;              // "Título"
+  id: string; // "titulo" → inputs "titulo-es" y "titulo-en"
+  etiqueta: string; // "Título"
   valor: TextoLocalizado;
   onChange: (valor: TextoLocalizado) => void;
-  multilinea?: boolean;          // textarea en vez de input
-  required?: boolean;            // solo afecta a ES
+  multilinea?: boolean; // textarea en vez de input
+  required?: boolean; // solo afecta a ES
 }
 ```
 
@@ -179,12 +187,13 @@ interface Props {
 
 Uso por formulario:
 
-| Form | Campos con `CampoLocalizado` |
-| ---- | ---------------------------- |
-| `ExperienciaForm` | `descripcion` (multilínea) |
-| `FormacionForm` | `titulo`, `institucion` |
-| `FormacionComplementariaForm` | `titulo`, `institucion` |
-| `PerfilForm` | `descripcion` (multilínea), `direccion`, `disponibilidad` |
+| Form                          | Campos con `CampoLocalizado`                              |
+| ----------------------------- | --------------------------------------------------------- |
+| `ExperienciaForm`             | `descripcion` (multilínea)                                |
+| `FormacionForm`               | `titulo`, `institucion`                                   |
+| `FormacionComplementariaForm` | `titulo`, `institucion`                                   |
+| `PerfilForm`                  | `descripcion` (multilínea), `direccion`, `disponibilidad` |
+| `ConocimientoForm`            | `titulo` (enmienda)                                       |
 
 Listas (hitos, extras, idiomas del perfil): cada fila tiene un input ES y otro EN (`aria-label` «Hito N (ES)» / «Hito N (EN)»). Debajo del grupo, un botón «Sugerir EN de los vacíos» traduce **en una sola petición** todas las filas con ES relleno y EN vacío.
 
@@ -192,6 +201,12 @@ Listas (hitos, extras, idiomas del perfil): cada fila tiene un input ES y otro E
 - Payload: los dos idiomas trimados. Se descartan las filas de hitos/extras/idiomas con `es` vacío.
 - `ConocimientoForm`: el `<select>` usa las claves como `value` y `ETIQUETAS_PRIORIDAD` como texto.
 - Cards (`ExperienciaCard`, `FormacionCard`, `FormacionComplementariaCard`): muestran el `es` y una marca «Sin EN» si algún campo localizado de la entidad (o de sus hitos/extras) tiene `en` vacío. Sirve para encontrar lo que falta por traducir.
+- Conocimiento (enmienda):
+  - `ConocimientoForm` usa `CampoLocalizado` para `titulo` (obligatorio en ES, con «Sugerir EN»). `CONOCIMIENTO_VACIO` usa `{ es: '', en: '' }` y el payload envía los dos idiomas trimados.
+  - `ConocimientoCard` muestra `titulo.es` y **no** pinta «Sin EN»: en conocimiento el inglés es opcional a propósito (la mayoría son nombres propios) y la marca saldría en casi todas las cards.
+  - Donde el admin pinta títulos de conocimiento (`MultiSelect` de `ExperienciaForm` y tecnologías de `ExperienciaCard`) se usa `titulo.es`.
+  - `tecnologiasFilter` pasa a genérico (`<C extends { id: string }>`) para servir al admin (`Conocimiento`) y al CV (`Conocimiento<string>`).
+  - La parte pública no cambia: `/curriculum?lang=` ya devuelve `titulo` resuelto, y `ordenarCurriculum`, `ConocimientoItem` y el PDF siguen trabajando con strings.
 
 ## Plan de implementación
 
@@ -214,6 +229,11 @@ Listas (hitos, extras, idiomas del perfil): cada fila tiene un input ES y otro E
    - `ordenarCurriculum` y PDF con las nuevas claves de prioridad.
 8. `npm run verify`.
 9. **Despliegue.** Justo después de la SPEC 13 en producción. Prueba: `/` y `/en` en producción, `curl` de `/en` con el HTML prerenderizado en inglés, y validar `hreflang` con un inspector SEO.
+10. **Enmienda: `Conocimiento.titulo`.** Va después del paso 10 de la SPEC 13 (backend) en la misma rama, y antes del despliegue del paso 9.
+    - Tipos: `Conocimiento<T>` y `Curriculum.conocimiento: Conocimiento<string>[]`; `tecnologiasFilter` genérico.
+    - Admin: `ConocimientoForm` con `CampoLocalizado`; `ConocimientoCard`, `MultiSelect` y `ExperienciaCard` con `titulo.es`.
+    - Tests: el payload de conocimiento lleva `{ es, en }`, la edición carga los dos idiomas, «Sugerir EN» rellena `titulo` EN, la card muestra el ES y no pinta «Sin EN», y el `MultiSelect` y la card de experiencia muestran el ES. Adaptar los fixtures de conocimiento del admin.
+    - Prueba: `npm run verify` en verde y, contra el backend local migrado, `/en` muestra el `en` de un conocimiento traducido y el `es` de los demás.
 
 ## Criterios de aceptación
 
@@ -229,6 +249,7 @@ Listas (hitos, extras, idiomas del perfil): cada fila tiene un input ES y otro E
 - [ ] «Sugerir EN de los vacíos» hace una sola petición y solo toca las filas con EN vacío.
 - [ ] Las cards marcan «Sin EN» las entidades con alguna traducción pendiente.
 - [ ] La prioridad se guarda con claves y se muestra con su etiqueta en español en el admin.
+- [ ] `ConocimientoForm` edita `titulo` en ES y EN con «Sugerir EN» y envía `{ es, en }`; en `/en` un conocimiento con `en` sale en inglés y uno sin `en` sale en español (enmienda).
 - [ ] `es.json` y `en.json` tienen las mismas claves (test).
 - [ ] `npm run verify` en verde.
 
@@ -244,14 +265,21 @@ Listas (hitos, extras, idiomas del perfil): cada fila tiene un input ES y otro E
 - **Sí:** «Sugerir EN» sobrescribe EN sin confirmar, porque es una acción explícita. **No:** un `confirm()`, que bloquea y no encaja con el resto del admin.
 - **Sí:** para las listas, un botón por grupo y una sola petición. **No:** un botón por fila, que recarga la UI y gasta más peticiones.
 - **Sí:** `t` por parámetro en helpers y PDF. **No:** importar el singleton de i18n en helpers puros, porque complica los tests.
+- **Sí (enmienda):** `Conocimiento.titulo` bilingüe con `en` opcional y sin marca «Sin EN» en su card. **No:** marcar «Sin EN» en conocimiento, porque con nombres propios (React, Docker) el `en` vacío es lo normal y no algo pendiente.
 
 ## Riesgos
 
-| Riesgo | Mitigación |
-| ------ | ---------- |
-| La hidratación no cuadra si el idioma de i18n no está fijado antes del primer render | `changeLanguage` en `index.tsx`/`entry-server.tsx` antes de renderizar; prueba con `npm run preview` en `/` y `/en` |
-| Vercel sirve `spa.html` en `/en` por la regla comodín | Rewrite explícito `/en` → `/en/index.html` antes del comodín; comprobarlo con `curl` tras desplegar |
-| `vite preview` no lee `vercel.json` | `index.tsx` comprueba la ruta y el idioma precargado antes de hidratar, como hoy |
-| Una clave de i18n en `en.json` pero no en `es.json` (o al revés) | Tipado de claves y test de paridad |
-| Traducir las cadenas del PDF descuadra el maquetado (el inglés es más corto o más largo) | Revisión visual del PDF en los dos idiomas en el paso 4 |
-| Despliegue desfasado con el backend | Desplegar justo después de la SPEC 13; el fallback a `es` del backend cubre los datos aún sin traducir |
+| Riesgo                                                                                   | Mitigación                                                                                                          |
+| ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| La hidratación no cuadra si el idioma de i18n no está fijado antes del primer render     | `changeLanguage` en `index.tsx`/`entry-server.tsx` antes de renderizar; prueba con `npm run preview` en `/` y `/en` |
+| Vercel sirve `spa.html` en `/en` por la regla comodín                                    | Rewrite explícito `/en` → `/en/index.html` antes del comodín; comprobarlo con `curl` tras desplegar                 |
+| `vite preview` no lee `vercel.json`                                                      | `index.tsx` comprueba la ruta y el idioma precargado antes de hidratar, como hoy                                    |
+| Una clave de i18n en `en.json` pero no en `es.json` (o al revés)                         | Tipado de claves y test de paridad                                                                                  |
+| Traducir las cadenas del PDF descuadra el maquetado (el inglés es más corto o más largo) | Revisión visual del PDF en los dos idiomas en el paso 4                                                             |
+| Despliegue desfasado con el backend                                                      | Desplegar justo después de la SPEC 13; el fallback a `es` del backend cubre los datos aún sin traducir              |
+
+## Enmiendas
+
+| Fecha      | Cambio                                                                                                                                                                                | Motivo                                                                                                        |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| 2026-11-03 | `Conocimiento.titulo` bilingüe: tipo genérico, `ConocimientoForm` con `CampoLocalizado`, títulos ES en el admin, `tecnologiasFilter` genérico, paso 10 del plan, criterio y decisión. | Algunos conocimientos necesitan versión en inglés en `/en`. Acompaña a la enmienda de la SPEC 13 del backend. |

@@ -1,8 +1,9 @@
 # SPEC 13 — Contenido bilingüe (ES/EN) y sugerencia de traducción
 
-> **Estado:** Aprobada
+> **Estado:** Implementada
 > **Depende de:** SPEC 11 (`11-prioridad-conocimiento.md`), cuyo `enum` se cambia a claves; SPEC 12 (`12-extras-formacion.md`), cuyo helper `descripcionesHijas.js` se adapta
 > **Fecha:** 2026-11-02
+> **Enmienda:** 2026-11-03 — `Conocimiento.titulo` pasa a `{ es, en }` (ver «Enmiendas»)
 > **Objetivo:** Guardar en la base el texto libre del currículum en español e inglés (`{ es, en }` por campo), servir `GET /api/curriculum?lang=es|en` con el texto ya resuelto y exponer `POST /api/traduccion` (DeepL API Free) para que el admin sugiera la versión EN.
 
 ## Alcance
@@ -12,14 +13,15 @@
 - Nuevo `models/plugins/localizado.js`: sub-schema `{ es, en }` reutilizable.
 - Campos que pasan a `{ es, en }`:
 
-  | Modelo | Campos |
-  | ------ | ------ |
-  | `Experiencia` | `descripcion` |
-  | `Hito` | `descripcion` |
-  | `Formacion` | `titulo`, `institucion` |
-  | `Extra` | `descripcion` |
-  | `FormacionComplementaria` | `titulo`, `institucion` |
-  | `Perfil` | `descripcion`, `direccion`, `disponibilidad`, `idiomas[].idioma`, `idiomas[].nivel` |
+  | Modelo                    | Campos                                                                              |
+  | ------------------------- | ----------------------------------------------------------------------------------- |
+  | `Experiencia`             | `descripcion`                                                                       |
+  | `Hito`                    | `descripcion`                                                                       |
+  | `Formacion`               | `titulo`, `institucion`                                                             |
+  | `Extra`                   | `descripcion`                                                                       |
+  | `FormacionComplementaria` | `titulo`, `institucion`                                                             |
+  | `Perfil`                  | `descripcion`, `direccion`, `disponibilidad`, `idiomas[].idioma`, `idiomas[].nivel` |
+  | `Conocimiento`            | `titulo` (enmienda)                                                                 |
 
 - `Conocimiento.prioridad`: el `enum` pasa de texto en español a claves (`muyAlta`, `alta`, `media`, `baja`, `muyBaja`; por defecto `media`).
 - `helpers/descripcionesHijas.js`: `descripcion` de hitos y extras pasa a `{ es, en }`.
@@ -31,7 +33,7 @@
 **Fuera de alcance:**
 
 - Más idiomas que ES y EN. El sub-schema tiene las dos claves fijas: no hay lista de idiomas configurable.
-- Traducir campos que no son texto libre: `empresa`, `Conocimiento.titulo` (nombres de tecnologías), `nombre`, `apellidos`, `email`, `telefono`, URLs y fechas.
+- Traducir campos que no son texto libre: `empresa`, `nombre`, `apellidos`, `email`, `telefono`, URLs y fechas.
 - Traducción automática al leer: la traducción solo se pide desde el admin y se guarda revisada.
 - Cache de traducciones o glosario de DeepL.
 - Cambios en `scripts/clonarBBDD.js`: clona los documentos tal cual.
@@ -60,6 +62,7 @@ module.exports = { localizado };
 
 - Un campo que hoy es `required` usa `localizado({ required: true })`: exige `es`, nunca `en`.
 - `Perfil.idiomas` mantiene su sub-schema, con `idioma` y `nivel` como `localizado({ required: true })`.
+- `Conocimiento.titulo` usa `localizado({ required: true })` (enmienda). La mayoría son nombres propios (React, Docker) y se quedan con `en: ''`: la lectura pública cae a `es`. Solo se rellena `en` en los traducibles («Metodologías ágiles», «Pruebas unitarias»…).
 - Gracias a `{ _id: false }`, el `toJSON` actual devuelve `{ es, en }` sin `id`.
 
 `Conocimiento.prioridad`:
@@ -75,7 +78,7 @@ prioridad: {
 
 ## Contrato
 
-### Escritura (admin): `POST`/`PUT` de experiencia, formación, formación complementaria y perfil
+### Escritura (admin): `POST`/`PUT` de experiencia, formación, formación complementaria, perfil y conocimiento
 
 Los campos de la tabla llegan como objeto:
 
@@ -85,7 +88,10 @@ Los campos de la tabla llegan como objeto:
   "institucion": { "es": "Universidad de Valencia", "en": "" },
   "fechaFin": "2015-06-30",
   "extras": [
-    { "id": "<opcional>", "descripcion": { "es": "Rama de software", "en": "Software track" } }
+    {
+      "id": "<opcional>",
+      "descripcion": { "es": "Rama de software", "en": "Software track" }
+    }
   ]
 }
 ```
@@ -93,6 +99,7 @@ Los campos de la tabla llegan como objeto:
 - `en` ausente → `''`.
 - Si llega un string en un campo localizado, el cast falla y responde el `500` genérico de `conContexto` (ver Decisiones).
 - Hitos y extras: se descartan los que tengan `descripcion.es` vacío o de solo espacios. Se mantienen la reconciliación por id y el formato antiguo `["texto"]`, que pasa a `{ es: texto, en: '' }`.
+- Conocimiento (enmienda): `POST /api/conocimiento`, `POST /api/conocimiento/multiple` (cada elemento del array) y `PUT /api/conocimiento/:id` reciben `titulo: { es, en }`. `actualizarConocimiento` ya asigna `req.body.titulo` tal cual: solo cambia el tipo.
 
 ### Lectura del admin: `GET /api/experiencia`, `/formacion`, `/formacionComplementaria`, `/perfil`, `/conocimiento`
 
@@ -182,6 +189,9 @@ db.perfils.updateMany({ 'descripcion.es': { $exists: false } }, [
     },
   },
 ]);
+db.conocimientos.updateMany({ 'titulo.es': { $exists: false } }, [
+  { $set: { titulo: loc('titulo') } },
+]);
 db.conocimientos.updateMany({}, [
   {
     $set: {
@@ -214,6 +224,7 @@ db.extras.countDocuments({ descripcion: { $type: 'string' } }); // 0
 db.formacions.countDocuments({ titulo: { $type: 'string' } }); // 0
 db.formacioncomplementarias.countDocuments({ titulo: { $type: 'string' } }); // 0
 db.perfils.countDocuments({ descripcion: { $type: 'string' } }); // 0
+db.conocimientos.countDocuments({ titulo: { $type: 'string' } }); // 0
 db.conocimientos.countDocuments({
   prioridad: { $nin: ['muyAlta', 'alta', 'media', 'baja', 'muyBaja'] },
 }); // 0
@@ -234,6 +245,13 @@ db.conocimientos.countDocuments({
 7. `npm test`, `npm run test:coverage`, `npm run lint`.
 8. **Local.** Copia de la base, migración y verificación. Prueba manual: `GET /api/curriculum?lang=en` devuelve el texto en español (con `en` vacío cae a `es`).
 9. **Producción.** Crear la cuenta de DeepL API Free y añadir `DEEPL_API_KEY` en Vercel. Copia, migración, despliegue y verificación. Justo después, desplegar el frontend de la SPEC 23.
+10. **Enmienda: `Conocimiento.titulo`.**
+    - `models/Conocimiento.js`: `titulo: localizado({ required: true })`.
+    - `test/utils/fixtures.js`: `crearConocimientoEnBd` siembra `titulo: { es: 'React', en: '' }`.
+    - `conocimiento.test.js`: adaptar los bodies a `{ es, en }`, `POST` sin `en` guarda `''`, `PUT` cambia solo `en`, `POST /multiple` guarda los dos idiomas y un `titulo` string responde `500` sin crear nada.
+    - `curriculum.test.js`: `lang=en` devuelve `titulo.en` si existe y `titulo.es` si está vacío.
+    - Migración: añadir el `updateMany` de `titulo` en `conocimientos` y su verificación (ya incluidos arriba). Ejecutar en local y en producción antes de desplegar, igual que el resto.
+    - Prueba: `npm test`, `npm run test:coverage` y `npm run lint` en verde.
 
 ## Criterios de aceptación
 
@@ -243,6 +261,7 @@ db.conocimientos.countDocuments({
 - [ ] `GET /api/curriculum?lang=en` devuelve strings: `en` si existe y `es` si no.
 - [ ] `GET /api/curriculum` sin `lang` o con un idioma no soportado devuelve strings en `es`.
 - [ ] `prioridad` solo acepta `muyAlta|alta|media|baja|muyBaja` y por defecto es `media`.
+- [ ] `Conocimiento.titulo` se guarda y se devuelve como `{ es, en }` en `GET`, `POST`, `POST /multiple` y `PUT`; `/curriculum?lang=en` lo resuelve con fallback a `es` (enmienda).
 - [ ] `POST /api/traduccion` sin token → `401`; con datos inválidos → `400`; correcto → `200` con `textos` en el mismo orden.
 - [ ] `503`, `429` y `502` según el caso de error de DeepL descrito.
 - [ ] La clave de DeepL solo vive en el backend (`DEEPL_API_KEY`) y nunca aparece en una respuesta.
@@ -262,14 +281,21 @@ db.conocimientos.countDocuments({
 - **Sí:** traducción bajo JWT. Solo la usa el admin y así nadie gasta la cuota.
 - **No:** aceptar strings en los campos localizados por compatibilidad. El admin anterior no puede leer los objetos de todos modos, así que los dos repos se despliegan seguidos.
 - **Sí:** migración `mongosh` manual e idempotente (precedente de las SPEC 10, 11 y 12).
+- **Sí (enmienda):** `Conocimiento.titulo` localizado con `en` opcional. Algunos conocimientos son conceptos traducibles y en `/en` deben salir en inglés; la mayoría son nombres propios y con el fallback no hay que tocarlos. **No:** un campo aparte (`tituloEn`) solo para los traducibles: rompería el patrón `{ es, en }` que ya resuelve `resolverIdioma`.
 
 ## Riesgos
 
-| Riesgo | Mitigación |
-| ------ | ---------- |
+| Riesgo                                                                                                   | Mitigación                                                                                                                                                              |
+| -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Entre el despliegue del backend y el del frontend, el admin anterior recibe objetos donde espera strings | La parte pública sigue bien porque `/curriculum` sin `lang` devuelve strings. El admin se rompe unos minutos: desplegar la SPEC 23 justo después y no editar entretanto |
-| El frontend anterior ordena por las prioridades antiguas (`'Muy alta'`…) | `indicePrioridad` trata un valor desconocido como Media: el orden por prioridad se pierde unos minutos, no se rompe |
-| La migración se ejecuta a medias o dos veces | Filtros idempotentes, copia previa con `clone-db` y verificaciones con `countDocuments` |
-| Un campo opcional sin valor (`disponibilidad`) pasa a `{ es: '', en: '' }` | El frontend trata `''` como ausente, igual que hoy |
-| Se agota la cuota de DeepL o cambia el plan gratuito | `429`/`503` controlados: el admin muestra el error y se puede traducir a mano |
-| `resolverIdioma` convierte un objeto que no es localizado | Solo actúa con las claves exactas `{ en, es }`; test unitario con objetos de otras claves |
+| El frontend anterior ordena por las prioridades antiguas (`'Muy alta'`…)                                 | `indicePrioridad` trata un valor desconocido como Media: el orden por prioridad se pierde unos minutos, no se rompe                                                     |
+| La migración se ejecuta a medias o dos veces                                                             | Filtros idempotentes, copia previa con `clone-db` y verificaciones con `countDocuments`                                                                                 |
+| Un campo opcional sin valor (`disponibilidad`) pasa a `{ es: '', en: '' }`                               | El frontend trata `''` como ausente, igual que hoy                                                                                                                      |
+| Se agota la cuota de DeepL o cambia el plan gratuito                                                     | `429`/`503` controlados: el admin muestra el error y se puede traducir a mano                                                                                           |
+| `resolverIdioma` convierte un objeto que no es localizado                                                | Solo actúa con las claves exactas `{ en, es }`; test unitario con objetos de otras claves                                                                               |
+
+## Enmiendas
+
+| Fecha      | Cambio                                                                                                                                      | Motivo                                                                                                                                                    |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-11-03 | `Conocimiento.titulo` pasa a `{ es, en }` (modelo, contrato, migración, plan paso 10, criterio y decisión). Se quita de «Fuera de alcance». | Algunos conocimientos («Metodologías ágiles», «Pruebas unitarias») necesitan versión en inglés en `/en`. Se implementa junto con la SPEC 23 del frontend. |

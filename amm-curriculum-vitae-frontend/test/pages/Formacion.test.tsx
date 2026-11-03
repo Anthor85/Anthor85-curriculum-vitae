@@ -1,7 +1,13 @@
 import { fireEvent, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { avanzarMensaje, flush, renderConStore, textoMensaje } from '../utils';
+import {
+  avanzarMensaje,
+  errorAxios,
+  flush,
+  renderConStore,
+  textoMensaje,
+} from '../utils';
 import { Formacion as IFormacion } from '../../src/interfaces/formacion.interface';
 
 const apiMock = vi.hoisted(() => ({
@@ -18,20 +24,26 @@ vi.mock('../../src/api/api', () => ({
 
 import { Formacion } from '../../src/pages/Formacion';
 
+const loc = (es: string, en = '') => ({ es, en });
+
 const FORMACIONES: IFormacion[] = [
   {
     id: '1',
-    titulo: 'Ingeniería Informática',
-    institucion: 'Universidad de Valencia',
+    titulo: loc('Ingeniería Informática', 'Computer Engineering'),
+    institucion: loc('Universidad de Valencia', 'University of Valencia'),
     fechaFin: '2015-06-30',
     extras: [
-      { id: 'x1', descripcion: 'Especialidad en software', formacion: '1' },
+      {
+        id: 'x1',
+        descripcion: loc('Especialidad en software', 'Software track'),
+        formacion: '1',
+      },
     ],
   },
   {
     id: '2',
-    titulo: 'Grado Superior DAM',
-    institucion: 'IES Camp de Morvedre',
+    titulo: loc('Grado Superior DAM', 'Higher Diploma in App Development'),
+    institucion: loc('IES Camp de Morvedre'),
     fechaFin: '2011-06-30',
     extras: [],
   },
@@ -58,7 +70,7 @@ const inputsExtra = () =>
   screen
     .queryAllByRole('textbox')
     .filter(
-      (input) => input.getAttribute('name') === 'extras',
+      (input) => input.getAttribute('name') === 'extras-es',
     ) as HTMLInputElement[];
 
 const renderPagina = async () => {
@@ -97,8 +109,8 @@ describe('<Formacion />', () => {
   test('pinta el formulario con sus campos y sus botones', async () => {
     await renderPagina();
 
-    expect(screen.getByLabelText('Título:')).toBeInTheDocument();
-    expect(screen.getByLabelText('Institución:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Título (ES)')).toBeInTheDocument();
+    expect(screen.getByLabelText('Institución (ES)')).toBeInTheDocument();
     expect(screen.getByRole('group', { name: 'Extra:' })).toBeInTheDocument();
     expect(screen.getByLabelText('Fecha de Fin:')).toBeInTheDocument();
     expect(
@@ -119,8 +131,8 @@ describe('<Formacion />', () => {
     const user = setupUser();
     await renderPagina();
 
-    const titulo = screen.getByLabelText('Título:');
-    const institucion = screen.getByLabelText('Institución:');
+    const titulo = screen.getByLabelText('Título (ES)');
+    const institucion = screen.getByLabelText('Institución (ES)');
     const fechaFin = screen.getByLabelText('Fecha de Fin:');
 
     await user.type(titulo, 'Máster en IA');
@@ -142,16 +154,16 @@ describe('<Formacion />', () => {
     const user = setupUser();
     await renderPagina();
 
-    await user.type(screen.getByLabelText('Título:'), 'Máster en IA');
-    await user.type(screen.getByLabelText('Institución:'), 'UNED');
+    await user.type(screen.getByLabelText('Título (ES)'), 'Máster en IA');
+    await user.type(screen.getByLabelText('Institución (ES)'), 'UNED');
     escribirFecha(screen.getByLabelText('Fecha de Fin:'), '2024-06-30');
     await user.click(screen.getByRole('button', { name: 'Agregar Formación' }));
 
     await flush();
 
     expect(apiMock.post).toHaveBeenCalledWith('/formacion', {
-      titulo: 'Máster en IA',
-      institucion: 'UNED',
+      titulo: { es: 'Máster en IA', en: '' },
+      institucion: { es: 'UNED', en: '' },
       fechaFin: '2024-06-30',
       extras: [],
     });
@@ -166,9 +178,9 @@ describe('<Formacion />', () => {
     const user = setupUser();
     await renderPagina();
 
-    const titulo = screen.getByLabelText('Título:');
+    const titulo = screen.getByLabelText('Título (ES)');
 
-    await user.type(screen.getByLabelText('Institución:'), 'UNED');
+    await user.type(screen.getByLabelText('Institución (ES)'), 'UNED');
     escribirFecha(screen.getByLabelText('Fecha de Fin:'), '2024-06-30');
     await user.click(screen.getByRole('button', { name: 'Agregar Formación' }));
 
@@ -186,14 +198,21 @@ describe('<Formacion />', () => {
 
     await user.click(screen.getAllByRole('button', { name: 'Editar' })[0]);
 
-    expect(screen.getByLabelText('Título:')).toHaveValue(
+    expect(screen.getByLabelText('Título (ES)')).toHaveValue(
       'Ingeniería Informática',
     );
-    expect(screen.getByLabelText('Institución:')).toHaveValue(
+    expect(screen.getByLabelText('Institución (ES)')).toHaveValue(
       'Universidad de Valencia',
     );
     expect(inputsExtra()).toHaveLength(1);
     expect(inputsExtra()[0]).toHaveValue('Especialidad en software');
+    expect(screen.getByLabelText('Título (EN)')).toHaveValue(
+      'Computer Engineering',
+    );
+    expect(screen.getByLabelText('Institución (EN)')).toHaveValue(
+      'University of Valencia',
+    );
+    expect(screen.getByLabelText('Extra 1 (EN)')).toHaveValue('Software track');
     expect(screen.getByLabelText('Fecha de Fin:')).toHaveValue('2015-06-30');
     expect(
       screen.getByRole('heading', { name: 'Editar Formación' }),
@@ -210,8 +229,8 @@ describe('<Formacion />', () => {
     await user.click(screen.getAllByRole('button', { name: 'Editar' })[0]);
     await user.click(screen.getByRole('button', { name: 'Borrar formulario' }));
 
-    expect(screen.getByLabelText('Título:')).toHaveValue('');
-    expect(screen.getByLabelText('Institución:')).toHaveValue('');
+    expect(screen.getByLabelText('Título (ES)')).toHaveValue('');
+    expect(screen.getByLabelText('Institución (ES)')).toHaveValue('');
     expect(inputsExtra()).toHaveLength(0);
     expect(screen.getByLabelText('Fecha de Fin:')).toHaveValue('');
     expect(
@@ -228,7 +247,7 @@ describe('<Formacion />', () => {
 
     await user.click(screen.getAllByRole('button', { name: 'Editar' })[0]);
 
-    const titulo = screen.getByLabelText('Título:');
+    const titulo = screen.getByLabelText('Título (ES)');
     await user.clear(titulo);
     await user.type(titulo, 'Ingeniería del Software');
     await user.click(
@@ -238,10 +257,15 @@ describe('<Formacion />', () => {
     await flush();
 
     expect(apiMock.put).toHaveBeenCalledWith('/formacion/1', {
-      titulo: 'Ingeniería del Software',
-      institucion: 'Universidad de Valencia',
+      titulo: loc('Ingeniería del Software', 'Computer Engineering'),
+      institucion: loc('Universidad de Valencia', 'University of Valencia'),
       fechaFin: '2015-06-30',
-      extras: [{ id: 'x1', descripcion: 'Especialidad en software' }],
+      extras: [
+        {
+          id: 'x1',
+          descripcion: loc('Especialidad en software', 'Software track'),
+        },
+      ],
     });
     expect(screen.getByText('Ingeniería del Software')).toBeInTheDocument();
     expect(
@@ -270,8 +294,8 @@ describe('<Formacion />', () => {
 
     expect(inputsExtra()).toHaveLength(0);
 
-    await user.type(screen.getByLabelText('Título:'), 'Máster en IA');
-    await user.type(screen.getByLabelText('Institución:'), 'UNED');
+    await user.type(screen.getByLabelText('Título (ES)'), 'Máster en IA');
+    await user.type(screen.getByLabelText('Institución (ES)'), 'UNED');
     escribirFecha(screen.getByLabelText('Fecha de Fin:'), '2024-06-30');
     await user.click(screen.getByRole('button', { name: '+ Añadir extra' }));
     await user.type(inputsExtra()[0], 'Primer extra');
@@ -287,8 +311,8 @@ describe('<Formacion />', () => {
       '/formacion',
       expect.objectContaining({
         extras: [
-          { descripcion: 'Primer extra' },
-          { descripcion: 'Segundo extra' },
+          { descripcion: { es: 'Primer extra', en: '' } },
+          { descripcion: { es: 'Segundo extra', en: '' } },
         ],
       }),
     );
@@ -344,8 +368,8 @@ describe('<Formacion />', () => {
     apiMock.post.mockRejectedValue(new Error('boom'));
     await renderPagina();
 
-    await user.type(screen.getByLabelText('Título:'), 'Máster en IA');
-    await user.type(screen.getByLabelText('Institución:'), 'UNED');
+    await user.type(screen.getByLabelText('Título (ES)'), 'Máster en IA');
+    await user.type(screen.getByLabelText('Institución (ES)'), 'UNED');
     escribirFecha(screen.getByLabelText('Fecha de Fin:'), '2024-06-30');
     await user.click(screen.getByRole('button', { name: 'Agregar Formación' }));
 
@@ -366,7 +390,7 @@ describe('<Formacion />', () => {
 
     await user.click(screen.getAllByRole('button', { name: 'Editar' })[0]);
 
-    const titulo = screen.getByLabelText('Título:');
+    const titulo = screen.getByLabelText('Título (ES)');
     await user.clear(titulo);
     await user.type(titulo, 'Ingeniería del Software');
     await user.click(
@@ -413,5 +437,114 @@ describe('<Formacion />', () => {
     expect(screen.queryByLabelText('Título:')).not.toBeInTheDocument();
 
     await flush();
+  });
+
+  test('el payload lleva los dos idiomas trimados de título, institución y extras', async () => {
+    const user = setupUser();
+    await renderPagina();
+
+    await user.type(screen.getByLabelText('Título (ES)'), ' Máster en IA ');
+    await user.type(screen.getByLabelText('Título (EN)'), ' MSc in AI ');
+    await user.type(screen.getByLabelText('Institución (ES)'), 'UNED');
+    escribirFecha(screen.getByLabelText('Fecha de Fin:'), '2024-06-30');
+    await user.click(screen.getByRole('button', { name: '+ Añadir extra' }));
+    await user.type(screen.getByLabelText('Extra 1 (ES)'), ' Matrícula ');
+    await user.type(screen.getByLabelText('Extra 1 (EN)'), ' Honours ');
+    await user.click(screen.getByRole('button', { name: '+ Añadir extra' }));
+    await user.type(screen.getByLabelText('Extra 2 (EN)'), 'Sin español');
+    await user.click(screen.getByRole('button', { name: 'Agregar Formación' }));
+    await flush();
+
+    expect(apiMock.post).toHaveBeenCalledWith('/formacion', {
+      titulo: { es: 'Máster en IA', en: 'MSc in AI' },
+      institucion: { es: 'UNED', en: '' },
+      fechaFin: '2024-06-30',
+      extras: [{ descripcion: { es: 'Matrícula', en: 'Honours' } }],
+    });
+  });
+
+  test('«Sugerir EN de los vacíos» manda una sola petición con los extras sin EN', async () => {
+    const user = setupUser();
+    apiMock.post.mockResolvedValue({ data: { textos: ['First', 'Third'] } });
+    await renderPagina();
+
+    for (let i = 0; i < 3; i++) {
+      await user.click(screen.getByRole('button', { name: '+ Añadir extra' }));
+    }
+    await user.type(screen.getByLabelText('Extra 1 (ES)'), 'Primero');
+    await user.type(screen.getByLabelText('Extra 2 (ES)'), 'Segundo');
+    await user.type(screen.getByLabelText('Extra 2 (EN)'), 'Ya traducido');
+    await user.type(screen.getByLabelText('Extra 3 (ES)'), 'Tercero');
+    await user.click(
+      screen.getByRole('button', { name: 'Sugerir EN de los vacíos' }),
+    );
+    await flush();
+
+    expect(apiMock.post).toHaveBeenCalledTimes(1);
+    expect(apiMock.post).toHaveBeenCalledWith('/traduccion', {
+      textos: ['Primero', 'Tercero'],
+    });
+    expect(screen.getByLabelText('Extra 1 (EN)')).toHaveValue('First');
+    expect(screen.getByLabelText('Extra 2 (EN)')).toHaveValue('Ya traducido');
+    expect(screen.getByLabelText('Extra 3 (EN)')).toHaveValue('Third');
+  });
+
+  test('«Sugerir EN» del título rellena EN con la traducción', async () => {
+    const user = setupUser();
+    apiMock.post.mockResolvedValue({ data: { textos: ['MSc in AI'] } });
+    await renderPagina();
+
+    await user.type(screen.getByLabelText('Título (ES)'), 'Máster en IA');
+    const [sugerirTitulo] = screen.getAllByRole('button', {
+      name: 'Sugerir EN',
+    });
+    await user.click(sugerirTitulo);
+    await flush();
+
+    expect(apiMock.post).toHaveBeenCalledWith('/traduccion', {
+      textos: ['Máster en IA'],
+    });
+    expect(screen.getByLabelText('Título (EN)')).toHaveValue('MSc in AI');
+  });
+
+  test('si la traducción de los extras falla muestra el error en línea', async () => {
+    const user = setupUser();
+    apiMock.post.mockRejectedValue(errorAxios(429));
+    await renderPagina();
+
+    await user.click(screen.getByRole('button', { name: '+ Añadir extra' }));
+    await user.type(screen.getByLabelText('Extra 1 (ES)'), 'Primero');
+    await user.click(
+      screen.getByRole('button', { name: 'Sugerir EN de los vacíos' }),
+    );
+    await flush();
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Cuota de traducción agotada',
+    );
+  });
+
+  test('la Card marca «Sin EN» solo si falta alguna traducción', async () => {
+    await renderPagina();
+
+    const marcas = screen.getAllByText('Sin EN');
+    expect(marcas).toHaveLength(1);
+    expect(marcas[0].parentElement).toHaveTextContent('Grado Superior DAM');
+  });
+
+  test('la Card marca «Sin EN» si solo falta la traducción de un extra', async () => {
+    apiMock.get.mockResolvedValue({
+      data: [
+        {
+          ...FORMACIONES[0],
+          extras: [
+            { id: 'x1', descripcion: loc('Sin traducir'), formacion: '1' },
+          ],
+        },
+      ],
+    });
+    await renderPagina();
+
+    expect(screen.getByText('Sin EN')).toBeInTheDocument();
   });
 });

@@ -4,7 +4,7 @@ import { Formacion } from '../../../../interfaces/formacion.interface';
 import styles from './Items.module.scss';
 
 interface Props {
-  formacion: Formacion;
+  formacion: Formacion<string>;
 }
 
 export const FormacionItem = ({ formacion }: Props) => {

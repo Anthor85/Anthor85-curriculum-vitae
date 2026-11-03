@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { exportToPDF } from '../helpers/exportToPDF';
 import { tituloCurriculum } from '../helpers/metasCurriculum';
 import { ordenarCurriculum } from '../helpers/ordenarCurriculum';
 import { Button } from '../components/Button';
 import { Resumen } from '../components/Resumen';
 import { Tabs } from '../components/Tabs';
-import { useCurriculumStore } from '../hooks';
+import { useCurriculumStore, useIdioma } from '../hooks';
 import {
   ConocimientoItem,
   Contacto,
@@ -13,13 +14,24 @@ import {
   FormacionComplementariaItem,
   FormacionItem,
 } from './components/curriculum/items';
+import { SelectorIdioma } from './components/curriculum/selectorIdioma';
 
 import styles from './Curriculum.module.scss';
 import { Spinner } from '../components/Spinner';
 
 export const Curriculum = () => {
+  const { t, i18n } = useTranslation();
+  const idioma = useIdioma();
   const [preparandoPDF, setPreparandoPDF] = useState(false);
-  const { curriculum, getCurriculum, loading, error } = useCurriculumStore();
+  const { curriculum, getCurriculum, loading, error } =
+    useCurriculumStore(idioma);
+
+  // index.tsx y entry-server.tsx ya fijan el idioma antes del primer render;
+  // esto cubre el cambio de idioma al navegar con el selector.
+  useEffect(() => {
+    i18n.changeLanguage(idioma);
+    document.documentElement.lang = idioma;
+  }, [i18n, idioma]);
 
   useEffect(() => {
     if (!curriculum) getCurriculum();
@@ -36,7 +48,9 @@ export const Curriculum = () => {
   const nombreFichero = [perfil?.nombre, perfil?.apellidos]
     .filter((parte) => parte?.trim())
     .join(' ');
-  const nombrePDF = nombreFichero ? `CV ${nombreFichero}` : 'CV';
+  const nombrePDF = nombreFichero
+    ? t('pdf.nombreFichero', { nombre: nombreFichero })
+    : t('pdf.nombreFicheroSinNombre');
 
   const titulo = tituloCurriculum(perfil);
 
@@ -61,7 +75,7 @@ export const Curriculum = () => {
   const tabs = [
     {
       id: 'experiencia',
-      titulo: 'Experiencia',
+      titulo: t('curriculum.tabs.experiencia'),
       contenido: experienciaOrdenada.length
         ? experienciaOrdenada.map((item) => (
             <ExperienciaItem
@@ -70,20 +84,20 @@ export const Curriculum = () => {
               conocimiento={conocimientosOrdenados}
             />
           ))
-        : vacio('Sin experiencia registrada'),
+        : vacio(t('curriculum.vacio.experiencia')),
     },
     {
       id: 'formacion',
-      titulo: 'Formación Académica',
+      titulo: t('curriculum.tabs.formacion'),
       contenido: formacionesOrdenadas.length
         ? formacionesOrdenadas.map((item) => (
             <FormacionItem key={item.id} formacion={item} />
           ))
-        : vacio('Sin formación académica registrada'),
+        : vacio(t('curriculum.vacio.formacion')),
     },
     {
       id: 'formacion-complementaria',
-      titulo: 'Formación Complementaria',
+      titulo: t('curriculum.tabs.formacionComplementaria'),
       contenido: complementariasOrdenadas.length
         ? complementariasOrdenadas.map((item) => (
             <FormacionComplementariaItem
@@ -91,11 +105,11 @@ export const Curriculum = () => {
               formacionComplementaria={item}
             />
           ))
-        : vacio('Sin formación complementaria registrada'),
+        : vacio(t('curriculum.vacio.formacionComplementaria')),
     },
     {
       id: 'conocimientos',
-      titulo: 'Conocimientos',
+      titulo: t('curriculum.tabs.conocimientos'),
       contenido: conocimientosOrdenados.length ? (
         <ul className={styles.conocimientos}>
           {conocimientosOrdenados.map((item) => (
@@ -103,7 +117,7 @@ export const Curriculum = () => {
           ))}
         </ul>
       ) : (
-        vacio('Sin conocimientos registrados')
+        vacio(t('curriculum.vacio.conocimientos'))
       ),
     },
   ];
@@ -118,10 +132,12 @@ export const Curriculum = () => {
         formaciones: ordenado.formacionesOrdenadas,
         formacionesComplementarias: ordenado.complementariasOrdenadas,
         conocimiento: ordenado.conocimientosOrdenados,
+        idioma,
+        t: i18n.getFixedT(idioma),
       },
       nombrePDF,
     ).finally(() => setPreparandoPDF(false));
-  }, [preparandoPDF, curriculum, nombrePDF]);
+  }, [preparandoPDF, curriculum, nombrePDF, idioma, i18n]);
   const cargando = loading || (!curriculum && !error);
 
   return cargando ? (
@@ -146,11 +162,14 @@ export const Curriculum = () => {
             {perfil?.disponibilidad && (
               <p className={styles.disponibilidad}>{perfil.disponibilidad}</p>
             )}
-            <Button
-              onClick={() => setPreparandoPDF(true)}
-              name="Descargar CV (PDF)"
-              icon="descarga"
-            />
+            <div className={styles.acciones}>
+              <Button
+                onClick={() => setPreparandoPDF(true)}
+                name={t('curriculum.descargarPDF')}
+                icon="descarga"
+              />
+              <SelectorIdioma />
+            </div>
           </div>
           <div className={styles.information}>
             {perfil?.descripcion && (

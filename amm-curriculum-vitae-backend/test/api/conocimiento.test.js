@@ -7,6 +7,8 @@ const Conocimiento = require('../../models/Conocimiento');
 const { crearConocimientoEnBd } = require('../utils/fixtures');
 const { tokenValido } = require('../utils/token');
 
+const loc = (es, en = '') => ({ es, en });
+
 describe('/api/conocimiento', () => {
   let token;
 
@@ -23,7 +25,7 @@ describe('/api/conocimiento', () => {
 
     it('devuelve los conocimientos sembrados con id y sin _id ni __v', async () => {
       const conocimiento = await crearConocimientoEnBd({
-        titulo: 'Node',
+        titulo: loc('Node'),
         prioridad: 'baja',
       });
 
@@ -32,7 +34,7 @@ describe('/api/conocimiento', () => {
       expect(body).toHaveLength(1);
       expect(body[0]).toEqual({
         id: conocimiento._id.toString(),
-        titulo: 'Node',
+        titulo: loc('Node'),
         prioridad: 'baja',
       });
       expect(body[0]).not.toHaveProperty('_id');
@@ -45,12 +47,12 @@ describe('/api/conocimiento', () => {
       const { body } = await request(app)
         .post('/api/conocimiento')
         .set('x-token', token)
-        .send({ titulo: 'React', prioridad: 'alta' })
+        .send({ titulo: loc('React', 'React'), prioridad: 'alta' })
         .expect(201);
 
       expect(body).toEqual({
         id: expect.any(String),
-        titulo: 'React',
+        titulo: loc('React', 'React'),
         prioridad: 'alta',
       });
       await expect(Conocimiento.countDocuments()).resolves.toBe(1);
@@ -59,7 +61,7 @@ describe('/api/conocimiento', () => {
     it('sin token devuelve 401 y no crea nada', async () => {
       const { body } = await request(app)
         .post('/api/conocimiento')
-        .send({ titulo: 'React', prioridad: 'alta' })
+        .send({ titulo: loc('React'), prioridad: 'alta' })
         .expect(401);
 
       expect(body).toEqual({ msg: 'No hay token en la petición' });
@@ -70,7 +72,7 @@ describe('/api/conocimiento', () => {
       const { body } = await request(app)
         .post('/api/conocimiento')
         .set('x-token', token)
-        .send({ titulo: 'React', prioridad: 'Experto' })
+        .send({ titulo: loc('React'), prioridad: 'Experto' })
         .expect(500);
 
       expect(body).toEqual({ msg: 'Error al crear el conocimiento' });
@@ -81,7 +83,7 @@ describe('/api/conocimiento', () => {
       const antigua = await request(app)
         .post('/api/conocimiento')
         .set('x-token', token)
-        .send({ titulo: 'React', prioridad: 'Alta' })
+        .send({ titulo: loc('React'), prioridad: 'Alta' })
         .expect(500);
 
       expect(antigua.body).toEqual({ msg: 'Error al crear el conocimiento' });
@@ -90,7 +92,7 @@ describe('/api/conocimiento', () => {
       const { body } = await request(app)
         .post('/api/conocimiento')
         .set('x-token', token)
-        .send({ titulo: 'React', prioridad: 'alta' })
+        .send({ titulo: loc('React'), prioridad: 'alta' })
         .expect(201);
 
       expect(body.prioridad).toBe('alta');
@@ -100,7 +102,7 @@ describe('/api/conocimiento', () => {
       const { body } = await request(app)
         .post('/api/conocimiento')
         .set('x-token', token)
-        .send({ titulo: 'React' })
+        .send({ titulo: loc('React') })
         .expect(201);
 
       expect(body.prioridad).toBe('media');
@@ -112,7 +114,7 @@ describe('/api/conocimiento', () => {
         const { body } = await request(app)
           .post('/api/conocimiento')
           .set('x-token', token)
-          .send({ titulo: 'React', prioridad })
+          .send({ titulo: loc('React'), prioridad })
           .expect(201);
 
         expect(body.prioridad).toBe(prioridad);
@@ -123,7 +125,7 @@ describe('/api/conocimiento', () => {
       const { body } = await request(app)
         .post('/api/conocimiento')
         .set('x-token', token)
-        .send({ titulo: 'React', nivel: 'Avanzado' })
+        .send({ titulo: loc('React'), nivel: 'Avanzado' })
         .expect(201);
 
       expect(body).not.toHaveProperty('nivel');
@@ -132,19 +134,75 @@ describe('/api/conocimiento', () => {
     });
   });
 
+  describe('POST /api/conocimiento (titulo bilingüe)', () => {
+    it('sin en devuelve 201 y guarda en vacio', async () => {
+      const { body } = await request(app)
+        .post('/api/conocimiento')
+        .set('x-token', token)
+        .send({ titulo: { es: '  Metodologías ágiles ' } })
+        .expect(201);
+
+      expect(body.titulo).toEqual(loc('Metodologías ágiles'));
+      const enBd = await Conocimiento.findById(body.id).lean();
+      expect(enBd.titulo).toEqual(loc('Metodologías ágiles'));
+    });
+
+    it('con es y en devuelve 201 y guarda los dos', async () => {
+      const { body } = await request(app)
+        .post('/api/conocimiento')
+        .set('x-token', token)
+        .send({ titulo: loc('Pruebas unitarias', 'Unit testing') })
+        .expect(201);
+
+      expect(body.titulo).toEqual(loc('Pruebas unitarias', 'Unit testing'));
+    });
+
+    it.each([
+      ['string', 'React'],
+      ['sin es', { en: 'React' }],
+      ['es vacio', { es: '   ', en: 'React' }],
+    ])('con titulo %s devuelve 500 y no crea nada', async (_caso, titulo) => {
+      const { body } = await request(app)
+        .post('/api/conocimiento')
+        .set('x-token', token)
+        .send({ titulo })
+        .expect(500);
+
+      expect(body).toEqual({ msg: 'Error al crear el conocimiento' });
+      await expect(Conocimiento.countDocuments()).resolves.toBe(0);
+    });
+  });
+
   describe('POST /api/conocimiento/multiple', () => {
+    it('guarda los dos idiomas de cada elemento', async () => {
+      await request(app)
+        .post('/api/conocimiento/multiple')
+        .set('x-token', token)
+        .send([
+          { titulo: loc('Metodologías ágiles', 'Agile methodologies') },
+          { titulo: loc('Docker') },
+        ])
+        .expect(201);
+
+      const enBd = await Conocimiento.find().lean();
+      expect(enBd.map(({ titulo }) => titulo)).toEqual([
+        loc('Metodologías ágiles', 'Agile methodologies'),
+        loc('Docker'),
+      ]);
+    });
+
     it('con token y un array de dos devuelve 201 y deja dos en la base', async () => {
       const { body } = await request(app)
         .post('/api/conocimiento/multiple')
         .set('x-token', token)
         .send([
-          { titulo: 'React', prioridad: 'alta' },
-          { titulo: 'Node', prioridad: 'baja' },
+          { titulo: loc('React'), prioridad: 'alta' },
+          { titulo: loc('Node'), prioridad: 'baja' },
         ])
         .expect(201);
 
       expect(body).toHaveLength(2);
-      expect(body.map(({ titulo }) => titulo)).toEqual(['React', 'Node']);
+      expect(body.map(({ titulo }) => titulo.es)).toEqual(['React', 'Node']);
       await expect(Conocimiento.countDocuments()).resolves.toBe(2);
     });
 
@@ -152,7 +210,7 @@ describe('/api/conocimiento', () => {
       await request(app)
         .post('/api/conocimiento/multiple')
         .set('x-token', token)
-        .send([{ titulo: 'React' }, { titulo: 'Node' }])
+        .send([{ titulo: loc('React') }, { titulo: loc('Node') }])
         .expect(201);
 
       const enBd = await Conocimiento.find();
@@ -170,24 +228,53 @@ describe('/api/conocimiento', () => {
       const { body } = await request(app)
         .put(`/api/conocimiento/${conocimiento._id}`)
         .set('x-token', token)
-        .send({ titulo: 'Vue', prioridad: 'muyBaja' })
+        .send({ titulo: loc('Vue'), prioridad: 'muyBaja' })
         .expect(200);
 
       expect(body).toEqual({
         id: conocimiento._id.toString(),
-        titulo: 'Vue',
+        titulo: loc('Vue'),
         prioridad: 'muyBaja',
       });
       const enBd = await Conocimiento.findById(conocimiento._id);
-      expect(enBd.titulo).toBe('Vue');
+      expect(enBd.titulo.es).toBe('Vue');
       expect(enBd.prioridad).toBe('muyBaja');
+    });
+
+    it('cambia solo en y conserva es', async () => {
+      const conocimiento = await crearConocimientoEnBd({
+        titulo: loc('Pruebas unitarias'),
+      });
+
+      const { body } = await request(app)
+        .put(`/api/conocimiento/${conocimiento._id}`)
+        .set('x-token', token)
+        .send({ titulo: loc('Pruebas unitarias', 'Unit testing') })
+        .expect(200);
+
+      expect(body.titulo).toEqual(loc('Pruebas unitarias', 'Unit testing'));
+      const enBd = await Conocimiento.findById(conocimiento._id).lean();
+      expect(enBd.titulo).toEqual(loc('Pruebas unitarias', 'Unit testing'));
+    });
+
+    it('con titulo string devuelve 500 y conserva el anterior', async () => {
+      const conocimiento = await crearConocimientoEnBd();
+
+      await request(app)
+        .put(`/api/conocimiento/${conocimiento._id}`)
+        .set('x-token', token)
+        .send({ titulo: 'Vue' })
+        .expect(500);
+
+      const enBd = await Conocimiento.findById(conocimiento._id).lean();
+      expect(enBd.titulo).toEqual(loc('React'));
     });
 
     it('con un id inexistente devuelve 404', async () => {
       const { body } = await request(app)
         .put(`/api/conocimiento/${new Types.ObjectId()}`)
         .set('x-token', token)
-        .send({ titulo: 'Vue', prioridad: 'muyBaja' })
+        .send({ titulo: loc('Vue'), prioridad: 'muyBaja' })
         .expect(404);
 
       expect(body).toEqual({ msg: 'Conocimiento no encontrado' });
@@ -199,7 +286,7 @@ describe('/api/conocimiento', () => {
       const { body } = await request(app)
         .put(`/api/conocimiento/${conocimiento._id}`)
         .set('x-token', token)
-        .send({ titulo: 'Vue' })
+        .send({ titulo: loc('Vue') })
         .expect(200);
 
       expect(body.prioridad).toBe('alta');
@@ -213,12 +300,12 @@ describe('/api/conocimiento', () => {
       const { body } = await request(app)
         .put(`/api/conocimiento/${conocimiento._id}`)
         .set('x-token', token)
-        .send({ titulo: 'Vue', prioridad: 'Urgente' })
+        .send({ titulo: loc('Vue'), prioridad: 'Urgente' })
         .expect(500);
 
       expect(body).toEqual({ msg: 'Error al actualizar el conocimiento' });
       const enBd = await Conocimiento.findById(conocimiento._id);
-      expect(enBd.titulo).toBe('React');
+      expect(enBd.titulo.es).toBe('React');
       expect(enBd.prioridad).toBe('alta');
     });
 
@@ -228,7 +315,7 @@ describe('/api/conocimiento', () => {
       const { body } = await request(app)
         .put(`/api/conocimiento/${conocimiento._id}`)
         .set('x-token', token)
-        .send({ titulo: 'Vue', nivel: 'Avanzado' })
+        .send({ titulo: loc('Vue'), nivel: 'Avanzado' })
         .expect(200);
 
       expect(body).not.toHaveProperty('nivel');

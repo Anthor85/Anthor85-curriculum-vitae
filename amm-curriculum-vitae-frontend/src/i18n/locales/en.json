@@ -1,0 +1,61 @@
+{
+  "curriculum": {
+    "descargarPDF": "Download CV (PDF)",
+    "tabs": {
+      "experiencia": "Experience",
+      "formacion": "Education",
+      "formacionComplementaria": "Additional Training",
+      "conocimientos": "Skills"
+    },
+    "vacio": {
+      "experiencia": "No experience listed",
+      "formacion": "No education listed",
+      "formacionComplementaria": "No additional training listed",
+      "conocimientos": "No skills listed"
+    }
+  },
+  "experiencia": {
+    "tecnologias": "Technologies used:",
+    "hitos": "Key achievements:"
+  },
+  "contacto": {
+    "idiomas": "Languages"
+  },
+  "resumen": {
+    "verMas": "Show more",
+    "verMenos": "Show less"
+  },
+  "tabs": {
+    "abrirMenu": "Open tabs menu"
+  },
+  "error": {
+    "titulo": "Something went wrong",
+    "mensaje": "An unexpected error occurred. Try reloading the page.",
+    "recargar": "Reload"
+  },
+  "idioma": {
+    "selector": "Language"
+  },
+  "spinner": {
+    "cargando": "Loading..."
+  },
+  "fechas": {
+    "actualidad": "Present"
+  },
+  "pdf": {
+    "nombreFichero": "CV {{nombre}}",
+    "nombreFicheroSinNombre": "CV",
+    "direccion": "Address",
+    "telefono": "Phone",
+    "email": "Email",
+    "disponibilidad": "Availability",
+    "idiomas": "Languages",
+    "competencias": "Skills",
+    "tecnologias": "Technologies: ",
+    "hitos": "Key achievements:",
+    "experiencia": "Experience",
+    "formacion": "Education",
+    "formacionComplementaria": "Additional Training",
+    "pie": "{{nombre}} · Page {{pagina}} of {{total}}"
+  }
+}

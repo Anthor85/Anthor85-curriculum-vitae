@@ -6,14 +6,16 @@ import type {
 } from '../../interfaces/formacionComplementaria.interface';
 
 import { Button } from '../../components/Button';
+import { CampoLocalizado } from '../../components/CampoLocalizado';
+import { TEXTO_VACIO, trimLocalizado } from '../../helpers/textoLocalizado';
 import { MensajeAccion } from '../../components/MensajeAccion';
 import type { MensajeAccion as MensajeAccionType } from '../../interfaces/mensajeAccion.interface';
 
 import styles from './Form.module.scss';
 
 const FORMACION_COMPLEMENTARIA_VACIA: FormacionComplementariaPayload = {
-  titulo: '',
-  institucion: '',
+  titulo: TEXTO_VACIO,
+  institucion: TEXTO_VACIO,
   fechaFin: '',
 };
 
@@ -52,8 +54,8 @@ export const FormacionComplementariaForm = ({
   const { isPending, enviar } = useEnvioFormulario(async () => {
     const payload: FormacionComplementariaPayload = {
       ...formacionComplementaria,
-      titulo: formacionComplementaria.titulo.trim(),
-      institucion: formacionComplementaria.institucion.trim(),
+      titulo: trimLocalizado(formacionComplementaria.titulo),
+      institucion: trimLocalizado(formacionComplementaria.institucion),
     };
 
     await onSubmitFormacionComplementaria(payload);
@@ -62,38 +64,24 @@ export const FormacionComplementariaForm = ({
 
   return (
     <form onSubmit={enviar} className={styles.Form}>
-      <div className={styles.field}>
-        <label htmlFor="titulo">Título:</label>
-        <input
-          type="text"
-          id="titulo"
-          name="titulo"
-          value={formacionComplementaria.titulo}
-          onChange={(e) =>
-            setFormacionComplementaria({
-              ...formacionComplementaria,
-              titulo: e.target.value,
-            })
-          }
-          required
-        />
-      </div>
-      <div className={styles.field}>
-        <label htmlFor="institucion">Institución:</label>
-        <input
-          type="text"
-          id="institucion"
-          name="institucion"
-          value={formacionComplementaria.institucion}
-          onChange={(e) =>
-            setFormacionComplementaria({
-              ...formacionComplementaria,
-              institucion: e.target.value,
-            })
-          }
-          required
-        />
-      </div>
+      <CampoLocalizado
+        id="titulo"
+        etiqueta="Título"
+        valor={formacionComplementaria.titulo}
+        onChange={(titulo) =>
+          setFormacionComplementaria((prev) => ({ ...prev, titulo }))
+        }
+        required
+      />
+      <CampoLocalizado
+        id="institucion"
+        etiqueta="Institución"
+        valor={formacionComplementaria.institucion}
+        onChange={(institucion) =>
+          setFormacionComplementaria((prev) => ({ ...prev, institucion }))
+        }
+        required
+      />
       <div className={styles.field}>
         <label htmlFor="fechaFin">Fecha de Fin:</label>
         <input

@@ -3,7 +3,7 @@ import { Conocimiento } from '../../../../interfaces/conocimiento.interface';
 import styles from './Items.module.scss';
 
 interface Props {
-  conocimiento: Conocimiento;
+  conocimiento: Conocimiento<string>;
 }
 
 export const ConocimientoItem = ({ conocimiento }: Props) => {

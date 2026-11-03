@@ -4,7 +4,7 @@ import { FormacionComplementaria } from '../../../../interfaces/formacionComplem
 import styles from './Items.module.scss';
 
 interface Props {
-  formacionComplementaria: FormacionComplementaria;
+  formacionComplementaria: FormacionComplementaria<string>;
 }
 
 export const FormacionComplementariaItem = ({

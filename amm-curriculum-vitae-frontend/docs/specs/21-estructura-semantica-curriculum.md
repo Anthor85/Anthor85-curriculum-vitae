@@ -22,7 +22,7 @@ Comprobado en `main` (commit `37840b0`); `CAMBIOS_Y_MEJORAS.md` §3.1 sigue pend
 
 - **Landmarks en `Curriculum`**: `div#mainPage` pasa a `<main id="mainPage">`; `div.header` pasa a `<header>`. Sin `<footer>`.
 - **Nombre**: el `<span>` de `div.name` pasa a `<h1>`. El selector `.name span` pasa a `.name h1` y añade el reset necesario (`margin: 0`, `font: inherit`) para que se vea igual.
-- **Secciones (`Tabs`)**: cada `role="tabpanel"` lleva como primer hijo un `<h2>` con `tab.titulo`, visualmente oculto (clase `tituloPanel` en `Tabs.module.scss` con el patrón *sr-only*: `position: absolute`, `width/height: 1px`, `overflow: hidden`, `clip-path: inset(50%)`, `white-space: nowrap`, `margin: -1px`, `padding: 0`, `border: 0`). Los paneles ocultos (`hidden`) quedan fuera del árbol de accesibilidad como hoy.
+- **Secciones (`Tabs`)**: cada `role="tabpanel"` lleva como primer hijo un `<h2>` con `tab.titulo`, visualmente oculto (clase `tituloPanel` en `Tabs.module.scss` con el patrón _sr-only_: `position: absolute`, `width/height: 1px`, `overflow: hidden`, `clip-path: inset(50%)`, `white-space: nowrap`, `margin: -1px`, `padding: 0`, `border: 0`). Los paneles ocultos (`hidden`) quedan fuera del árbol de accesibilidad como hoy.
 - **Ítems a `<h3>`**: `FormacionItem` y `FormacionComplementariaItem` cambian `<h2 className={styles.titulo}>` por `<h3 className={styles.titulo}>`.
 - **`Expandable`**: nueva prop opcional `encabezado?: 'h2' | 'h3' | 'h4'`.
   - Si se pasa y no está `desactivado`: el `<button>` se envuelve en ese elemento (patrón acordeón WAI-ARIA: `<h3><button aria-expanded>…</button></h3>`), con clase `styles.encabezado` (`margin: 0`, `font: inherit`) para no alterar el aspecto.
@@ -83,7 +83,7 @@ Jerarquía resultante de `/`:
 2. **`ExperienciaItem`**: pasar `encabezado="h3"` y cambiar `div/h2/p` de la cabecera a `span`. Comprobar visualmente la tarjeta de experiencia (escritorio y ≤ 600 px).
 3. **`FormacionItem` y `FormacionComplementariaItem`**: `h2` → `h3`.
 4. **Conocimientos**: `div.conocimientos` → `ul` con reset de lista; `ConocimientoItem` → `li` + `span.titulo`. Adaptar el test de SPEC 20 en `Curriculum.test.tsx` (`getAllByRole('heading')` → `getAllByRole('listitem')`).
-5. **`Tabs`**: `<h2 className={styles.tituloPanel}>` como primer hijo de cada panel + estilo *sr-only*. Test en `Tabs.test.tsx`: el panel activo tiene un `heading` de nivel 2 con el título de la pestaña.
+5. **`Tabs`**: `<h2 className={styles.tituloPanel}>` como primer hijo de cada panel + estilo _sr-only_. Test en `Tabs.test.tsx`: el panel activo tiene un `heading` de nivel 2 con el título de la pestaña.
 6. **`Contacto`**: `h3` → `h2` en Idiomas y selector en `Curriculum.module.scss`. Test en `Contacto.test.tsx`: `getByRole('heading', { level: 2, name: 'Idiomas' })`.
 7. **`Curriculum`**: `div#mainPage` → `main`, `div.header` → `header`, `span` → `h1`; selector `.name h1` con reset. Tests en `Curriculum.test.tsx`: un único `heading` de nivel 1 con nombre y apellidos; existe `main`; existe un `<header>` (buscado por etiqueta, ver Riesgos); la pestaña Experiencia expone `heading` nivel 3 con el nombre de la empresa.
 8. **Verificación visual** con `npm run dev`: comparar `/` con `main` en escritorio (≥ 1080 px), ≤ 768 px y ≤ 600 px — nombre, columna lateral, Idiomas, las cuatro pestañas, tarjeta de experiencia plegada y desplegada, grid de conocimientos.
@@ -113,7 +113,7 @@ Jerarquía resultante de `/`:
 - **Idiomas como `<h2>`** (tomada) frente a dejar `<h3>`: evita el salto h1→h3 en la columna lateral, mismo estilo.
 - **Landmarks `main` + `header`** (tomada) frente a solo `main` o añadir `<section>` por panel (redundante con `role="tabpanel"`). Sin `<footer>`: no hay contenido.
 - **`<header>` dentro de `<main>`**: se mantiene la estructura DOM actual porque `.header` se posiciona `absolute` respecto a `.MainPage`; sacarlo obligaría a rehacer el layout. Un `<header>` dentro de `<main>` no es `banner`, pero la jerarquía de encabezados (objetivo principal) queda correcta.
-- **Estilo *sr-only* local en `Tabs.module.scss`** frente a una clase global en `styles.css`: el proyecto usa CSS Modules y hoy no hay otro uso.
+- **Estilo _sr-only_ local en `Tabs.module.scss`** frente a una clase global en `styles.css`: el proyecto usa CSS Modules y hoy no hay otro uso.
 - **Conocimientos sin encabezado** (`li > span`): 41 encabezados para palabras sueltas eran ruido para lectores de pantalla.
 
 ## Riesgos identificados

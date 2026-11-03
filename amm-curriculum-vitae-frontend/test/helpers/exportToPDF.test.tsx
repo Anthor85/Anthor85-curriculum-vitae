@@ -20,6 +20,7 @@ vi.mock('../../src/helpers/fotoComoDataURL', () => ({ fotoComoDataURL }));
 
 import { exportToPDF } from '../../src/helpers/exportToPDF';
 import type { DatosCurriculumPDF } from '../../src/pages/components/curriculum/pdf/CurriculumPDF';
+import i18n from '../../src/i18n';
 
 const datos: DatosCurriculumPDF = {
   perfil: {
@@ -36,6 +37,8 @@ const datos: DatosCurriculumPDF = {
   formaciones: [],
   formacionesComplementarias: [],
   conocimiento: [],
+  idioma: 'es',
+  t: i18n.getFixedT('es'),
 };
 
 const propsDelPDF = () =>

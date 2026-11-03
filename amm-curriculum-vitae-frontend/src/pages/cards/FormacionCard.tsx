@@ -1,6 +1,9 @@
 import { Button } from '../../components/Button';
 import { anioFecha } from '../../helpers/anioFecha';
+import { faltaEn } from '../../helpers/textoLocalizado';
 import { Formacion } from '../../interfaces/formacion.interface';
+
+import { MarcaSinEn } from './MarcaSinEn';
 
 import styles from './Cards.module.scss';
 
@@ -17,13 +20,19 @@ export const FormacionCard = ({
   enEdicion,
 }: Props) => {
   const { titulo, institucion, fechaFin, extras } = formacion;
+  const sinEn = [
+    titulo,
+    institucion,
+    ...(extras ?? []).map(({ descripcion }) => descripcion),
+  ].some(faltaEn);
 
   return (
     <div className={`${styles.Card} ${enEdicion ? styles.enEdicion : ''}`}>
       <div className={styles.data}>
-        <div className={styles.title}>{titulo}</div>
+        <div className={styles.title}>{titulo.es}</div>
+        {sinEn && <MarcaSinEn />}
         <div className={styles.subdata}>
-          <b>Institución:</b> {institucion}
+          <b>Institución:</b> {institucion.es}
         </div>
         <div className={styles.subdata}>
           <b>Fecha:</b> {anioFecha(fechaFin)}
@@ -33,7 +42,7 @@ export const FormacionCard = ({
             <p>Extra:</p>
             <ul className={styles.colecciones}>
               {extras.map((extra) => (
-                <li key={extra.id}>{extra.descripcion}</li>
+                <li key={extra.id}>{extra.descripcion.es}</li>
               ))}
             </ul>
           </div>

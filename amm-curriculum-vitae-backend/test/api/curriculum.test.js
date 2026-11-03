@@ -83,6 +83,10 @@ describe('/api/curriculum', () => {
     describe('?lang', () => {
       const sembrarCurriculum = async () => {
         await crearConocimientoEnBd({ prioridad: 'alta' });
+        await crearConocimientoEnBd({
+          titulo: { es: 'Pruebas unitarias', en: 'Unit testing' },
+          prioridad: 'baja',
+        });
         const experiencia = await crearExperienciaEnBd();
         await crearHitoEnBd(experiencia._id, {
           descripcion: { es: 'Hito sin traducir', en: '' },
@@ -130,6 +134,22 @@ describe('/api/curriculum', () => {
           disponibilidad: 'Immediate',
         });
         expect(body.conocimiento[0].prioridad).toBe('alta');
+      });
+
+      it('resuelve el titulo de conocimiento con fallback a es', async () => {
+        await sembrarCurriculum();
+
+        const en = await request(app).get('/api/curriculum?lang=en');
+        const es = await request(app).get('/api/curriculum?lang=es');
+
+        expect(en.body.conocimiento.map(({ titulo }) => titulo)).toEqual([
+          'React',
+          'Unit testing',
+        ]);
+        expect(es.body.conocimiento.map(({ titulo }) => titulo)).toEqual([
+          'React',
+          'Pruebas unitarias',
+        ]);
       });
 
       it('resuelve los idiomas del perfil', async () => {

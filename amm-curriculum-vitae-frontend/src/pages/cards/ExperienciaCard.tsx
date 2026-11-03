@@ -1,11 +1,18 @@
 import { Button } from '../../components/Button';
 import { rangoFechas } from '../../helpers/rangoFechas';
+import { faltaEn } from '../../helpers/textoLocalizado';
+import i18n from '../../i18n';
 import { tecnologiasFilter } from '../../helpers/tecnologiasFilter';
 import { useConocimientoStore } from '../../hooks';
 import { Conocimiento } from '../../interfaces/conocimiento.interface';
 import { Experiencia } from '../../interfaces/experiencia.interface';
 
+import { MarcaSinEn } from './MarcaSinEn';
+
 import styles from './Cards.module.scss';
+
+// El admin no se traduce: las fechas siempre en español.
+const tEs = i18n.getFixedT('es');
 
 interface Props {
   experiencia: Experiencia;
@@ -21,6 +28,10 @@ export const ExperienciaCard = ({
   enEdicion,
 }: Props) => {
   const { conocimiento } = useConocimientoStore();
+  const sinEn = [
+    experiencia.descripcion,
+    ...(experiencia.hitos ?? []).map(({ descripcion }) => descripcion),
+  ].some(faltaEn);
 
   return (
     <div
@@ -29,15 +40,18 @@ export const ExperienciaCard = ({
     >
       <div className={styles.data}>
         <h2>{experiencia.empresa}</h2>
-        <p>{experiencia.descripcion}</p>
-        <p>{rangoFechas(experiencia.fechaInicio, experiencia.fechaFin)}</p>
+        {sinEn && <MarcaSinEn />}
+        <p>{experiencia.descripcion.es}</p>
+        <p>{rangoFechas(tEs, experiencia.fechaInicio, experiencia.fechaFin)}</p>
         {experiencia.tecnologias.length > 0 && (
           <div className={styles.coleccion}>
             <p>Tecnologías:</p>
             <ul className={styles.colecciones}>
               {conocimiento &&
                 tecnologiasFilter(experiencia.tecnologias, conocimiento).map(
-                  (tech: Conocimiento) => <li key={tech.id}>{tech.titulo}</li>,
+                  (tech: Conocimiento) => (
+                    <li key={tech.id}>{tech.titulo.es}</li>
+                  ),
                 )}
             </ul>
           </div>
@@ -47,7 +61,7 @@ export const ExperienciaCard = ({
             <p>Hitos:</p>
             <ul className={styles.colecciones}>
               {experiencia.hitos.map((hito) => (
-                <li key={hito.id}>{hito.descripcion}</li>
+                <li key={hito.id}>{hito.descripcion.es}</li>
               ))}
             </ul>
           </div>

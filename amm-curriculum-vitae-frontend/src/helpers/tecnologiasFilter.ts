@@ -1,12 +1,9 @@
-import { Conocimiento } from '../interfaces/conocimiento.interface';
-
-export const tecnologiasFilter = (
+// Genérico: sirve al admin (`Conocimiento`) y al CV (`Conocimiento<string>`).
+export const tecnologiasFilter = <C extends { id: string }>(
   tecnologias: string[],
-  conocimientos: Conocimiento[],
-) => {
+  conocimientos: C[],
+): C[] => {
   const tecnologiasSet = new Set(tecnologias);
 
-  return conocimientos.filter((tech: Conocimiento) =>
-    tecnologiasSet.has(tech.id),
-  );
+  return conocimientos.filter((tech) => tecnologiasSet.has(tech.id));
 };

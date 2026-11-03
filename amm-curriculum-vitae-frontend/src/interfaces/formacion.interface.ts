@@ -1,20 +1,22 @@
-export interface Extra {
+import { TextoLocalizado } from './idioma.interface';
+
+export interface Extra<T = TextoLocalizado> {
   id: string;
-  descripcion: string;
+  descripcion: T;
   formacion: string;
 }
 
 export interface ExtraPayload {
   id?: string;
-  descripcion: string;
+  descripcion: TextoLocalizado;
 }
 
-export interface Formacion {
+export interface Formacion<T = TextoLocalizado> {
   id: string;
-  titulo: string;
-  institucion: string;
+  titulo: T;
+  institucion: T;
   fechaFin: string;
-  extras: Extra[];
+  extras: Extra<T>[];
 }
 
 export interface FormacionPayload extends Omit<Formacion, 'id' | 'extras'> {

@@ -1,7 +1,9 @@
-export interface FormacionComplementaria {
+import { TextoLocalizado } from './idioma.interface';
+
+export interface FormacionComplementaria<T = TextoLocalizado> {
   id: string;
-  titulo: string;
-  institucion: string;
+  titulo: T;
+  institucion: T;
   fechaFin?: string;
 }
 

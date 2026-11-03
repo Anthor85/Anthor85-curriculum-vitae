@@ -1,7 +1,9 @@
-import { screen, within } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 
-import { renderConStore } from '../utils';
+import { flush, renderConStore } from '../utils';
+import i18n from '../../src/i18n';
 import {
   ConocimientoPrioridad,
   type Conocimiento,
@@ -15,13 +17,17 @@ vi.mock('../../src/helpers/exportToPDF', () => ({
   exportToPDF: exportToPDFMock,
 }));
 
+const apiMock = vi.hoisted(() => ({ get: vi.fn() }));
+
+vi.mock('../../src/api/api', () => ({ default: apiMock, api: apiMock }));
+
 import { Curriculum } from '../../src/pages/Curriculum';
 
 const conocimiento = (
   id: string,
   titulo: string,
   prioridad?: ConocimientoPrioridad,
-): Conocimiento => ({ id, titulo, prioridad }) as Conocimiento;
+): Conocimiento<string> => ({ id, titulo, prioridad }) as Conocimiento<string>;
 
 const CURRICULUM: ICurriculum = {
   perfil: null,
@@ -58,7 +64,7 @@ const ORDEN_ESPERADO = [
   'Cobol',
 ];
 
-const PERFIL: Perfil = {
+const PERFIL: Perfil<string> = {
   id: 'p1',
   nombre: 'Antonio',
   apellidos: 'Menéndez',
@@ -69,13 +75,47 @@ const PERFIL: Perfil = {
 };
 
 const renderCurriculum = (curriculum: ICurriculum = CURRICULUM) =>
-  renderConStore(<Curriculum />, {
-    curriculum: { curriculum, loading: false, error: null },
-  });
+  renderConStore(
+    <MemoryRouter initialEntries={['/']}>
+      <Curriculum />
+    </MemoryRouter>,
+    {
+      curriculum: {
+        curriculums: { es: curriculum, en: null },
+        loading: false,
+        error: null,
+      },
+    },
+  );
+
+// Arranca en `ruta` con los currículums indicados ya en el store
+const renderEn = (
+  ruta: string,
+  curriculums: { es: ICurriculum | null; en: ICurriculum | null },
+) =>
+  renderConStore(
+    <MemoryRouter initialEntries={[ruta]}>
+      <Curriculum />
+    </MemoryRouter>,
+    { curriculum: { curriculums, loading: false, error: null } },
+  );
+
+const CURRICULUM_EN: ICurriculum = {
+  ...CURRICULUM,
+  experiencia: [{ ...CURRICULUM.experiencia[0], descripcion: 'Developer' }],
+};
 
 describe('<Curriculum />', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  // Curriculum cambia el idioma del singleton de i18n: se restaura entre tests
+  afterEach(async () => {
+    await act(async () => {
+      await i18n.changeLanguage('es');
+    });
+    document.documentElement.lang = 'es';
   });
 
   test('la pestaña Conocimientos ordena por prioridad y alfabéticamente sin mostrar la prioridad', async () => {
@@ -171,5 +211,88 @@ describe('<Curriculum />', () => {
         .getAllByRole('listitem')
         .map((li) => li.textContent),
     ).toEqual(['Rama de software', 'Premio extraordinario']);
+  });
+
+  test('en /en pide el currículum con lang=en y pinta los textos fijos en inglés', async () => {
+    apiMock.get.mockResolvedValue({ data: CURRICULUM_EN });
+    renderEn('/en', { es: CURRICULUM, en: null });
+    await flush();
+
+    expect(apiMock.get).toHaveBeenCalledTimes(1);
+    expect(apiMock.get).toHaveBeenCalledWith('/curriculum', {
+      params: { lang: 'en' },
+    });
+    expect(screen.getByRole('tab', { name: 'Experience' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Skills' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Download CV/ }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Developer')).toBeInTheDocument();
+    expect(document.documentElement.lang).toBe('en');
+  });
+
+  test('el selector son enlaces con hrefLang y marca el idioma activo', async () => {
+    renderEn('/en', { es: CURRICULUM, en: CURRICULUM_EN });
+    await flush();
+
+    const selector = screen.getByRole('navigation', { name: 'Language' });
+    const es = within(selector).getByRole('link', { name: 'Español' });
+    const en = within(selector).getByRole('link', { name: 'English' });
+
+    expect(es).toHaveAttribute('href', '/');
+    expect(es).toHaveAttribute('hreflang', 'es');
+    expect(es).not.toHaveAttribute('aria-current');
+    expect(en).toHaveAttribute('href', '/en');
+    expect(en).toHaveAttribute('hreflang', 'en');
+    expect(en).toHaveAttribute('aria-current', 'page');
+  });
+
+  test('cambiar de idioma pide solo el que falta y volver no repite la petición', async () => {
+    const user = userEvent.setup();
+    apiMock.get.mockResolvedValue({ data: CURRICULUM_EN });
+    renderEn('/', { es: CURRICULUM, en: null });
+    await flush();
+
+    expect(apiMock.get).not.toHaveBeenCalled();
+    expect(
+      screen.getByRole('tab', { name: 'Experiencia' }),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('link', { name: 'English' }));
+    await flush();
+
+    expect(apiMock.get).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('tab', { name: 'Experience' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'English' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+
+    await user.click(screen.getByRole('link', { name: 'Español' }));
+    await flush();
+    await user.click(screen.getByRole('link', { name: 'English' }));
+    await flush();
+
+    expect(apiMock.get).toHaveBeenCalledTimes(1);
+    expect(screen.getByText('Developer')).toBeInTheDocument();
+  });
+
+  test('el PDF exportado desde /en sale en inglés', async () => {
+    const user = userEvent.setup();
+    renderEn('/en', {
+      es: null,
+      en: { ...CURRICULUM_EN, perfil: PERFIL },
+    });
+    await flush();
+
+    await user.click(screen.getByRole('button', { name: /Download CV/ }));
+
+    const [datos, nombre] = exportToPDFMock.mock.calls[0] as unknown as [
+      { idioma: string; t: (clave: string) => string },
+      string,
+    ];
+    expect(datos.idioma).toBe('en');
+    expect(datos.t('pdf.experiencia')).toBe('Experience');
+    expect(nombre).toBe('CV Antonio Menéndez');
   });
 });

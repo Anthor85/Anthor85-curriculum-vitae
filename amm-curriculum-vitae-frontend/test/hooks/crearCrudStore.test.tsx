@@ -20,9 +20,11 @@ vi.mock('../../src/api/api', () => ({
 
 import { useConocimientoStore } from '../../src/hooks/useConocimientoStore';
 
+const loc = (es: string, en = '') => ({ es, en });
+
 const conocimiento = (id: string, titulo: string): Conocimiento => ({
   id,
-  titulo,
+  titulo: loc(titulo),
   prioridad: ConocimientoPrioridad.MEDIA,
 });
 
@@ -86,35 +88,35 @@ describe('crearCrudStore', () => {
     await act(async () => {
       expect(
         await result.current.createConocimiento({
-          titulo: 'Node',
+          titulo: loc('Node'),
           prioridad: ConocimientoPrioridad.MEDIA,
         }),
       ).toBe(true);
     });
 
     expect(apiMock.post).toHaveBeenCalledWith('/conocimiento', {
-      titulo: 'Node',
+      titulo: loc('Node'),
       prioridad: ConocimientoPrioridad.MEDIA,
     });
     expect(listaEnStore(store)).toEqual([REACT, NODE]);
   });
 
   test('update reemplaza el elemento con el mismo id y respeta la posicion', async () => {
-    const actualizado = { ...REACT, titulo: 'React 19' };
+    const actualizado = { ...REACT, titulo: loc('React 19') };
     apiMock.put.mockResolvedValue({ data: actualizado });
     const { result, store } = renderCrud([REACT, NODE]);
 
     await act(async () => {
       expect(
         await result.current.updateConocimiento('1', {
-          titulo: 'React 19',
+          titulo: loc('React 19'),
           prioridad: ConocimientoPrioridad.MEDIA,
         }),
       ).toBe(true);
     });
 
     expect(apiMock.put).toHaveBeenCalledWith('/conocimiento/1', {
-      titulo: 'React 19',
+      titulo: loc('React 19'),
       prioridad: ConocimientoPrioridad.MEDIA,
     });
     expect(listaEnStore(store)).toEqual([actualizado, NODE]);
@@ -140,11 +142,11 @@ describe('crearCrudStore', () => {
 
     await act(async () => {
       await result.current.createConocimiento({
-        titulo: 'Node',
+        titulo: loc('Node'),
         prioridad: ConocimientoPrioridad.MEDIA,
       });
       await result.current.updateConocimiento('2', {
-        titulo: 'Node',
+        titulo: loc('Node'),
         prioridad: ConocimientoPrioridad.MEDIA,
       });
       await result.current.deleteConocimiento('2');
@@ -164,13 +166,13 @@ describe('crearCrudStore', () => {
       expect(await result.current.getConocimiento()).toBe(false);
       expect(
         await result.current.createConocimiento({
-          titulo: 'Node',
+          titulo: loc('Node'),
           prioridad: ConocimientoPrioridad.MEDIA,
         }),
       ).toBe(false);
       expect(
         await result.current.updateConocimiento('1', {
-          titulo: 'Node',
+          titulo: loc('Node'),
           prioridad: ConocimientoPrioridad.MEDIA,
         }),
       ).toBe(false);

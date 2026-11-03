@@ -48,6 +48,18 @@
     align-items: flex-start;
   }
 
+  // Marca de traducción pendiente
+  .sinEn {
+    align-self: flex-start;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    background-color: v.$color-error;
+    color: v.$color-white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    vertical-align: middle;
+  }
+
   &.enEdicion {
     border-color: v.$color-card-border;
     background-color: v.$color-card-bg;

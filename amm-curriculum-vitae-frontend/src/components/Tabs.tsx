@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import styles from './Tabs.module.scss';
 
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export const Tabs = ({ tabs }: Props) => {
+  const { t } = useTranslation();
   const [activa, setActiva] = useState<string>(tabs[0]?.id ?? '');
   const [menuAbierto, setMenuAbierto] = useState(false);
 
@@ -108,7 +110,7 @@ export const Tabs = ({ tabs }: Props) => {
             className={styles.hamburguesa}
             aria-expanded={menuAbierto}
             aria-controls={idDesplegable}
-            aria-label="Abrir menú de pestañas"
+            aria-label={t('tabs.abrirMenu')}
             onClick={() => setMenuAbierto((abierto) => !abierto)}
           >
             ☰

@@ -4,7 +4,7 @@ import {
   type Conocimiento,
 } from '../../src/interfaces/conocimiento.interface';
 
-const conocimiento = (id: string, titulo: string): Conocimiento => ({
+const conocimiento = (id: string, titulo: string): Conocimiento<string> => ({
   id,
   titulo,
   prioridad: ConocimientoPrioridad.ALTA,
@@ -46,5 +46,22 @@ describe('tecnologiasFilter', () => {
     tecnologiasFilter(['2'], CONOCIMIENTOS);
 
     expect(CONOCIMIENTOS).toEqual(copia);
+  });
+
+  test('es genérico: también filtra conocimientos del admin con titulo { es, en }', () => {
+    const admin: Conocimiento[] = [
+      {
+        id: '1',
+        titulo: { es: 'Pruebas unitarias', en: 'Unit testing' },
+        prioridad: ConocimientoPrioridad.ALTA,
+      },
+      {
+        id: '2',
+        titulo: { es: 'Docker', en: '' },
+        prioridad: ConocimientoPrioridad.ALTA,
+      },
+    ];
+
+    expect(tecnologiasFilter(['2'], admin)).toEqual([admin[1]]);
   });
 });

@@ -88,29 +88,29 @@ export type IconName =
 
 Líneas de `Contacto`, en orden:
 
-| Línea     | Icono       | Texto visible      | `href`                         | Pestaña nueva | Se pinta si          |
-| --------- | ----------- | ------------------ | ------------------------------ | ------------- | -------------------- |
-| Dirección | `chincheta` | `perfil.direccion` | `enlaceMaps(direccion)`        | sí            | siempre              |
-| Teléfono  | `telefono`  | `perfil.telefono`  | `enlaceTelefono(telefono)`     | no            | siempre              |
-| Email     | `sobre`     | `perfil.email`     | `enlaceEmail(email)`           | no            | siempre              |
-| LinkedIn  | `linkedin`  | `LinkedIn`         | `perfil.linkedinURL`           | sí            | `perfil.linkedinURL` |
-| GitHub    | `github`    | `GitHub`           | `perfil.githubURL`             | sí            | `perfil.githubURL`   |
+| Línea     | Icono       | Texto visible      | `href`                     | Pestaña nueva | Se pinta si          |
+| --------- | ----------- | ------------------ | -------------------------- | ------------- | -------------------- |
+| Dirección | `chincheta` | `perfil.direccion` | `enlaceMaps(direccion)`    | sí            | siempre              |
+| Teléfono  | `telefono`  | `perfil.telefono`  | `enlaceTelefono(telefono)` | no            | siempre              |
+| Email     | `sobre`     | `perfil.email`     | `enlaceEmail(email)`       | no            | siempre              |
+| LinkedIn  | `linkedin`  | `LinkedIn`         | `perfil.linkedinURL`       | sí            | `perfil.linkedinURL` |
+| GitHub    | `github`    | `GitHub`           | `perfil.githubURL`         | sí            | `perfil.githubURL`   |
 
 **Ficheros**
 
-| Fichero                                                    | Cambio                                             |
-| ---------------------------------------------------------- | -------------------------------------------------- |
-| `src/interfaces/perfil.interface.ts`                       | dos campos nuevos; fuera `fechaNacimiento`         |
-| `src/pages/forms/PerfilForm.tsx`                           | dos inputs, `PERFIL_VACIO`, precarga y `trim`; fuera el input de fecha |
-| `src/helpers/enlacesContacto.ts`                           | nuevo                                              |
-| `src/helpers/getIcons.ts`                                  | `IconName` con `github` y `linkedin`               |
-| `src/pages/components/curriculum/items/Contacto.tsx`       | líneas como `<a>` y dos líneas nuevas              |
-| `src/pages/Curriculum.module.scss`                         | estilo de enlace en `.contacto__linea`             |
-| `src/pages/components/curriculum/pdf/CurriculumPDF.module.scss` | estilo de enlace en `.contacto__linea`        |
-| `public/icons/github.svg`, `public/icons/linkedin.svg`     | se commitean; se retoca el `viewBox` solo si el paso 5 lo pide |
-| `test/helpers/enlacesContacto.test.tsx`                    | nuevo                                              |
-| `test/components/Contacto.test.tsx`                        | nuevo                                              |
-| `test/pages/Perfil.test.tsx`                               | fixture, payloads y casos nuevos                   |
+| Fichero                                                         | Cambio                                                                 |
+| --------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `src/interfaces/perfil.interface.ts`                            | dos campos nuevos; fuera `fechaNacimiento`                             |
+| `src/pages/forms/PerfilForm.tsx`                                | dos inputs, `PERFIL_VACIO`, precarga y `trim`; fuera el input de fecha |
+| `src/helpers/enlacesContacto.ts`                                | nuevo                                                                  |
+| `src/helpers/getIcons.ts`                                       | `IconName` con `github` y `linkedin`                                   |
+| `src/pages/components/curriculum/items/Contacto.tsx`            | líneas como `<a>` y dos líneas nuevas                                  |
+| `src/pages/Curriculum.module.scss`                              | estilo de enlace en `.contacto__linea`                                 |
+| `src/pages/components/curriculum/pdf/CurriculumPDF.module.scss` | estilo de enlace en `.contacto__linea`                                 |
+| `public/icons/github.svg`, `public/icons/linkedin.svg`          | se commitean; se retoca el `viewBox` solo si el paso 5 lo pide         |
+| `test/helpers/enlacesContacto.test.tsx`                         | nuevo                                                                  |
+| `test/components/Contacto.test.tsx`                             | nuevo                                                                  |
+| `test/pages/Perfil.test.tsx`                                    | fixture, payloads y casos nuevos                                       |
 
 ## Plan de implementación
 
@@ -164,13 +164,13 @@ Líneas de `Contacto`, en orden:
 
 ## Riesgos identificados
 
-| Riesgo                                                                                              | Mitigación                                                                                                             |
-| --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Desplegar el frontend antes que el backend: los campos nuevos se ignoran y, sin `fechaNacimiento`, el `required` del modelo antiguo responde `500` al guardar | Dependencia declarada; se despliega primero la SPEC 10 del backend, que ignora el campo si el frontend anterior aún lo envía |
-| El build se lanza antes del `$unset` en producción y `fechaNacimiento` sigue en el HTML prerenderizado | Redesplegar el frontend después del paso 8 de la SPEC 10 del backend; criterio de aceptación propio                    |
-| Los iconos nuevos se ven más pequeños o desalineados (`viewBox` con margen, `800px` de tamaño propio) | El CSS ya fija 18 px / 16 px; el paso 5 lo revisa y ajusta el `viewBox` si hace falta                                   |
-| Estilos globales de `a` (color, subrayado) cambian el aspecto de las líneas en web o en el PDF       | Regla explícita de color heredado y sin subrayado en los dos `.module.scss`; pasos 4 y 6                                |
-| `html2canvas` no pinta los SVG nuevos o pinta el subrayado de un estado hover                        | Paso 6; el módulo del PDF no define hover                                                                               |
-| jsdom no aplica la validación de `type="url"` y el test de "URL inválida" no es fiable                | Ese criterio se verifica a mano en el navegador; los tests cubren precarga, `trim` y payload                            |
-| El perfil ya prerenderizado no trae los enlaces hasta redesplegar                                    | La revalidación tras hidratar (SPEC 17) los pinta para las personas; redeploy manual tras rellenar los campos           |
-| Área pulsable pequeña en móvil (líneas de ~20 px de alto)                                            | El enlace ocupa toda la línea; si en el paso 5 resulta incómodo, se anota para una spec de ajuste, no se cambia el espaciado aquí |
+| Riesgo                                                                                                                                                        | Mitigación                                                                                                                        |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Desplegar el frontend antes que el backend: los campos nuevos se ignoran y, sin `fechaNacimiento`, el `required` del modelo antiguo responde `500` al guardar | Dependencia declarada; se despliega primero la SPEC 10 del backend, que ignora el campo si el frontend anterior aún lo envía      |
+| El build se lanza antes del `$unset` en producción y `fechaNacimiento` sigue en el HTML prerenderizado                                                        | Redesplegar el frontend después del paso 8 de la SPEC 10 del backend; criterio de aceptación propio                               |
+| Los iconos nuevos se ven más pequeños o desalineados (`viewBox` con margen, `800px` de tamaño propio)                                                         | El CSS ya fija 18 px / 16 px; el paso 5 lo revisa y ajusta el `viewBox` si hace falta                                             |
+| Estilos globales de `a` (color, subrayado) cambian el aspecto de las líneas en web o en el PDF                                                                | Regla explícita de color heredado y sin subrayado en los dos `.module.scss`; pasos 4 y 6                                          |
+| `html2canvas` no pinta los SVG nuevos o pinta el subrayado de un estado hover                                                                                 | Paso 6; el módulo del PDF no define hover                                                                                         |
+| jsdom no aplica la validación de `type="url"` y el test de "URL inválida" no es fiable                                                                        | Ese criterio se verifica a mano en el navegador; los tests cubren precarga, `trim` y payload                                      |
+| El perfil ya prerenderizado no trae los enlaces hasta redesplegar                                                                                             | La revalidación tras hidratar (SPEC 17) los pinta para las personas; redeploy manual tras rellenar los campos                     |
+| Área pulsable pequeña en móvil (líneas de ~20 px de alto)                                                                                                     | El enlace ocupa toda la línea; si en el paso 5 resulta incómodo, se anota para una spec de ajuste, no se cambia el espaciado aquí |

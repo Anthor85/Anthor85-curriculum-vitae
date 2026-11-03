@@ -1,0 +1,39 @@
+{
+  "curriculum": {
+    "descargarPDF": "Descargar CV (PDF)",
+    "tabs": {
+      "experiencia": "Experiencia",
+      "formacion": "Formación Académica",
+      "formacionComplementaria": "Formación Complementaria",
+      "conocimientos": "Conocimientos"
+    },
+    "vacio": {
+      "experiencia": "Sin experiencia registrada",
+      "formacion": "Sin formación académica registrada",
+      "formacionComplementaria": "Sin formación complementaria registrada",
+      "conocimientos": "Sin conocimientos registrados"
+    }
+  },
+  "experiencia": {
+    "tecnologias": "Tecnologías utilizadas:",
+    "hitos": "Algunas tareas destacadas:"
+  },
+  "contacto": {
+    "idiomas": "Idiomas"
+  },
+  "resumen": {
+    "verMas": "Ver más",
+    "verMenos": "Ver menos"
+  },
+  "tabs": {
+    "abrirMenu": "Abrir menú de pestañas"
+  },
+  "error": {
+    "titulo": "Algo ha ido mal",
+    "mensaje": "Se ha producido un error inesperado. Prueba a recargar la página.",
+    "recargar": "Recargar"
+  },
+  "spinner": {
+    "cargando": "Cargando..."
+  }
+}

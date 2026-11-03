@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { Translation } from 'react-i18next';
 
 import { Button } from './Button';
 import styles from './ErrorBoundary.module.scss';
@@ -28,11 +29,18 @@ export class ErrorBoundary extends Component<Props, State> {
     if (!this.state.hayError) return this.props.children;
 
     return (
-      <div className={styles.ErrorBoundary} role="alert">
-        <h1>Algo ha ido mal</h1>
-        <p>Se ha producido un error inesperado. Prueba a recargar la página.</p>
-        <Button name="Recargar" onClick={() => window.location.reload()} />
-      </div>
+      <Translation>
+        {(t) => (
+          <div className={styles.ErrorBoundary} role="alert">
+            <h1>{t('error.titulo')}</h1>
+            <p>{t('error.mensaje')}</p>
+            <Button
+              name={t('error.recargar')}
+              onClick={() => window.location.reload()}
+            />
+          </div>
+        )}
+      </Translation>
     );
   }
 }

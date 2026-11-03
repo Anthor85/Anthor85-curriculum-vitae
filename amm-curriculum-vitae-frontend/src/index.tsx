@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import api from './api/api';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import './i18n';
 import type { Curriculum } from './interfaces/curriculum.interface';
 import { Router } from './router/Router';
 import { setCurriculum, store } from './store';

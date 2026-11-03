@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { Expandable } from '../../../../components/Expandable';
 import { rangoFechas } from '../../../../helpers/rangoFechas';
 import { tecnologiasFilter } from '../../../../helpers/tecnologiasFilter';
@@ -17,6 +19,7 @@ export const ExperienciaItem = ({
   conocimiento,
   expandible = true,
 }: Props) => {
+  const { t } = useTranslation();
   const tecnologias = tecnologiasFilter(experiencia.tecnologias, conocimiento);
 
   const clases = [styles.Item, expandible && styles.expandable]
@@ -43,7 +46,7 @@ export const ExperienciaItem = ({
         <div className={styles.items}>
           {tecnologias.length > 0 && (
             <div className={styles.coleccion}>
-              <p className={styles.etiqueta}>Tecnologías utilizadas:</p>
+              <p className={styles.etiqueta}>{t('experiencia.tecnologias')}</p>
               <ul className={styles.tecnologias}>
                 {tecnologias.map((tech) => (
                   <li key={tech.id}>{tech.titulo}</li>
@@ -53,7 +56,7 @@ export const ExperienciaItem = ({
           )}
           {experiencia.hitos?.length ? (
             <div className={styles.coleccion}>
-              <p className={styles.etiqueta}>Algunas tareas destacadas:</p>
+              <p className={styles.etiqueta}>{t('experiencia.hitos')}</p>
               <ul>
                 {experiencia.hitos.map((hito) => (
                   <li key={hito.id}>{hito.descripcion}</li>

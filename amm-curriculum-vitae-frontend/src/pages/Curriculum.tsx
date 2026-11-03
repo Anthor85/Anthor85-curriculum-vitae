@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { exportToPDF } from '../helpers/exportToPDF';
 import { tituloCurriculum } from '../helpers/metasCurriculum';
 import { ordenarCurriculum } from '../helpers/ordenarCurriculum';
@@ -18,6 +19,7 @@ import styles from './Curriculum.module.scss';
 import { Spinner } from '../components/Spinner';
 
 export const Curriculum = () => {
+  const { t } = useTranslation();
   const [preparandoPDF, setPreparandoPDF] = useState(false);
   const { curriculum, getCurriculum, loading, error } = useCurriculumStore();
 
@@ -61,7 +63,7 @@ export const Curriculum = () => {
   const tabs = [
     {
       id: 'experiencia',
-      titulo: 'Experiencia',
+      titulo: t('curriculum.tabs.experiencia'),
       contenido: experienciaOrdenada.length
         ? experienciaOrdenada.map((item) => (
             <ExperienciaItem
@@ -70,20 +72,20 @@ export const Curriculum = () => {
               conocimiento={conocimientosOrdenados}
             />
           ))
-        : vacio('Sin experiencia registrada'),
+        : vacio(t('curriculum.vacio.experiencia')),
     },
     {
       id: 'formacion',
-      titulo: 'Formación Académica',
+      titulo: t('curriculum.tabs.formacion'),
       contenido: formacionesOrdenadas.length
         ? formacionesOrdenadas.map((item) => (
             <FormacionItem key={item.id} formacion={item} />
           ))
-        : vacio('Sin formación académica registrada'),
+        : vacio(t('curriculum.vacio.formacion')),
     },
     {
       id: 'formacion-complementaria',
-      titulo: 'Formación Complementaria',
+      titulo: t('curriculum.tabs.formacionComplementaria'),
       contenido: complementariasOrdenadas.length
         ? complementariasOrdenadas.map((item) => (
             <FormacionComplementariaItem
@@ -91,11 +93,11 @@ export const Curriculum = () => {
               formacionComplementaria={item}
             />
           ))
-        : vacio('Sin formación complementaria registrada'),
+        : vacio(t('curriculum.vacio.formacionComplementaria')),
     },
     {
       id: 'conocimientos',
-      titulo: 'Conocimientos',
+      titulo: t('curriculum.tabs.conocimientos'),
       contenido: conocimientosOrdenados.length ? (
         <ul className={styles.conocimientos}>
           {conocimientosOrdenados.map((item) => (
@@ -103,7 +105,7 @@ export const Curriculum = () => {
           ))}
         </ul>
       ) : (
-        vacio('Sin conocimientos registrados')
+        vacio(t('curriculum.vacio.conocimientos'))
       ),
     },
   ];
@@ -148,7 +150,7 @@ export const Curriculum = () => {
             )}
             <Button
               onClick={() => setPreparandoPDF(true)}
-              name="Descargar CV (PDF)"
+              name={t('curriculum.descargarPDF')}
               icon="descarga"
             />
           </div>

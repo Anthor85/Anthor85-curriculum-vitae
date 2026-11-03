@@ -6,8 +6,10 @@
     "@react-pdf/renderer": "^4.9.0",
     "@reduxjs/toolkit": "^2.8.2",
     "axios": "^1.11.0",
+    "i18next": "^26.7.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-i18next": "^17.1.11",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.7.1"
   },

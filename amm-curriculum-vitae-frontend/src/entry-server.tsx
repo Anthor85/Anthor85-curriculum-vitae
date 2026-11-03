@@ -3,6 +3,7 @@ import { Provider } from 'react-redux';
 import { StaticRouter } from 'react-router-dom';
 
 import { ErrorBoundary } from './components/ErrorBoundary';
+import './i18n';
 import type { Curriculum } from './interfaces/curriculum.interface';
 import { Router } from './router/Router';
 import { setCurriculum, store } from './store';

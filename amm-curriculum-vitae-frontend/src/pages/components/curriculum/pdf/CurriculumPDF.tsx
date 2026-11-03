@@ -230,9 +230,7 @@ const Puesto = ({
       </View>
       {experiencia.hitos?.length ? (
         <View style={styles.hitos}>
-          <Text style={styles.etiquetaHitos}>
-            Algunas tareas destacadas:
-          </Text>
+          <Text style={styles.etiquetaHitos}>Algunas tareas destacadas:</Text>
           {experiencia.hitos.map((hito) => (
             <View key={hito.id} style={styles.hito} wrap={false}>
               <Text style={styles.vineta}>•</Text>

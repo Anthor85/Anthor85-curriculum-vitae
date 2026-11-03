@@ -1,4 +1,5 @@
 import { useId, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './Resumen.module.scss';
 
 // Por debajo de este largo cabe entero en el recorte móvil: no hace falta botón
@@ -11,6 +12,7 @@ interface ResumenProps {
 // Resumen profesional. En escritorio se ve entero; en móvil se recorta
 // a unas líneas (CSS) y el botón lo despliega.
 export const Resumen = ({ texto }: ResumenProps) => {
+  const { t } = useTranslation();
   const [abierto, setAbierto] = useState(false);
   const id = useId();
   const plegable = texto.length > LARGO_MINIMO_PLEGABLE;
@@ -31,7 +33,7 @@ export const Resumen = ({ texto }: ResumenProps) => {
           aria-controls={id}
           onClick={() => setAbierto(!abierto)}
         >
-          {abierto ? 'Ver menos' : 'Ver más'}
+          {abierto ? t('resumen.verMenos') : t('resumen.verMas')}
         </button>
       )}
     </div>

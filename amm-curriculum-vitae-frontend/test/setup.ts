@@ -2,6 +2,8 @@ import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
 import { afterEach, vi } from 'vitest';
 
+import '../src/i18n';
+
 // @testing-library solo detecta que hay fake timers a traves del global `jest`
 // (helpers.js -> jestFakeTimersAreEnabled). Sin este puente, su asyncWrapper
 // espera un setTimeout que nadie avanza y toda interaccion de user-event

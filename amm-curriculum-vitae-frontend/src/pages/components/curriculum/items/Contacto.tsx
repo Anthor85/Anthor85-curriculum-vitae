@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import {
   enlaceEmail,
   enlaceMaps,
@@ -20,6 +22,7 @@ interface Linea {
 }
 
 export const Contacto = ({ perfil, styles }: ContactoProps) => {
+  const { t } = useTranslation();
   const lineas: Linea[] = perfil
     ? [
         {
@@ -102,7 +105,7 @@ export const Contacto = ({ perfil, styles }: ContactoProps) => {
             <div className={styles.contacto__idiomas}>
               <h2>
                 <img src={getIcons('idiomas')} alt="" />
-                Idiomas
+                {t('contacto.idiomas')}
               </h2>
               <ul>
                 {perfil.idiomas.map(({ idioma, nivel }) => (

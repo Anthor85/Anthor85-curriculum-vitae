@@ -55,6 +55,86 @@
     }
   }
 
+  // Bloque Icono de ConocimientoForm
+  .icono {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border: none;
+    margin: 0;
+    padding: 0;
+
+    legend {
+      padding: 0;
+      margin-bottom: 0.5rem;
+    }
+
+    summary {
+      cursor: pointer;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .iconoFila {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .iconoPrevia {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+    color: v.$color-gray-900;
+  }
+
+  .iconoPreviaSvg {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .iconoResultados {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(3.5rem, 1fr));
+    gap: 0.5rem;
+    max-width: 32rem;
+
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      aspect-ratio: 1;
+      font-size: 1.25rem;
+      color: v.$color-gray-900;
+      background: v.$color-white;
+      border: 2px solid v.$color-gray-200;
+      border-radius: 8px;
+      cursor: pointer;
+
+      &:hover {
+        border-color: v.$color-secondary;
+      }
+
+      &[aria-pressed='true'] {
+        border-color: v.$color-primary;
+        background: v.$color-primary-soft;
+      }
+
+      @include v.foco-visible;
+    }
+  }
+
+  .error {
+    margin: 0;
+    color: v.$color-error;
+    font-weight: 600;
+  }
+
   .actions {
     display: flex;
     flex-direction: row;

@@ -21,6 +21,13 @@ export interface Conocimiento<T = TextoLocalizado> {
   id: string;
   titulo: T;
   prioridad: ConocimientoPrioridad;
+  icono?: string; // SVG como texto; '' o ausente = sin icono
 }
 
 export type ConocimientoPayload = Omit<Conocimiento, 'id'>;
+
+export interface ResultadoIcono {
+  nombre: string;
+  fuente: 'simple-icons' | 'lucide' | 'monograma';
+  icono: string;
+}

@@ -2,9 +2,11 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { avanzarMensaje, flush, renderConStore, textoMensaje } from '../utils';
+import { errorAxios } from '../utils/errores';
 import {
   Conocimiento as IConocimiento,
   ConocimientoPrioridad,
+  type ResultadoIcono,
 } from '../../src/interfaces/conocimiento.interface';
 
 const apiMock = vi.hoisted(() => ({
@@ -137,6 +139,7 @@ describe('<Conocimiento />', () => {
     expect(payload).toEqual({
       titulo: loc('TypeScript'),
       prioridad: ConocimientoPrioridad.MEDIA,
+      icono: '',
     });
     expect(payload).not.toHaveProperty('nivel');
   });
@@ -176,6 +179,7 @@ describe('<Conocimiento />', () => {
     expect(apiMock.post).toHaveBeenCalledWith('/conocimiento', {
       titulo: loc('TypeScript'),
       prioridad: ConocimientoPrioridad.ALTA,
+      icono: '',
     });
     expect(screen.getByText('TypeScript')).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: 'Editar' })).toHaveLength(3);
@@ -258,6 +262,7 @@ describe('<Conocimiento />', () => {
     expect(apiMock.put).toHaveBeenCalledWith('/conocimiento/1', {
       titulo: loc('React 19'),
       prioridad: ConocimientoPrioridad.ALTA,
+      icono: '',
     });
     expect(screen.getByText('React 19')).toBeInTheDocument();
     expect(screen.queryByText('React')).not.toBeInTheDocument();
@@ -396,6 +401,7 @@ describe('<Conocimiento />', () => {
     expect(apiMock.put).toHaveBeenCalledWith('/conocimiento/1', {
       titulo: loc('Pruebas unitarias', 'Unit testing'),
       prioridad: ConocimientoPrioridad.ALTA,
+      icono: '',
     });
   });
 
@@ -433,6 +439,7 @@ describe('<Conocimiento />', () => {
     expect(apiMock.post).toHaveBeenLastCalledWith('/conocimiento', {
       titulo: loc('Metodologías ágiles', 'Agile methodologies'),
       prioridad: ConocimientoPrioridad.MEDIA,
+      icono: '',
     });
   });
 
@@ -457,5 +464,226 @@ describe('<Conocimiento />', () => {
     expect(screen.queryByText('Unit testing')).not.toBeInTheDocument();
     expect(screen.getByText('Metodologías ágiles')).toBeInTheDocument();
     expect(screen.queryByText('Sin EN')).not.toBeInTheDocument();
+  });
+
+  describe('icono', () => {
+    const SVG_REACT =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M1 1h22v22H1z"/></svg>';
+    const SVG_MONO =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><text>R</text></svg>';
+    const RESULTADOS: ResultadoIcono[] = [
+      { nombre: 'React', fuente: 'simple-icons', icono: SVG_REACT },
+      { nombre: 'R', fuente: 'monograma', icono: SVG_MONO },
+    ];
+
+    // GET /icono responde con `respuesta`; el resto, con `conocimientos`
+    const responderIconos = (
+      respuesta: () => Promise<unknown> = () =>
+        Promise.resolve({ data: { resultados: RESULTADOS } }),
+      conocimientos: IConocimiento[] = CONOCIMIENTOS,
+    ) =>
+      apiMock.get.mockImplementation((url: string) =>
+        url === '/icono'
+          ? respuesta()
+          : Promise.resolve({ data: conocimientos }),
+      );
+
+    const CON_ICONO = [{ ...CONOCIMIENTOS[0], icono: SVG_REACT }];
+
+    const previa = () => screen.getByTestId('icono-previa');
+    const estiloPrevia = () =>
+      previa().querySelector('[aria-hidden]')?.getAttribute('style') ?? '';
+    const botonResultado = (nombre: string) =>
+      screen.getByRole('button', { name: `Usar icono ${nombre}` });
+    const hayResultados = () =>
+      screen.queryAllByRole('button', { name: /^Usar icono/ }).length > 0;
+
+    test('el formulario muestra vista previa, Buscar icono, edición manual y Quitar icono', async () => {
+      await renderPagina();
+
+      expect(previa()).toHaveTextContent('Sin icono');
+      expect(
+        screen.getByRole('button', { name: 'Buscar icono' }),
+      ).toBeDisabled();
+      expect(
+        screen.getByRole('button', { name: 'Quitar icono' }),
+      ).toBeDisabled();
+      expect(screen.getByText('Editar SVG a mano')).toBeInTheDocument();
+      expect(screen.getByLabelText('SVG:')).toHaveValue('');
+    });
+
+    test('«Buscar icono» usa el título ES y muestra los resultados', async () => {
+      const user = setupUser();
+      responderIconos();
+      await renderPagina();
+
+      await user.type(screen.getByLabelText('Título (ES)'), ' React ');
+      await user.type(screen.getByLabelText('Título (EN)'), 'Other');
+      await user.click(screen.getByRole('button', { name: 'Buscar icono' }));
+      await flush();
+
+      expect(apiMock.get).toHaveBeenCalledWith('/icono', {
+        params: { q: 'React' },
+      });
+      expect(botonResultado('React (simple-icons)')).toHaveAttribute(
+        'aria-pressed',
+        'false',
+      );
+      expect(botonResultado('R (monograma)')).toBeInTheDocument();
+    });
+
+    test('«Buscar icono» se deshabilita mientras busca', async () => {
+      const user = setupUser();
+      let resolver: (valor: unknown) => void = () => {};
+      responderIconos(() => new Promise((r) => (resolver = r)));
+      await renderPagina();
+
+      await user.type(screen.getByLabelText('Título (ES)'), 'React');
+      await user.click(screen.getByRole('button', { name: 'Buscar icono' }));
+
+      expect(screen.getByRole('button', { name: 'Buscando…' })).toBeDisabled();
+
+      resolver({ data: { resultados: RESULTADOS } });
+      await flush();
+
+      expect(
+        screen.getByRole('button', { name: 'Buscar icono' }),
+      ).toBeEnabled();
+    });
+
+    test('elegir un resultado actualiza la vista previa, cierra la lista y viaja en el POST', async () => {
+      const user = setupUser();
+      responderIconos();
+      await renderPagina();
+
+      await user.type(screen.getByLabelText('Título (ES)'), 'React');
+      await user.click(screen.getByRole('button', { name: 'Buscar icono' }));
+      await flush();
+      await user.click(botonResultado('React (simple-icons)'));
+
+      expect(estiloPrevia()).toContain(encodeURIComponent(SVG_REACT));
+      expect(previa()).not.toHaveTextContent('Sin icono');
+      expect(hayResultados()).toBe(false);
+      expect(screen.getByLabelText('SVG:')).toHaveValue(SVG_REACT);
+
+      await user.click(
+        screen.getByRole('button', { name: 'Agregar Conocimiento' }),
+      );
+      await flush();
+
+      expect(apiMock.post).toHaveBeenCalledWith('/conocimiento', {
+        titulo: loc('React'),
+        prioridad: ConocimientoPrioridad.MEDIA,
+        icono: SVG_REACT,
+      });
+    });
+
+    test('pegar en la textarea actualiza la vista previa y el payload lleva el SVG recortado', async () => {
+      const user = setupUser();
+      await renderPagina();
+
+      await user.type(screen.getByLabelText('Título (ES)'), 'React');
+      await user.click(screen.getByLabelText('SVG:'));
+      await user.paste(`  ${SVG_MONO}\n`);
+
+      expect(estiloPrevia()).toContain(encodeURIComponent(SVG_MONO));
+      expect(
+        screen.getByRole('button', { name: 'Quitar icono' }),
+      ).toBeEnabled();
+
+      await user.click(
+        screen.getByRole('button', { name: 'Agregar Conocimiento' }),
+      );
+      await flush();
+
+      expect(apiMock.post).toHaveBeenCalledWith('/conocimiento', {
+        titulo: loc('React'),
+        prioridad: ConocimientoPrioridad.MEDIA,
+        icono: SVG_MONO,
+      });
+    });
+
+    test('«Editar» carga el icono guardado y «Quitar icono» envía icono vacío', async () => {
+      const user = setupUser();
+      apiMock.get.mockResolvedValue({ data: CON_ICONO });
+      await renderPagina();
+
+      await user.click(screen.getByRole('button', { name: 'Editar' }));
+
+      expect(estiloPrevia()).toContain(encodeURIComponent(SVG_REACT));
+      expect(screen.getByLabelText('SVG:')).toHaveValue(SVG_REACT);
+
+      await user.click(screen.getByRole('button', { name: 'Quitar icono' }));
+
+      expect(previa()).toHaveTextContent('Sin icono');
+      expect(
+        screen.getByRole('button', { name: 'Quitar icono' }),
+      ).toBeDisabled();
+
+      await user.click(
+        screen.getByRole('button', { name: 'Actualizar Conocimiento' }),
+      );
+      await flush();
+
+      expect(apiMock.put).toHaveBeenCalledWith('/conocimiento/1', {
+        titulo: loc('React'),
+        prioridad: ConocimientoPrioridad.ALTA,
+        icono: '',
+      });
+    });
+
+    test('al buscar con un icono ya elegido, el resultado igual queda marcado', async () => {
+      const user = setupUser();
+      responderIconos(undefined, CON_ICONO);
+      await renderPagina();
+
+      await user.click(screen.getByRole('button', { name: 'Editar' }));
+      await user.click(screen.getByRole('button', { name: 'Buscar icono' }));
+      await flush();
+
+      expect(botonResultado('React (simple-icons)')).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      );
+      expect(botonResultado('R (monograma)')).toHaveAttribute(
+        'aria-pressed',
+        'false',
+      );
+    });
+
+    test('«Borrar formulario» limpia el icono y los resultados', async () => {
+      const user = setupUser();
+      responderIconos(undefined, CON_ICONO);
+      await renderPagina();
+
+      await user.click(screen.getByRole('button', { name: 'Editar' }));
+      await user.click(screen.getByRole('button', { name: 'Buscar icono' }));
+      await flush();
+      expect(hayResultados()).toBe(true);
+
+      await user.click(
+        screen.getByRole('button', { name: 'Borrar formulario' }),
+      );
+
+      expect(previa()).toHaveTextContent('Sin icono');
+      expect(screen.getByLabelText('SVG:')).toHaveValue('');
+      expect(hayResultados()).toBe(false);
+    });
+
+    test.each([
+      [502, 'Servicio de iconos no disponible'],
+      [404, 'No se pudo buscar el icono'],
+    ])('si la búsqueda falla con %i muestra «%s»', async (status, mensaje) => {
+      const user = setupUser();
+      responderIconos(() => Promise.reject(errorAxios(status)));
+      await renderPagina();
+
+      await user.type(screen.getByLabelText('Título (ES)'), 'React');
+      await user.click(screen.getByRole('button', { name: 'Buscar icono' }));
+      await flush();
+
+      expect(screen.getByRole('alert')).toHaveTextContent(mensaje);
+      expect(hayResultados()).toBe(false);
+    });
   });
 });

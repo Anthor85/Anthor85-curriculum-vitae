@@ -9,3 +9,4 @@ export * from './useMensajeAccion';
 export * from './usePerfilStore';
 export * from './useIdioma';
 export * from './useTraduccion';
+export * from './useBuscarIcono';

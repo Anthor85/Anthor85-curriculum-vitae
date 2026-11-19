@@ -1,19 +1,10 @@
 const deepl = require('deepl-node');
 const { HttpError } = require('../helpers/HttpError');
 const { conContexto } = require('../helpers/conContexto');
+const { obtenerTraductor } = require('../helpers/deepl');
 
 const MAX_TEXTOS = 50;
 const MAX_CARACTERES = 5000;
-
-// Un solo cliente por instancia. Se crea en la primera petición y no al
-// cargar el módulo, para que la falta de clave sea un 503 y no un fallo al
-// arrancar. Una clave terminada en ":fx" usa sola el host de la API Free.
-let traductor;
-const obtenerTraductor = () => {
-  if (!process.env.DEEPL_API_KEY) return null;
-  traductor ??= new deepl.Translator(process.env.DEEPL_API_KEY);
-  return traductor;
-};
 
 const validarTextos = (textos) => {
   if (

@@ -25,6 +25,7 @@ app.use('/api/curriculum', require('./routes/curriculum'));
 app.use('/api/conocimiento', require('./routes/conocimiento'));
 app.use('/api/experiencia', require('./routes/experiencia'));
 app.use('/api/formacion', require('./routes/formacion'));
+app.use('/api/icono', require('./routes/icono'));
 app.use(
   '/api/formacionComplementaria',
   require('./routes/formacionComplementaria'),

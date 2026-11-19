@@ -9,6 +9,14 @@ const { tokenValido } = require('../utils/token');
 
 const loc = (es, en = '') => ({ es, en });
 
+const ICONO =
+  '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z"/></svg>';
+const OTRO_ICONO =
+  '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"/></svg>';
+const ICONO_SCRIPT =
+  '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>';
+const ICONO_NO_VALIDO = { msg: 'Icono SVG no válido' };
+
 describe('/api/conocimiento', () => {
   let token;
 
@@ -36,6 +44,7 @@ describe('/api/conocimiento', () => {
         id: conocimiento._id.toString(),
         titulo: loc('Node'),
         prioridad: 'baja',
+        icono: '',
       });
       expect(body[0]).not.toHaveProperty('_id');
       expect(body[0]).not.toHaveProperty('__v');
@@ -54,6 +63,7 @@ describe('/api/conocimiento', () => {
         id: expect.any(String),
         titulo: loc('React', 'React'),
         prioridad: 'alta',
+        icono: '',
       });
       await expect(Conocimiento.countDocuments()).resolves.toBe(1);
     });
@@ -173,7 +183,72 @@ describe('/api/conocimiento', () => {
     });
   });
 
+  describe('POST /api/conocimiento (icono)', () => {
+    it('sin icono guarda cadena vacia', async () => {
+      await request(app)
+        .post('/api/conocimiento')
+        .set('x-token', token)
+        .send({ titulo: loc('React') })
+        .expect(201);
+
+      const enBd = await Conocimiento.findOne().lean();
+      expect(enBd.icono).toBe('');
+    });
+
+    it('con un SVG valido lo guarda normalizado', async () => {
+      const { body } = await request(app)
+        .post('/api/conocimiento')
+        .set('x-token', token)
+        .send({
+          titulo: loc('React'),
+          icono: `  <?xml version="1.0"?><!-- logo -->${ICONO}
+`,
+        })
+        .expect(201);
+
+      expect(body.icono).toBe(ICONO);
+      const enBd = await Conocimiento.findOne().lean();
+      expect(enBd.icono).toBe(ICONO);
+    });
+
+    it('con un SVG no valido devuelve 400 y no crea nada', async () => {
+      const { body } = await request(app)
+        .post('/api/conocimiento')
+        .set('x-token', token)
+        .send({ titulo: loc('React'), icono: ICONO_SCRIPT })
+        .expect(400);
+
+      expect(body).toEqual(ICONO_NO_VALIDO);
+      await expect(Conocimiento.countDocuments()).resolves.toBe(0);
+    });
+  });
+
   describe('POST /api/conocimiento/multiple', () => {
+    it('valida los iconos y guarda los validos', async () => {
+      await request(app)
+        .post('/api/conocimiento/multiple')
+        .set('x-token', token)
+        .send([{ titulo: loc('React'), icono: ICONO }, { titulo: loc('Node') }])
+        .expect(201);
+
+      const enBd = await Conocimiento.find().lean();
+      expect(enBd.map(({ icono }) => icono)).toEqual([ICONO, '']);
+    });
+
+    it('con un icono no valido devuelve 400 y no inserta ninguno', async () => {
+      const { body } = await request(app)
+        .post('/api/conocimiento/multiple')
+        .set('x-token', token)
+        .send([
+          { titulo: loc('React'), icono: ICONO },
+          { titulo: loc('Node'), icono: ICONO_SCRIPT },
+        ])
+        .expect(400);
+
+      expect(body).toEqual(ICONO_NO_VALIDO);
+      await expect(Conocimiento.countDocuments()).resolves.toBe(0);
+    });
+
     it('guarda los dos idiomas de cada elemento', async () => {
       await request(app)
         .post('/api/conocimiento/multiple')
@@ -235,6 +310,7 @@ describe('/api/conocimiento', () => {
         id: conocimiento._id.toString(),
         titulo: loc('Vue'),
         prioridad: 'muyBaja',
+        icono: '',
       });
       const enBd = await Conocimiento.findById(conocimiento._id);
       expect(enBd.titulo.es).toBe('Vue');
@@ -307,6 +383,64 @@ describe('/api/conocimiento', () => {
       const enBd = await Conocimiento.findById(conocimiento._id);
       expect(enBd.titulo.es).toBe('React');
       expect(enBd.prioridad).toBe('alta');
+    });
+
+    it('sin icono conserva el actual', async () => {
+      const conocimiento = await crearConocimientoEnBd({ icono: ICONO });
+
+      const { body } = await request(app)
+        .put(`/api/conocimiento/${conocimiento._id}`)
+        .set('x-token', token)
+        .send({ titulo: loc('Vue') })
+        .expect(200);
+
+      expect(body.icono).toBe(ICONO);
+      const enBd = await Conocimiento.findById(conocimiento._id).lean();
+      expect(enBd.icono).toBe(ICONO);
+    });
+
+    it('con icono vacio lo quita', async () => {
+      const conocimiento = await crearConocimientoEnBd({ icono: ICONO });
+
+      const { body } = await request(app)
+        .put(`/api/conocimiento/${conocimiento._id}`)
+        .set('x-token', token)
+        .send({ titulo: loc('React'), icono: '' })
+        .expect(200);
+
+      expect(body.icono).toBe('');
+      const enBd = await Conocimiento.findById(conocimiento._id).lean();
+      expect(enBd.icono).toBe('');
+    });
+
+    it('con un SVG valido lo sustituye', async () => {
+      const conocimiento = await crearConocimientoEnBd({ icono: ICONO });
+
+      const { body } = await request(app)
+        .put(`/api/conocimiento/${conocimiento._id}`)
+        .set('x-token', token)
+        .send({ titulo: loc('React'), icono: OTRO_ICONO })
+        .expect(200);
+
+      expect(body.icono).toBe(OTRO_ICONO);
+      const enBd = await Conocimiento.findById(conocimiento._id).lean();
+      expect(enBd.icono).toBe(OTRO_ICONO);
+    });
+
+    it('con <script> devuelve 400 y el documento no cambia', async () => {
+      const conocimiento = await crearConocimientoEnBd({ icono: ICONO });
+
+      const { body } = await request(app)
+        .put(`/api/conocimiento/${conocimiento._id}`)
+        .set('x-token', token)
+        .send({ titulo: loc('Vue'), prioridad: 'alta', icono: ICONO_SCRIPT })
+        .expect(400);
+
+      expect(body).toEqual(ICONO_NO_VALIDO);
+      const enBd = await Conocimiento.findById(conocimiento._id).lean();
+      expect(enBd.titulo).toEqual(loc('React'));
+      expect(enBd.prioridad).toBe('media');
+      expect(enBd.icono).toBe(ICONO);
     });
 
     it('con nivel en el body lo ignora', async () => {

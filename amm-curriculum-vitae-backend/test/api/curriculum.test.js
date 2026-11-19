@@ -152,6 +152,20 @@ describe('/api/curriculum', () => {
         ]);
       });
 
+      it('devuelve el icono de conocimiento tal cual en los dos idiomas', async () => {
+        const icono =
+          '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0"/></svg>';
+        await crearConocimientoEnBd({ icono });
+        await crearConocimientoEnBd({ titulo: { es: 'Node', en: '' } });
+
+        for (const lang of ['es', 'en']) {
+          const { body } = await request(app)
+            .get(`/api/curriculum?lang=${lang}`)
+            .expect(200);
+          expect(body.conocimiento.map((c) => c.icono)).toEqual([icono, '']);
+        }
+      });
+
       it('resuelve los idiomas del perfil', async () => {
         await sembrarCurriculum();
 

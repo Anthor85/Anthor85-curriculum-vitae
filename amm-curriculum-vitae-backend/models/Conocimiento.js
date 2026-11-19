@@ -11,6 +11,11 @@ const ConocimientoSchema = Schema({
     enum: ['muyAlta', 'alta', 'media', 'baja', 'muyBaja'],
     default: 'media',
   },
+  // SVG como texto, validado con helpers/validarIcono. No es localizado.
+  icono: {
+    type: String,
+    default: '',
+  },
 });
 
 ConocimientoSchema.plugin(toJSON);

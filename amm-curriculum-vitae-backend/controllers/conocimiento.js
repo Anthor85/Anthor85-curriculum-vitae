@@ -1,6 +1,7 @@
 const Conocimiento = require('../models/Conocimiento');
 const { HttpError } = require('../helpers/HttpError');
 const { conContexto } = require('../helpers/conContexto');
+const { validarIcono } = require('../helpers/validarIcono');
 
 // Obtener todos los conocimientos
 const obtenerConocimientos = async (req, res) => {
@@ -10,14 +11,22 @@ const obtenerConocimientos = async (req, res) => {
 
 // Crear un nuevo conocimiento
 const crearConocimiento = async (req, res) => {
-  const nuevoConocimiento = new Conocimiento(req.body);
+  const nuevoConocimiento = new Conocimiento({
+    ...req.body,
+    icono: validarIcono(req.body.icono),
+  });
   const conocimientoCreado = await nuevoConocimiento.save();
   res.status(201).json(conocimientoCreado);
 };
 
 //Crear múltiples conocimientos
 const crearConocimientos = async (req, res) => {
-  const conocimientosCreado = await Conocimiento.insertMany(req.body);
+  // Se validan todos antes de insertar: si uno falla no se inserta ninguno.
+  const conocimientos = [].concat(req.body ?? []).map((conocimiento) => ({
+    ...conocimiento,
+    icono: validarIcono(conocimiento?.icono),
+  }));
+  const conocimientosCreado = await Conocimiento.insertMany(conocimientos);
   res.status(201).json(conocimientosCreado);
 };
 
@@ -33,6 +42,10 @@ const actualizarConocimiento = async (req, res) => {
   conocimiento.titulo = req.body.titulo;
   if (req.body.prioridad !== undefined) {
     conocimiento.prioridad = req.body.prioridad;
+  }
+  // Ausente se conserva; '' quita el icono.
+  if (req.body.icono !== undefined) {
+    conocimiento.icono = validarIcono(req.body.icono);
   }
 
   await conocimiento.save();

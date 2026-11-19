@@ -8,6 +8,7 @@
     "start": "node index.js",
     "seed": "node scripts/seedUsuario.js",
     "clone-db": "node scripts/clonarBBDD.js",
+    "iconos": "node scripts/cargarIconosConocimientos.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",

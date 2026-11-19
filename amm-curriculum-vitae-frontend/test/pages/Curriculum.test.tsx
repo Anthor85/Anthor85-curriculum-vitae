@@ -136,6 +136,43 @@ describe('<Curriculum />', () => {
     expect(panel.innerHTML).not.toMatch(/prioridad/i);
   });
 
+  test('un conocimiento con icono lo pinta antes del título; sin icono no cambia el marcado', async () => {
+    const user = userEvent.setup();
+    const SVG =
+      '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0h1v1z"/></svg>';
+    renderCurriculum({
+      ...CURRICULUM,
+      conocimiento: [
+        {
+          ...conocimiento('1', 'Sonata', ConocimientoPrioridad.ALTA),
+          icono: SVG,
+        },
+        {
+          ...conocimiento('2', 'Java', ConocimientoPrioridad.MEDIA),
+          icono: '',
+        },
+        conocimiento('3', 'Cobol', ConocimientoPrioridad.BAJA),
+      ],
+    });
+
+    await user.click(screen.getByRole('tab', { name: 'Conocimientos' }));
+    const [conIcono, vacio, sinCampo] = within(
+      screen.getByRole('tabpanel'),
+    ).getAllByRole('listitem');
+
+    const icono = conIcono.firstElementChild;
+    expect(icono).toHaveAttribute('aria-hidden', 'true');
+    expect(icono?.getAttribute('style')).toContain(encodeURIComponent(SVG));
+    expect(icono?.nextElementSibling).toHaveTextContent('Sonata');
+    expect(conIcono.textContent).toBe('Sonata');
+
+    [vacio, sinCampo].forEach((li) => {
+      expect(li.children).toHaveLength(1);
+      expect(li.querySelector('[aria-hidden]')).toBeNull();
+      expect(li.className).toBe(conIcono.className.split(' ')[0]);
+    });
+  });
+
   test('las tecnologías de una experiencia siguen el orden por prioridad', () => {
     renderCurriculum();
 

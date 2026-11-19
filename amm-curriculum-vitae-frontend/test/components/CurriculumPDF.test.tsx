@@ -197,6 +197,23 @@ describe('CurriculumPDF', () => {
     );
   });
 
+  test('los iconos de los conocimientos no salen en el PDF ni cambian su salida', () => {
+    const { container: sinIconos, unmount } = renderPDF();
+    const htmlSinIconos = sinIconos.innerHTML;
+    unmount();
+
+    const { container } = renderPDF({
+      conocimiento: datos.conocimiento.map((c) => ({
+        ...c,
+        icono:
+          '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0h1v1z"/></svg>',
+      })),
+    });
+
+    expect(container.innerHTML).toBe(htmlSinIconos);
+    expect(container.innerHTML).not.toMatch(/svg/i);
+  });
+
   test('sin conocimientos no pinta la sección Competencias', () => {
     renderPDF({ conocimiento: [] });
 
